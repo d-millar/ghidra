@@ -30,6 +30,11 @@ import com.sun.jna.NativeLibrary;
 import com.sun.jna.win32.StdCallLibrary;
 
 import SWIG.SBDebugger;
+import SWIG.SBProcess;
+import SWIG.SBProcessInfo;
+import SWIG.SBTarget;
+import SWIG.SBThread;
+import SWIG.StateType;
 import ghidra.test.AbstractGhidraHeadlessIntegrationTest;
 import ghidra.util.Msg;
 
@@ -74,6 +79,8 @@ public class LLDBTest extends AbstractGhidraHeadlessIntegrationTest {
 
 		StringBuilder outputCapture = null;
 
+		private SBProcess process;
+
 		public void start() {
 			/*
 			client.setEventCallbacks(new NoisyDebugEventCallbacksAdapter(DebugStatus.NO_CHANGE) {
@@ -110,19 +117,26 @@ public class LLDBTest extends AbstractGhidraHeadlessIntegrationTest {
 			*/
 
 			Msg.debug(this, "Starting " + cmdLine + " with client " + sbd);
-			sbd.CreateTarget(cmdLine);
-			//control.execute(".create " + cmdLine);
-			//control.waitForEvent();
-			//DebugProcessInfo pi = procInfo.getNow(null);
-			//assertNotNull(pi);
-			//control.execute("g");
-			//control.waitForEvent();
-			//DebugThreadInfo ti = threadInfo.getNow(null);
-			//assertNotNull(ti);
+			SBTarget target = sbd.CreateTarget(cmdLine);
+			process = target.LaunchSimple(null, null, null);
+			assertNotNull(process);
+			System.out.println(process.GetProcessID()+":"+process.GetUniqueID());
+			SBProcessInfo pi = process.GetProcessInfo();
+			assertNotNull(pi);
+			SBThread thread = process.GetThreadAtIndex(0);
+			assertNotNull(thread);
+			System.out.println(thread.GetThreadID()+":"+process.GetUniqueID());
+			thread.Resume();
 		}
 
 		public void kill() {
 			Msg.debug(this, "Killing " + cmdLine);
+			process.Kill();
+			try {
+				process.wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			//control.execute(".kill");
 			//control.waitForEvent();
 			//Integer exitCode = procExit.getNow(null);
@@ -143,9 +157,10 @@ public class LLDBTest extends AbstractGhidraHeadlessIntegrationTest {
 
 		@Override
 		public void close() {
-			//if (procInfo.isDone() && !procExit.isDone()) {
-			//	kill();
-			//}
+			StateType state = process.GetState();
+			if (!state.equals(StateType.eStateExited)) {
+				kill();
+			}
 		}
 	}
 	
