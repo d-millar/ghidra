@@ -27,13 +27,15 @@ public interface DebugBreakpoint {
 	}
 
 	public static class BreakFullType {
-		public final BreakType breakType;
+		/*
+			public final BreakType breakType;
 		public final Machine procType; // TODO: Guessing the values are from WinNT
 
 		public BreakFullType(BreakType breakType, Machine procType) {
 			this.breakType = breakType;
 			this.procType = procType;
 		}
+		*/
 	}
 
 	public static enum BreakFlags implements BitmaskUniverse {

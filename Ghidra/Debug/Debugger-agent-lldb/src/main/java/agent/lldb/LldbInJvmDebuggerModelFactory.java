@@ -39,7 +39,7 @@ public class LldbInJvmDebuggerModelFactory implements LocalDebuggerModelFactory 
 	@Override
 	public CompletableFuture<? extends DebuggerObjectModel> build() {
 		LldbModelImpl model = new LldbModelImpl();
-		return model.startDbgEng(new String[] {}).thenApply(__ -> model);
+		return model.startLLDB(new String[] {}).thenApply(__ -> model);
 	}
 
 	@Override

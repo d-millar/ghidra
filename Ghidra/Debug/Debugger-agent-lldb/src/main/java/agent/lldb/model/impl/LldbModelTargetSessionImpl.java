@@ -62,7 +62,7 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 	}
 
 	protected static String indexSession(SBTarget session) {
-		return indexSession(session.getId());
+		return indexSession(new DebugSessionId(session.hashCode()));
 	}
 
 	protected static String keySession(SBTarget session) {

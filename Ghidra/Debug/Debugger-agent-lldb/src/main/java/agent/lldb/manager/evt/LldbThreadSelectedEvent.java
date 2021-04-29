@@ -15,20 +15,19 @@
  */
 package agent.lldb.manager.evt;
 
-import agent.dbgeng.dbgeng.DebugThreadId;
-import agent.dbgeng.manager.DbgState;
-import agent.dbgeng.manager.DbgThread;
-import agent.dbgeng.manager.impl.DbgStackFrameImpl;
-import agent.dbgeng.manager.impl.DbgThreadImpl;
+import SWIG.SBFrame;
+import SWIG.SBThread;
+import SWIG.StateType;
+import agent.lldb.lldb.DebugThreadId;
 
 /**
  * The event corresponding with "{@code =thread-selected}"
  */
 public class LldbThreadSelectedEvent extends AbstractLldbEvent<DebugThreadId> {
 	private final DebugThreadId id;
-	private DbgState state;
-	private DbgThread thread;
-	private DbgStackFrameImpl frame;
+	private StateType state;
+	private SBThread thread;
+	private SBFrame frame;
 
 	/**
 	 * The selected thread ID must be specified by dbgeng.
@@ -36,7 +35,7 @@ public class LldbThreadSelectedEvent extends AbstractLldbEvent<DebugThreadId> {
 	 * @param frame
 	 * @param id dbgeng-provided id
 	 */
-	public LldbThreadSelectedEvent(DbgState state, DbgThread thread, DbgStackFrameImpl frame) {
+	public LldbThreadSelectedEvent(StateType state, SBThread thread, SBFrame frame) {
 		super(thread.getId());
 		this.id = thread.getId();
 		this.state = state;
@@ -53,15 +52,15 @@ public class LldbThreadSelectedEvent extends AbstractLldbEvent<DebugThreadId> {
 		return id;
 	}
 
-	public DbgState getState() {
+	public StateType getState() {
 		return state;
 	}
 
-	public DbgThreadImpl getThread() {
-		return (DbgThreadImpl) thread;
+	public SBThread getThread() {
+		return thread;
 	}
 
-	public DbgStackFrameImpl getFrame() {
+	public SBFrame getFrame() {
 		return frame;
 	}
 

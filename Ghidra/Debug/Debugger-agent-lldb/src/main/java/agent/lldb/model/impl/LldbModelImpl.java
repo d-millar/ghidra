@@ -60,7 +60,7 @@ public class LldbModelImpl extends AbstractLldbModel implements DebuggerObjectMo
 	protected final AddressFactory addressFactory =
 		new DefaultAddressFactory(new AddressSpace[] { space });
 
-	protected final LldbManager dbg;
+	protected final LldbManager manager;
 	protected final LldbModelTargetRootImpl root;
 	protected final LldbModelTargetSessionImpl session;
 
@@ -73,7 +73,7 @@ public class LldbModelImpl extends AbstractLldbModel implements DebuggerObjectMo
 		//System.out.println(XmlSchemaContext.serialize(SCHEMA_CTX));
 		this.root = new LldbModelTargetRootImpl(this, ROOT_SCHEMA);
 		this.completedRoot = CompletableFuture.completedFuture(root);
-		SBTarget s = new SBTarget((LldbManagerImpl) dbg, new DebugSessionId(0));
+		SBTarget s = new SBTarget((LldbManagerImpl) manager, new DebugSessionId(0));
 		s.add();
 		LldbModelTargetSessionContainer sessions = root.sessions;
 		this.session = (LLdbModelTargetSessionImpl) sessions.getTargetSession(s);
@@ -100,20 +100,20 @@ public class LldbModelImpl extends AbstractLldbModel implements DebuggerObjectMo
 	}
 
 	@Override
-	public CompletableFuture<Void> startDbgEng(String[] args) {
-		return dbg.start(args).thenApplyAsync(__ -> null, clientExecutor);
+	public CompletableFuture<Void> startLLDB(String[] args) {
+		return manager.start(args).thenApplyAsync(__ -> null, clientExecutor);
 	}
 
 	@Override
 	public boolean isRunning() {
-		return dbg.isRunning();
+		return manager.isRunning();
 	}
 
 	@Override
 	public void terminate() throws IOException {
 		listeners.fire.modelClosed(DebuggerModelClosedReason.NORMAL);
 		root.invalidateSubtree(root, "Dbgeng is terminating");
-		dbg.terminate();
+		manager.terminate();
 	}
 
 	@Override

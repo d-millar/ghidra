@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 import agent.lldb.manager.LldbManager;
+import agent.lldb.model.iface2.LldbModelTargetSession;
 import ghidra.dbg.agent.AbstractDebuggerObjectModel;
 import ghidra.dbg.target.TargetObject;
 import ghidra.program.model.address.AddressFactory;
@@ -27,7 +28,7 @@ public abstract class AbstractLldbModel extends AbstractDebuggerObjectModel {
 
 	public abstract LldbManager getManager();
 
-	public abstract CompletableFuture<Void> startDbgEng(String[] args);
+	public abstract CompletableFuture<Void> startLLDB(String[] args);
 
 	public abstract boolean isRunning();
 
@@ -35,7 +36,7 @@ public abstract class AbstractLldbModel extends AbstractDebuggerObjectModel {
 
 	public abstract AddressFactory getAddressFactory();
 
-	//public abstract DbgModelTargetSession getSession();
+	public abstract LldbModelTargetSession getSession();
 
 	public abstract void addModelObject(Object object, TargetObject targetObject);
 
