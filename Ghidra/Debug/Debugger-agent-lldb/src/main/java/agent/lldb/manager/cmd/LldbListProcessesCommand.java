@@ -15,29 +15,31 @@
  */
 package agent.lldb.manager.cmd;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import agent.dbgeng.dbgeng.DebugProcessId;
-import agent.dbgeng.dbgeng.DebugSystemObjects;
-import agent.dbgeng.manager.DbgCause.Causes;
-import agent.dbgeng.manager.DbgManager;
-import agent.dbgeng.manager.DbgProcess;
-import agent.dbgeng.manager.impl.DbgManagerImpl;
+import SWIG.SBProcess;
+import agent.lldb.lldb.DebugProcessId;
+import agent.lldb.manager.LldbCause.Causes;
+import agent.lldb.manager.LldbManager;
+import agent.lldb.manager.impl.LldbManagerImpl;
 import ghidra.util.Msg;
 
 /**
- * Implementation of {@link DbgManager#listProcesses()}
+ * Implementation of {@link LldbManager#listProcesses()}
  */
-public class LldbListProcessesCommand extends AbstractLldbCommand<Map<DebugProcessId, DbgProcess>> {
+public class LldbListProcessesCommand extends AbstractLldbCommand<Map<DebugProcessId, SBProcess>> {
 	private List<DebugProcessId> updatedProcessIds;
 
-	public LldbListProcessesCommand(DbgManagerImpl manager) {
+	public LldbListProcessesCommand(LldbManagerImpl manager) {
 		super(manager);
 	}
 
 	@Override
-	public Map<DebugProcessId, DbgProcess> complete(LldbPendingCommand<?> pending) {
-		Map<DebugProcessId, DbgProcess> allProcesses = manager.getKnownProcesses();
+	public Map<DebugProcessId, SBProcess> complete(LldbPendingCommand<?> pending) {
+		Map<DebugProcessId, SBProcess> allProcesses = manager.getKnownProcesses();
 		Set<DebugProcessId> cur = allProcesses.keySet();
 		for (DebugProcessId id : updatedProcessIds) {
 			if (cur.contains(id)) {

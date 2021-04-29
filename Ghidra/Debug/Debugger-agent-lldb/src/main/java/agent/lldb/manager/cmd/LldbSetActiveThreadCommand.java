@@ -15,13 +15,13 @@
  */
 package agent.lldb.manager.cmd;
 
-import agent.dbgeng.dbgeng.DebugThreadId;
-import agent.dbgeng.manager.DbgThread;
-import agent.dbgeng.manager.impl.DbgManagerImpl;
+import SWIG.SBThread;
+import agent.lldb.lldb.DebugThreadId;
+import agent.lldb.manager.impl.LldbManagerImpl;
 
 public class LldbSetActiveThreadCommand extends AbstractLldbCommand<Void> {
 
-	private DbgThread thread;
+	private SBThread thread;
 	private Integer frameId;
 
 	/**
@@ -31,7 +31,7 @@ public class LldbSetActiveThreadCommand extends AbstractLldbCommand<Void> {
 	 * @param thread the desired thread
 	 * @param frameId the desired frame level
 	 */
-	public LldbSetActiveThreadCommand(DbgManagerImpl manager, DbgThread thread, Integer frameId) {
+	public LldbSetActiveThreadCommand(LldbManagerImpl manager, SBThread thread, Integer frameId) {
 		super(manager);
 		this.thread = thread;
 		this.frameId = frameId;

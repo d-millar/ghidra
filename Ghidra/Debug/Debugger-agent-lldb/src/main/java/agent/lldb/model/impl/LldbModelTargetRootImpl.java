@@ -20,9 +20,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import agent.Lldbeng.manager.*;
-import agent.Lldbeng.manager.impl.LldbProcessImpl;
-import agent.Lldbeng.model.iface2.*;
+import SWIG.SBProcess;
+import SWIG.SBThread;
+import SWIG.StateType;
+import agent.lldb.manager.LldbCause;
+import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface1.LldbModelSelectableObject;
 import agent.lldb.model.iface2.LldbModelTargetConnector;
 import agent.lldb.model.iface2.LldbModelTargetRoot;
@@ -121,12 +123,12 @@ public class LldbModelTargetRootImpl extends LldbModelDefaultTargetModelRoot
 
 	@Override
 	public CompletableFuture<Void> attach(long pid) {
-		LldbProcess process = new LldbProcessImpl(getManager());
+		SBProcess process = new SBProcess(getManager());
 		return model.gateFuture(process.attach(pid)).thenApply(__ -> null);
 	}
 
 	@Override
-	public void threadStateChanged(LldbThread thread, LldbState state, LldbCause cause,
+	public void threadStateChanged(SBThread thread, StateType state, LldbCause cause,
 			LldbReason reason) {
 		LldbModelTargetThread targetThread =
 			(LldbModelTargetThread) getModel().getModelObject(thread);

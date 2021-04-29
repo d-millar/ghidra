@@ -351,6 +351,6 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 
 	<T> CompletableFuture<T> execute(LldbCommand<? extends T> cmd);
 
-	DebugEventInformation getLastEventInformation();
+	//DebugEventInformation getLastEventInformation();
 
 }

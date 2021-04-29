@@ -17,28 +17,30 @@ package agent.lldb.manager.cmd;
 
 import java.util.Map;
 
-import agent.dbgeng.dbgeng.*;
-import agent.dbgeng.manager.*;
-import agent.dbgeng.manager.evt.AbstractDbgCompletedCommandEvent;
-import agent.dbgeng.manager.evt.DbgProcessCreatedEvent;
-import agent.dbgeng.manager.impl.DbgManagerImpl;
+import SWIG.SBThread;
+import agent.lldb.lldb.DebugClient;
+import agent.lldb.lldb.DebugThreadId;
+import agent.lldb.manager.LldbEvent;
+import agent.lldb.manager.evt.AbstractLldbCompletedCommandEvent;
+import agent.lldb.manager.evt.LldbProcessCreatedEvent;
+import agent.lldb.manager.impl.LldbManagerImpl;
 
 /**
  * Implementation of {@link DbgProcess#fileExecAndSymbols(String)}
  */
-public class LldbOpenDumpCommand extends AbstractLldbCommand<DbgThread> {
+public class LldbOpenDumpCommand extends AbstractLldbCommand<SBThread> {
 
 	private LldbProcessCreatedEvent created = null;
 	private boolean completed = false;
 	private Map<String, ?> args;
 
-	public LldbOpenDumpCommand(DbgManagerImpl manager, Map<String, ?> args) {
+	public LldbOpenDumpCommand(LldbManagerImpl manager, Map<String, ?> args) {
 		super(manager);
 		this.args = args;
 	}
 
 	@Override
-	public boolean handle(DbgEvent<?> evt, LldbPendingCommand<?> pending) {
+	public boolean handle(LldbEvent<?> evt, LldbPendingCommand<?> pending) {
 		if (evt instanceof AbstractLldbCompletedCommandEvent && pending.getCommand().equals(this)) {
 			completed = true;
 		}
@@ -49,7 +51,7 @@ public class LldbOpenDumpCommand extends AbstractLldbCommand<DbgThread> {
 	}
 
 	@Override
-	public DbgThread complete(LldbPendingCommand<?> pending) {
+	public SBThread complete(LldbPendingCommand<?> pending) {
 		DebugProcessInfo info = created.getInfo();
 		DebugThreadInfo tinfo = info.initialThreadInfo;
 		DebugSystemObjects so = manager.getSystemObjects();
