@@ -15,13 +15,13 @@
  */
 package agent.lldb.manager.cmd;
 
-import agent.dbgeng.manager.impl.DbgManagerImpl;
-import agent.dbgeng.model.iface1.DbgModelTargetFocusScope;
+import agent.lldb.manager.impl.LldbManagerImpl;
+import agent.lldb.model.iface1.LldbModelTargetFocusScope;
 import ghidra.dbg.target.TargetObject;
 
 public class LldbRequestFocusCommand extends AbstractLldbCommand<Void> {
 
-	private DbgModelTargetFocusScope scope;
+	private LldbModelTargetFocusScope scope;
 	private TargetObject obj;
 
 	/**
@@ -31,7 +31,7 @@ public class LldbRequestFocusCommand extends AbstractLldbCommand<Void> {
 	 * @param scope in most cases the root object (must be an ancestor for the ref)
 	 * @param obj the desired focus
 	 */
-	public LldbRequestFocusCommand(DbgManagerImpl manager, DbgModelTargetFocusScope scope,
+	public LldbRequestFocusCommand(LldbManagerImpl manager, LldbModelTargetFocusScope scope,
 			TargetObject obj) {
 		super(manager);
 		this.scope = scope;

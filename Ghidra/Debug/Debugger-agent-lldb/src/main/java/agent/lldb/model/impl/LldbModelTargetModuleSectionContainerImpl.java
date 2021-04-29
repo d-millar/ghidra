@@ -17,8 +17,7 @@ package agent.lldb.model.impl;
 
 import java.util.concurrent.CompletableFuture;
 
-import agent.Lldbeng.manager.LldbModule;
-import agent.Lldbeng.manager.LldbModuleSection;
+import SWIG.SBModule;
 import agent.lldb.model.iface2.LldbModelTargetModule;
 import agent.lldb.model.iface2.LldbModelTargetModuleSection;
 import agent.lldb.model.iface2.LldbModelTargetModuleSectionContainer;
@@ -33,11 +32,11 @@ import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 public class LldbModelTargetModuleSectionContainerImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetModuleSectionContainer {
 
-	protected final LldbModule module;
+	protected final SBModule module;
 
 	public LldbModelTargetModuleSectionContainerImpl(LldbModelTargetModule module) {
 		super(module.getModel(), module, "Sections", "ModuleSections");
-		this.module = module.getLldbModule();
+		this.module = module.getModule();
 
 	}
 
@@ -58,7 +57,7 @@ public class LldbModelTargetModuleSectionContainerImpl extends LldbModelTargetOb
 		*/
 	}
 
-	protected synchronized LldbModelTargetModuleSection getModuleSection(LldbModuleSection section) {
+	protected synchronized LldbModelTargetModuleSection getModuleSection(SBModuleSection section) {
 		LldbModelImpl impl = (LldbModelImpl) model;
 		TargetObject modelObject = impl.getModelObject(section);
 		if (modelObject != null) {

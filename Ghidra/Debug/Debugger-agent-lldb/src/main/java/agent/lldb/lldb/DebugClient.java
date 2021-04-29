@@ -17,6 +17,7 @@ package agent.lldb.lldb;
 
 import com.sun.jna.platform.win32.WinBase;
 
+import SWIG.SBListener;
 import ghidra.comm.util.BitmaskSet;
 import ghidra.comm.util.BitmaskUniverse;
 
@@ -277,6 +278,7 @@ public interface DebugClient extends DebugClientReentrant {
 		}
 	}
 
+	public SBListener getListener();
 
 	/**
 	 * The the ID for the local server

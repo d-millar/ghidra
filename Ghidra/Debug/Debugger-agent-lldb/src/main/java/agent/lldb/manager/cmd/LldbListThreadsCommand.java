@@ -15,27 +15,27 @@
  */
 package agent.lldb.manager.cmd;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
-import agent.dbgeng.dbgeng.DebugSystemObjects;
-import agent.dbgeng.dbgeng.DebugThreadId;
-import agent.dbgeng.manager.DbgThread;
-import agent.dbgeng.manager.impl.DbgManagerImpl;
-import agent.dbgeng.manager.impl.DbgProcessImpl;
-import ghidra.util.Msg;
+import SWIG.SBProcess;
+import SWIG.SBThread;
+import agent.lldb.lldb.DebugThreadId;
+import agent.lldb.manager.impl.LldbManagerImpl;
 
-public class LldbListThreadsCommand extends AbstractLldbCommand<Map<DebugThreadId, DbgThread>> {
-	protected final DbgProcessImpl process;
+public class LldbListThreadsCommand extends AbstractLldbCommand<Map<DebugThreadId, SBThread>> {
+	protected final SBProcess process;
 	private List<DebugThreadId> updatedThreadIds;
 
-	public LldbListThreadsCommand(DbgManagerImpl manager, DbgProcessImpl process) {
+	public LldbListThreadsCommand(LldbManagerImpl manager, SBProcess process) {
 		super(manager);
 		this.process = process;
 	}
 
 	@Override
-	public Map<DebugThreadId, DbgThread> complete(LldbPendingCommand<?> pending) {
-		Map<DebugThreadId, DbgThread> threads = process.getKnownThreads();
+	public Map<DebugThreadId, SBThread> complete(LldbPendingCommand<?> pending) {
+		/*
+		Map<DebugThreadId, SBThread> threads = process.getKnownThreads();
 		Set<DebugThreadId> cur = threads.keySet();
 		for (DebugThreadId id : updatedThreadIds) {
 			if (cur.contains(id)) {
@@ -58,13 +58,17 @@ public class LldbListThreadsCommand extends AbstractLldbCommand<Map<DebugThreadI
 			manager.removeThread(id);
 		}
 		return process.getKnownThreads();
+		*/
+		return null;
 	}
 
 	@Override
 	public void invoke() {
+		/*
 		DebugSystemObjects so = manager.getSystemObjects();
 		so.setCurrentProcessId(process.getId());
 		updatedThreadIds = so.getThreads();
+		*/
 	}
 
 }

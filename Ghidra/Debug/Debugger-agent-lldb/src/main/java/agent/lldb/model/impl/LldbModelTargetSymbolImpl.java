@@ -41,7 +41,7 @@ import ghidra.program.model.address.Address;
 public class LldbModelTargetSymbolImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetSymbol {
 	protected static String indexSymbol(SBSymbol symbol) {
-		return symbol.getName();
+		return null; //symbol.getName();
 	}
 
 	protected static String keySymbol(SBSymbol symbol) {
@@ -49,26 +49,28 @@ public class LldbModelTargetSymbolImpl extends LldbModelTargetObjectImpl
 	}
 
 	protected final boolean constant;
-	protected final Address value;
-	protected final long size;
+	protected Address value;
+	protected long size;
 
 	public LldbModelTargetSymbolImpl(LldbModelTargetSymbolContainerImpl symbols,
 			SBSymbol symbol) {
 		super(symbols.getModel(), symbols, keySymbol(symbol), "Symbol");
 		this.getModel().addModelObject(symbol, this);
 		this.constant = false;
-		this.value = symbols.getModel().getAddressSpace("ram").getAddress(symbol.getAddress());
-		this.size = symbol.getSize();
+		//this.value = symbols.getModel().getAddressSpace("ram").getAddress(symbol.getAddress());
+		//this.size = symbol.getSize();
 
 		changeAttributes(List.of(), List.of(), Map.of( //
 			// TODO: DATA_TYPE
 			NAMESPACE_ATTRIBUTE_NAME, symbols, //
 			VALUE_ATTRIBUTE_NAME, value, //
-			SIZE_ATTRIBUTE_NAME, size, //
+			SIZE_ATTRIBUTE_NAME, size //
+			/*
 			"Name", symbol.getName(), //
 			"Size", size, //
 			"TypeId", symbol.getTypeId(), //
 			"Tag", symbol.getTag() //
+			*/
 		), "Initialized");
 	}
 

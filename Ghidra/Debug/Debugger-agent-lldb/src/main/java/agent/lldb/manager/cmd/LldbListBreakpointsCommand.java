@@ -47,6 +47,6 @@ public class LldbListBreakpointsCommand extends AbstractLldbCommand<Map<Long, Ll
 
 	@Override
 	public void invoke() {
-		breakpoints = manager.getControl().getBreakpoints();
+		//breakpoints = manager.getControl().getBreakpoints();
 	}
 }

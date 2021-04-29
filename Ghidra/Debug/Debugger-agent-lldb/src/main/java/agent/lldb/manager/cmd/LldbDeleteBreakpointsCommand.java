@@ -15,8 +15,6 @@
  */
 package agent.lldb.manager.cmd;
 
-import agent.lldb.lldb.DebugBreakpoint;
-import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 /**
@@ -33,11 +31,12 @@ public class LldbDeleteBreakpointsCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public void invoke() {
+		/*
 		DebugControl control = manager.getControl();
 		for (long id : numbers) {
 			manager.doBreakpointDeleted(id, LldbCause.Causes.UNCLAIMED);
 			DebugBreakpoint bp = control.getBreakpointById((int) id);
-			bp.remove();
-		}
+			bp.remove();		
+		 */
 	}
 }

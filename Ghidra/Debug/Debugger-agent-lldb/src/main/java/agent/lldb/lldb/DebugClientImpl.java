@@ -1,6 +1,7 @@
 package agent.lldb.lldb;
 
 import SWIG.SBDebugger;
+import SWIG.SBListener;
 import ghidra.comm.util.BitmaskSet;
 
 public class DebugClientImpl implements DebugClient{
@@ -15,6 +16,11 @@ public class DebugClientImpl implements DebugClient{
 		SBDebugger.InitializeWithErrorHandling();
 		sbd = SBDebugger.Create();
 		return sbd;
+	}
+	
+	@Override
+	public SBListener getListener() {
+		return sbd.GetListener();
 	}
 
 	@Override

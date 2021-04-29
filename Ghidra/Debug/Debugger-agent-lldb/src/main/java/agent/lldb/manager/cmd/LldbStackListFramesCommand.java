@@ -15,31 +15,29 @@
  */
 package agent.lldb.manager.cmd;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 
-import agent.dbgeng.dbgeng.*;
-import agent.dbgeng.jna.dbgeng.DbgEngNative.DEBUG_STACK_FRAME;
-import agent.dbgeng.manager.DbgStackFrame;
-import agent.dbgeng.manager.impl.*;
+import SWIG.SBFrame;
+import SWIG.SBThread;
+import agent.lldb.manager.impl.LldbManagerImpl;
 
-public class LldbStackListFramesCommand extends AbstractLldbCommand<List<DbgStackFrame>> {
-	protected final DbgThreadImpl thread;
-	private List<DbgStackFrame> result;
+public class LldbStackListFramesCommand extends AbstractLldbCommand<List<SBFrame>> {
+	protected final SBThread thread;
+	private List<SBFrame> result;
 
-	public LldbStackListFramesCommand(DbgManagerImpl manager, DbgThreadImpl thread) {
+	public LldbStackListFramesCommand(LldbManagerImpl manager, SBThread thread) {
 		super(manager);
 		this.thread = thread;
 	}
 
 	@Override
-	public List<DbgStackFrame> complete(LldbPendingCommand<?> pending) {
+	public List<SBFrame> complete(LldbPendingCommand<?> pending) {
 		return result;
 	}
 
 	@Override
 	public void invoke() {
+		/*
 		result = new ArrayList<>();
 		DebugSystemObjects so = manager.getSystemObjects();
 		DebugThreadId previous = so.getCurrentThreadId();
@@ -49,7 +47,7 @@ public class LldbStackListFramesCommand extends AbstractLldbCommand<List<DbgStac
 			DEBUG_STACK_FRAME tf = stackTrace.getFrame(i);
 			//DbgStackFrame frame = new DbgStackFrameImpl(thread, tf.FrameNumber.intValue(),
 			//	new BigInteger(Long.toHexString(tf.InstructionOffset.longValue()), 16), null);
-			DbgStackFrame frame = new DbgStackFrameImpl(thread, //
+			SBFrame frame = new SBFrame(thread, //
 				tf.FrameNumber.intValue(), //
 				new BigInteger(Long.toHexString(tf.InstructionOffset.longValue()), 16), //
 				tf.FuncTableEntry.longValue(), //
@@ -63,6 +61,7 @@ public class LldbStackListFramesCommand extends AbstractLldbCommand<List<DbgStac
 				tf.Params[3].longValue());
 			result.add(frame);
 		}
+		*/
 		//so.setCurrentThreadId(previous);
 	}
 }

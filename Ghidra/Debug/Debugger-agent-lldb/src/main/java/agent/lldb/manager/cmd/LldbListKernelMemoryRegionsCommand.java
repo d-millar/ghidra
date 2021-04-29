@@ -21,7 +21,7 @@ import java.util.List;
 import SWIG.SBMemoryRegionInfo;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
-public class LldbListKernelMemoryRegionsCommand extends AbstractLldbCommand<List<LldbModuleMemory>> {
+public class LldbListKernelMemoryRegionsCommand extends AbstractLldbCommand<List<SBMemoryRegionInfo>> {
 
 	private List<SBMemoryRegionInfo> memoryRegions = new ArrayList<>();
 
@@ -36,6 +36,7 @@ public class LldbListKernelMemoryRegionsCommand extends AbstractLldbCommand<List
 
 	@Override
 	public void invoke() {
+		/*
 		SBMemoryRegionInfo section =
 			new SBMemoryRegionInfo("lomem", 0L, 0x7FFFFFFFFFFFFFFFL, 0L, new ArrayList<String>(),
 				new ArrayList<String>(), PageState.COMMIT, "NONE", true, true, true);
@@ -44,7 +45,6 @@ public class LldbListKernelMemoryRegionsCommand extends AbstractLldbCommand<List
 			0x8000000000000000L, new ArrayList<String>(), new ArrayList<String>(), PageState.COMMIT,
 			"NONE", true, true, true);
 		memoryRegions.add(section);
-		/*
 		DebugDataSpaces dataSpaces = manager.getDataSpaces();
 		for (DebugMemoryBasicInformation info : dataSpaces.iterateVirtual(0)) {
 			if (info.state == PageState.FREE) {

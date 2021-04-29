@@ -15,29 +15,30 @@
  */
 package agent.lldb.manager.cmd;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import agent.dbgeng.dbgeng.DebugSessionId;
-import agent.dbgeng.dbgeng.DebugSystemObjects;
-import agent.dbgeng.manager.DbgCause.Causes;
-import agent.dbgeng.manager.DbgManager;
-import agent.dbgeng.manager.DbgSession;
-import agent.dbgeng.manager.impl.DbgManagerImpl;
+import SWIG.SBTarget;
+import agent.lldb.lldb.DebugSessionId;
+import agent.lldb.manager.LldbCause.Causes;
+import agent.lldb.manager.impl.LldbManagerImpl;
 import ghidra.util.Msg;
 
 /**
  * Implementation of {@link DbgManager#listSessions()}
  */
-public class LldbListSessionsCommand extends AbstractLldbCommand<Map<DebugSessionId, DbgSession>> {
+public class LldbListSessionsCommand extends AbstractLldbCommand<Map<DebugSessionId, SBTarget>> {
 	private List<DebugSessionId> updatedSessionIds = new ArrayList<>();
 
-	public LldbListSessionsCommand(DbgManagerImpl manager) {
+	public LldbListSessionsCommand(LldbManagerImpl manager) {
 		super(manager);
 	}
 
 	@Override
-	public Map<DebugSessionId, DbgSession> complete(LldbPendingCommand<?> pending) {
-		Map<DebugSessionId, DbgSession> allSessions = manager.getKnownSessions();
+	public Map<DebugSessionId, SBTarget> complete(LldbPendingCommand<?> pending) {
+		Map<DebugSessionId, SBTarget> allSessions = manager.getKnownSessions();
 		Set<DebugSessionId> cur = allSessions.keySet();
 		for (DebugSessionId id : updatedSessionIds) {
 			if (cur.contains(id)) {
@@ -60,7 +61,7 @@ public class LldbListSessionsCommand extends AbstractLldbCommand<Map<DebugSessio
 
 	@Override
 	public void invoke() {
-		DebugSystemObjects so = manager.getSystemObjects();
-		updatedSessionIds = so.getSessions();
+		//DebugSystemObjects so = manager.getSystemObjects();
+		//updatedSessionIds = so.getSessions();
 	}
 }

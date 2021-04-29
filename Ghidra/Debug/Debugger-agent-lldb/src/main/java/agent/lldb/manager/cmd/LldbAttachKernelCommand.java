@@ -18,8 +18,6 @@ package agent.lldb.manager.cmd;
 import java.util.Map;
 
 import SWIG.SBThread;
-import agent.dbgeng.dbgeng.*;
-import agent.dbgeng.manager.*;
 import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.evt.AbstractLldbCompletedCommandEvent;
@@ -53,19 +51,24 @@ public class LldbAttachKernelCommand extends AbstractLldbCommand<SBThread> {
 
 	@Override
 	public SBThread complete(LldbPendingCommand<?> pending) {
+		/*
 		DebugProcessInfo info = created.getInfo();
 		DebugThreadInfo tinfo = info.initialThreadInfo;
 		DebugSystemObjects so = manager.getSystemObjects();
 		DebugThreadId tid = so.getThreadIdByHandle(tinfo.handle);
 		return manager.getThread(tid);
+		*/
+		return null;
 	}
 
 	@Override
 	public void invoke() {
+		/*
 		DebugClient dbgeng = manager.getClient();
 		long flags = (Long) args.get("Flags");
 		String options = (String) args.get("Options");
 		dbgeng.attachKernel(flags, options);
-		manager.waitForEventEx();
+		*/
+		manager.waitForEvent();
 	}
 }

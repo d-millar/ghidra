@@ -60,9 +60,9 @@ public class LldbModelImpl extends AbstractLldbModel implements DebuggerObjectMo
 	protected final AddressFactory addressFactory =
 		new DefaultAddressFactory(new AddressSpace[] { space });
 
-	protected final LldbManager manager;
+	protected LldbManager manager;
 	protected final LldbModelTargetRootImpl root;
-	protected final LldbModelTargetSessionImpl session;
+	protected LldbModelTargetSessionImpl session;
 
 	protected final CompletableFuture<LldbModelTargetRootImpl> completedRoot;
 
@@ -73,10 +73,12 @@ public class LldbModelImpl extends AbstractLldbModel implements DebuggerObjectMo
 		//System.out.println(XmlSchemaContext.serialize(SCHEMA_CTX));
 		this.root = new LldbModelTargetRootImpl(this, ROOT_SCHEMA);
 		this.completedRoot = CompletableFuture.completedFuture(root);
+		/*
 		SBTarget s = new SBTarget((LldbManagerImpl) manager, new DebugSessionId(0));
 		s.add();
 		LldbModelTargetSessionContainer sessions = root.sessions;
 		this.session = (LLdbModelTargetSessionImpl) sessions.getTargetSession(s);
+		*/
 		addModelRoot(root);
 	}
 
@@ -126,12 +128,10 @@ public class LldbModelImpl extends AbstractLldbModel implements DebuggerObjectMo
 		return completedRoot;
 	}
 
-	/*
 	@Override
-	public DbgManagerImpl getManager() {
-		return (DbgManagerImpl) dbg;
+	public LldbManagerImpl getManager() {
+		return (LldbManagerImpl) manager;
 	}
-	*/
 
 	@Override
 	public CompletableFuture<Void> close() {
@@ -187,4 +187,5 @@ public class LldbModelImpl extends AbstractLldbModel implements DebuggerObjectMo
 			return ExceptionUtils.rethrow(ex);
 		});
 	}
+
 }

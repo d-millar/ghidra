@@ -62,16 +62,18 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 		session.setAccessible(true);
 		LldbModelTargetProcess process = getTargetProcess(proc);
 		changeElements(List.of(), List.of(process), Map.of(), "Added");
+		/*
 		process.processStarted(proc.getPid());
 		getListeners().fire.event(getProxy(), null, TargetEventType.PROCESS_CREATED,
 			"Process " + proc.getId() + " started " + process.getName() + "pid=" + proc.getPid(),
 			List.of(process));
+		*/
 	}
 
 	@Override
 	public void processStarted(SBProcess proc, LldbCause cause) {
 		LldbModelTargetProcess process = getTargetProcess(proc);
-		process.processStarted(proc.getPid());
+		//process.processStarted(proc.getPid());
 	}
 
 	@Override
@@ -83,14 +85,14 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 
 	@Override
 	public void threadCreated(SBThread thread, LldbCause cause) {
-		LldbModelTargetProcess process = getTargetProcess(thread.getProcess());
+		LldbModelTargetProcess process = getTargetProcess(thread.GetProcess());
 		process.getThreads().threadCreated(thread);
 	}
 
 	@Override
 	public void threadStateChanged(SBThread thread, StateType state, LldbCause cause,
 			LldbReason reason) {
-		LldbModelTargetProcess process = getTargetProcess(thread.getProcess());
+		LldbModelTargetProcess process = getTargetProcess(thread.GetProcess());
 		process.threadStateChangedSpecific(thread, state);
 	}
 
@@ -98,7 +100,7 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 	public void threadExited(DebugThreadId threadId, SBProcess proc, LldbCause cause) {
 		LldbModelTargetProcess process = getTargetProcess(proc);
 		if (process != null) {
-			process.getThreads().threadExited(threadId);
+			//process.getThreads().threadExited(threadId);
 		}
 	}
 

@@ -15,39 +15,44 @@
  */
 package agent.lldb.manager.cmd;
 
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.HashMap;
+import java.util.Map;
 
-import agent.dbgeng.dbgeng.*;
-import agent.dbgeng.manager.impl.*;
+import SWIG.SBModule;
+import SWIG.SBProcess;
+import SWIG.SBSymbol;
+import agent.lldb.manager.impl.LldbManagerImpl;
 
-public class LldbListSymbolsCommand extends AbstractLldbCommand<Map<String, DbgMinimalSymbol>> {
-	protected final DbgProcessImpl process;
-	protected final DbgModuleImpl module;
+public class LldbListSymbolsCommand extends AbstractLldbCommand<Map<String, SBSymbol>> {
+	protected final SBProcess process;
+	protected final SBModule module;
 
-	private Map<DebugSymbolId, DebugSymbolEntry> symbolEntries = new HashMap<>();
+	//private Map<DebugSymbolId, DebugSymbolEntry> symbolEntries = new HashMap<>();
 
-	public LldbListSymbolsCommand(DbgManagerImpl manager, DbgProcessImpl process,
-			DbgModuleImpl module) {
+	public LldbListSymbolsCommand(LldbManagerImpl manager, SBProcess process,
+			SBModule module) {
 		super(manager);
 		this.process = process;
 		this.module = module;
 	}
 
 	@Override
-	public Map<String, DbgMinimalSymbol> complete(LldbPendingCommand<?> pending) {
-		Map<String, DbgMinimalSymbol> symbolMap = new HashMap<>();
+	public Map<String, SBSymbol> complete(LldbPendingCommand<?> pending) {
+		Map<String, SBSymbol> symbolMap = new HashMap<>();
+		/*
 		for (Entry<DebugSymbolId, DebugSymbolEntry> entry : symbolEntries.entrySet()) {
 			DebugSymbolEntry value = entry.getValue();
-			DbgMinimalSymbol minSymbol = new DbgMinimalSymbol(entry.getKey().symbolIndex,
+			SBSymbol minSymbol = new SBSymbol(entry.getKey().symbolIndex,
 				value.typeId, value.name, value.offset, value.size, value.tag, value.moduleBase);
 			symbolMap.put(entry.getKey().toString(), minSymbol);
 		}
+		*/
 		return symbolMap;
 	}
 
 	@Override
 	public void invoke() {
+		/*
 		DebugSystemObjects so = manager.getSystemObjects();
 		so.setCurrentProcessId(process.getId());
 		DebugSymbols symbols = manager.getSymbols();
@@ -59,5 +64,6 @@ public class LldbListSymbolsCommand extends AbstractLldbCommand<Map<String, DbgM
 				symbolEntries.put(symbolId, symbolEntry);
 			}
 		}
+		*/
 	}
 }

@@ -50,6 +50,6 @@ public class LldbReadDebuggerDataCommand extends AbstractLldbCommand<RangeSet<Lo
 
 	@Override
 	public void invoke() {
-		readLen = manager.getDataSpaces().readDebuggerData((int) addr, buf, len);
+		//readLen = manager.getDataSpaces().readDebuggerData((int) addr, buf, len);
 	}
 }

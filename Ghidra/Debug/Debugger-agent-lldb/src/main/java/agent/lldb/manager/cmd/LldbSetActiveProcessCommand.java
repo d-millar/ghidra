@@ -15,13 +15,12 @@
  */
 package agent.lldb.manager.cmd;
 
-import agent.dbgeng.dbgeng.DebugProcessId;
-import agent.dbgeng.manager.DbgProcess;
-import agent.dbgeng.manager.impl.DbgManagerImpl;
+import SWIG.SBProcess;
+import agent.lldb.manager.impl.LldbManagerImpl;
 
 public class LldbSetActiveProcessCommand extends AbstractLldbCommand<Void> {
 
-	private DbgProcess process;
+	private SBProcess process;
 
 	/**
 	 * Set the active process
@@ -29,18 +28,20 @@ public class LldbSetActiveProcessCommand extends AbstractLldbCommand<Void> {
 	 * @param manager the manager to execute the command
 	 * @param process the desired process
 	 */
-	public LldbSetActiveProcessCommand(DbgManagerImpl manager, DbgProcess process) {
+	public LldbSetActiveProcessCommand(LldbManagerImpl manager, SBProcess process) {
 		super(manager);
 		this.process = process;
 	}
 
 	@Override
 	public void invoke() {
+		/*
 		if (process != null) {
 			DebugProcessId id = process.getId();
 			if (id != null) {
 				manager.getSystemObjects().setCurrentProcessId(id);
 			}
 		}
+		*/
 	}
 }

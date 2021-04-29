@@ -17,7 +17,6 @@ package agent.lldb.manager.cmd;
 
 import java.nio.ByteBuffer;
 
-import agent.dbgeng.manager.DbgThread;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 /**
@@ -41,7 +40,7 @@ public class LldbWriteControlCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public void invoke() {
-		manager.getDataSpaces().writeControl(processor, addr, buf, buf.remaining());
+		//manager.getDataSpaces().writeControl(processor, addr, buf, buf.remaining());
 	}
 
 }

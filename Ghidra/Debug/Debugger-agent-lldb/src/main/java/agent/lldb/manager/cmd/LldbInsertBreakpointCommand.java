@@ -61,13 +61,14 @@ public class LldbInsertBreakpointCommand extends AbstractLldbCommand<LldbBreakpo
 
 	@Override
 	public void invoke() {
+		/*
 		DebugControl control = manager.getControl();
 		BreakType bt = BreakType.DATA;
 		if (type.equals(LldbBreakpointType.BREAKPOINT)) {
 			bt = BreakType.CODE;
 		}
 		// 2 for BU, 1 for BP
-		DebugBreakpoint bp = control.addBreakpoint/*2*/(bt);
+		DebugBreakpoint bp = control.addBreakpoint(bt);
 		if (bt.equals(BreakType.DATA)) {
 			BitmaskSet<BreakAccess> access = BitmaskSet.of(BreakAccess.EXECUTE);
 			if (type.equals(LldbBreakpointType.ACCESS_WATCHPOINT)) {
@@ -94,5 +95,6 @@ public class LldbInsertBreakpointCommand extends AbstractLldbCommand<LldbBreakpo
 		bp.addFlags(BreakFlags.ENABLED);
 
 		bkpt = new LldbBreakpointInfo(bp, manager.getCurrentProcess());
+		*/
 	}
 }

@@ -17,7 +17,6 @@ package agent.lldb.manager.cmd;
 
 import java.nio.ByteBuffer;
 
-import agent.dbgeng.manager.DbgThread;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 /**
@@ -45,8 +44,8 @@ public class LldbWriteBusDataCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public void invoke() {
-		manager.getDataSpaces()
-				.writeBusData(busDataType, busNumber, slotNumber, addr, buf, buf.remaining());
+		//manager.getDataSpaces()
+		//		.writeBusData(busDataType, busNumber, slotNumber, addr, buf, buf.remaining());
 	}
 
 }

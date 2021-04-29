@@ -15,22 +15,24 @@
  */
 package agent.lldb.manager.cmd;
 
-import agent.dbgeng.dbgeng.*;
-import agent.dbgeng.manager.*;
-import agent.dbgeng.manager.evt.*;
-import agent.dbgeng.manager.impl.DbgManagerImpl;
+import SWIG.SBThread;
+import agent.lldb.manager.LldbEvent;
+import agent.lldb.manager.evt.AbstractLldbCompletedCommandEvent;
+import agent.lldb.manager.evt.LldbRunningEvent;
+import agent.lldb.manager.evt.LldbThreadCreatedEvent;
+import agent.lldb.manager.impl.LldbManagerImpl;
 
 /**
  * Implementation of {@link DbgProcess#fileExecAndSymbols(String)}
  */
-public class LldbRunCommand extends AbstractLldbCommand<DbgThread> {
+public class LldbRunCommand extends AbstractLldbCommand<SBThread> {
 
-	public LldbRunCommand(DbgManagerImpl manager) {
+	public LldbRunCommand(LldbManagerImpl manager) {
 		super(manager);
 	}
 
 	@Override
-	public boolean handle(DbgEvent<?> evt, LldbPendingCommand<?> pending) {
+	public boolean handle(LldbEvent<?> evt, LldbPendingCommand<?> pending) {
 		if (evt instanceof AbstractLldbCompletedCommandEvent && pending.getCommand().equals(this)) {
 			pending.claim(evt);
 			return true;
@@ -45,13 +47,16 @@ public class LldbRunCommand extends AbstractLldbCommand<DbgThread> {
 	}
 
 	@Override
-	public DbgThread complete(LldbPendingCommand<?> pending) {
+	public SBThread complete(LldbPendingCommand<?> pending) {
+		/*
 		// Just take the first thread. Others are considered clones.
 		LldbThreadCreatedEvent created = pending.findFirstOf(LldbThreadCreatedEvent.class);
 		DebugThreadInfo info = created.getInfo();
 		DebugSystemObjects so = manager.getSystemObjects();
 		DebugThreadId tid = so.getThreadIdByHandle(info.handle);
 		return manager.getThread(tid);
+		*/
+		return null;
 	}
 
 	@Override

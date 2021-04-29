@@ -21,7 +21,6 @@ import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeSet;
 
-import agent.dbgeng.manager.DbgThread;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 /**
@@ -54,6 +53,6 @@ public class LldbReadControlCommand extends AbstractLldbCommand<RangeSet<Long>> 
 
 	@Override
 	public void invoke() {
-		readLen = manager.getDataSpaces().readControl(processor, addr, buf, len);
+		//readLen = manager.getDataSpaces().readControl(processor, addr, buf, len);
 	}
 }

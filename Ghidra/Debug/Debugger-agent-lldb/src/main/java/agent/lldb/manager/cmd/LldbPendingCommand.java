@@ -148,6 +148,7 @@ public class LldbPendingCommand<T> extends CompletableFuture<T> implements LldbC
 	 */
 	public <E extends LldbEvent<?>> List<E> findAllOf(Class<E> cls) {
 		List<E> found = new ArrayList<>();
+		for (LldbEvent<?> evt : evts) {
 			if (cls.isAssignableFrom(evt.getClass())) {
 				found.add(cls.cast(evt));
 			}

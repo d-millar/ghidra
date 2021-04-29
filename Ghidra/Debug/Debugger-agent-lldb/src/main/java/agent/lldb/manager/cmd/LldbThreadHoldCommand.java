@@ -15,10 +15,8 @@
  */
 package agent.lldb.manager.cmd;
 
-import agent.dbgeng.dbgeng.DebugControl;
-import agent.dbgeng.dbgeng.DebugThreadId;
-import agent.dbgeng.manager.DbgThread;
-import agent.dbgeng.manager.impl.DbgManagerImpl;
+import SWIG.SBThread;
+import agent.lldb.manager.impl.LldbManagerImpl;
 
 public class LldbThreadHoldCommand extends AbstractLldbCommand<Void> {
 
@@ -34,7 +32,7 @@ public class LldbThreadHoldCommand extends AbstractLldbCommand<Void> {
 
 	static final Boolean preferFreeze = true;
 
-	private DbgThread thread;
+	private SBThread thread;
 	private Boolean set;
 
 	/**
@@ -46,7 +44,7 @@ public class LldbThreadHoldCommand extends AbstractLldbCommand<Void> {
 	 * @param thread the desired thread
 	 * @param set hold or release
 	 */
-	public LldbThreadHoldCommand(DbgManagerImpl manager, DbgThread thread, Boolean set) {
+	public LldbThreadHoldCommand(LldbManagerImpl manager, SBThread thread, Boolean set) {
 		super(manager);
 		this.thread = thread;
 		this.set = set;
@@ -54,6 +52,7 @@ public class LldbThreadHoldCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public void invoke() {
+		/*
 		DebugThreadId id = thread.getId();
 		if (id != null) {
 			manager.getSystemObjects().setCurrentThreadId(id);
@@ -69,5 +68,6 @@ public class LldbThreadHoldCommand extends AbstractLldbCommand<Void> {
 				}
 			}
 		}
+		*/
 	}
 }

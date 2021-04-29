@@ -15,9 +15,6 @@
  */
 package agent.lldb.manager.cmd;
 
-import agent.dbgeng.dbgeng.DebugClient;
-import agent.dbgeng.dbgeng.DebugClient.DebugStatus;
-import agent.dbgeng.manager.DbgProcess;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.evt.AbstractLldbCompletedCommandEvent;
 import agent.lldb.manager.evt.LldbCommandErrorEvent;
@@ -48,7 +45,9 @@ public class LldbContinueCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public void invoke() {
+		/*
 		DebugClient dbgeng = manager.getClient();
 		dbgeng.getControl().setExecutionStatus(DebugStatus.GO);
+		*/
 	}
 }

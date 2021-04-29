@@ -123,8 +123,8 @@ public class LldbModelTargetRootImpl extends LldbModelDefaultTargetModelRoot
 
 	@Override
 	public CompletableFuture<Void> attach(long pid) {
-		SBProcess process = new SBProcess(getManager());
-		return model.gateFuture(process.attach(pid)).thenApply(__ -> null);
+		//SBProcess process = new SBProcess(getManager());
+		return null; //model.gateFuture(process.attach(pid)).thenApply(__ -> null);
 	}
 
 	@Override

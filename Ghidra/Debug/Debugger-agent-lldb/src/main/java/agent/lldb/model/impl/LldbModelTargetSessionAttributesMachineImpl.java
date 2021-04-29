@@ -19,14 +19,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import agent.Lldbeng.Lldbeng.DebugControl;
-import agent.Lldbeng.impl.Lldbeng.client.DebugClientInternal;
-import agent.Lldbeng.impl.Lldbeng.client.DebugClientInternal.DebugClass;
-import agent.Lldbeng.jna.Lldbeng.WinNTExtra.Machine;
-import agent.Lldbeng.manager.*;
+import SWIG.SBProcess;
+import SWIG.SBTarget;
+import agent.lldb.manager.LldbCause;
 import agent.lldb.model.iface2.LldbModelTargetSessionAttributes;
 import agent.lldb.model.iface2.LldbModelTargetSessionAttributesMachine;
-import ghidra.Lldb.target.schema.*;
 import ghidra.async.AsyncUtils;
 import ghidra.async.TypeSpec;
 import ghidra.dbg.target.schema.TargetAttributeType;
@@ -65,16 +62,17 @@ public class LldbModelTargetSessionAttributesMachineImpl extends LldbModelTarget
 	}
 
 	@Override
-	public void sessionAdded(LldbSession session, LldbCause cause) {
+	public void sessionAdded(SBTarget session, LldbCause cause) {
 		refreshInternal();
 	}
 
 	@Override
-	public void processAdded(LldbProcess process, LldbCause cause) {
+	public void processAdded(SBProcess process, LldbCause cause) {
 		refreshInternal();
 	}
 
 	public void refreshInternal() {
+		/*
 		DebugControl control = getManager().getControl();
 		int processorType = control.getActualProcessorType();
 		if (processorType < 0) {
@@ -87,6 +85,7 @@ public class LldbModelTargetSessionAttributesMachineImpl extends LldbModelTarget
 			ARCH_ATTRIBUTE_NAME, machine.description, //
 			"Mode", debugClass.toString() //
 		), "Refreshed");
+		*/
 
 		AtomicReference<String> capture = new AtomicReference<>();
 		AsyncUtils.sequence(TypeSpec.VOID).then(seq -> {

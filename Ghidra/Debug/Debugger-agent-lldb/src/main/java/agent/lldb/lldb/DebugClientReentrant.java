@@ -16,6 +16,7 @@
 package agent.lldb.lldb;
 
 import SWIG.SBDebugger;
+import SWIG.SBListener;
 
 /**
  * An interface containing the subset of {@link DebugClient} methods which are reentrant.
@@ -35,7 +36,7 @@ public interface DebugClientReentrant {
 	 * 
 	 * @return the control interface
 	 */
-	//DebugControlReentrant getControl();
+	SBListener getListener();
 
 	/**
 	 * End a session without acquiring locks

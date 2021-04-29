@@ -16,37 +16,41 @@
 package agent.lldb.manager.cmd;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
-import agent.dbgeng.dbgeng.*;
-import agent.dbgeng.manager.DbgStackFrameOperations;
-import agent.dbgeng.manager.impl.*;
+import SWIG.SBThread;
+import agent.lldb.lldb.DebugThreadId;
+import agent.lldb.manager.LldbRegister;
+import agent.lldb.manager.impl.LldbManagerImpl;
 
 /**
  * Implementation of {@link DbgStackFrameOperations#readRegisters(Set)}
  */
-public class LldbReadRegistersCommand extends AbstractLldbCommand<Map<DbgRegister, BigInteger>> {
+public class LldbReadRegistersCommand extends AbstractLldbCommand<Map<LldbRegister, BigInteger>> {
 
-	private final DbgThreadImpl thread;
-	private final Set<DbgRegister> regs;
-	private DebugRegisters registers;
+	private final SBThread thread;
+	private final Set<LldbRegister> regs;
+	//private DebugRegisters registers;
 	private DebugThreadId previous;
 
-	public LldbReadRegistersCommand(DbgManagerImpl manager, DbgThreadImpl thread, Integer frameId,
-			Set<DbgRegister> regs) {
+	public LldbReadRegistersCommand(LldbManagerImpl manager, SBThread thread, Integer frameId,
+			Set<LldbRegister> regs) {
 		super(manager);
 		this.thread = thread;
 		this.regs = regs;
 	}
 
 	@Override
-	public Map<DbgRegister, BigInteger> complete(LldbPendingCommand<?> pending) {
+	public Map<LldbRegister, BigInteger> complete(LldbPendingCommand<?> pending) {
+		Map<LldbRegister, BigInteger> result = new LinkedHashMap<>();
+		/*
 		DebugSystemObjects so = manager.getSystemObjects();
 		if (regs.isEmpty()) {
 			return Collections.emptyMap();
 		}
-		Map<DbgRegister, BigInteger> result = new LinkedHashMap<>();
-		for (DbgRegister r : regs) {
+		for (LldbRegister r : regs) {
 			if (registers != null) {
 				DebugValue value = registers.getValueByName(r.getName());
 				if (value != null) {
@@ -55,15 +59,18 @@ public class LldbReadRegistersCommand extends AbstractLldbCommand<Map<DbgRegiste
 				}
 			}
 		}
+		*/
 		//so.setCurrentThreadId(previous);
 		return result;
 	}
 
 	@Override
 	public void invoke() {
+		/*
 		DebugSystemObjects so = manager.getSystemObjects();
 		previous = so.getCurrentThreadId();
 		so.setCurrentThreadId(thread.getId());
 		registers = manager.getClient().getRegisters();
+		*/
 	}
 }

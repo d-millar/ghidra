@@ -31,7 +31,7 @@ public abstract class AbstractLldbEvent<T> implements LldbEvent<T> {
 	private final T info;
 	protected LldbCause cause = Causes.UNCLAIMED;
 	protected boolean stolen = false;
-	protected DebugStatus status = DebugStatus.NO_CHANGE;
+	//protected DebugStatus status = DebugStatus.NO_CHANGE;
 
 	/**
 	 * Construct a new event with the given information

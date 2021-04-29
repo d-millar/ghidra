@@ -42,7 +42,7 @@ import ghidra.program.model.address.AddressSpace;
 public class LldbModelTargetModuleImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetModule {
 	protected static String indexModule(SBModule module) {
-		return module.getName();
+		return null; //module.getName();
 	}
 
 	protected static String keyModule(SBModule module) {
@@ -70,15 +70,18 @@ public class LldbModelTargetModuleImpl extends LldbModelTargetObjectImpl
 			symbols //
 		//  sections.getName(), sections, //
 		), Map.of( //
-			DISPLAY_ATTRIBUTE_NAME, getIndex(), //
+			DISPLAY_ATTRIBUTE_NAME, getIndex() //
+			/*
 			SHORT_DISPLAY_ATTRIBUTE_NAME, module.getName(), //
 			MODULE_NAME_ATTRIBUTE_NAME, module.getImageName(), //
 			"BaseAddress", space.getAddress(module.getKnownBase()), //
 			"ImageName", module.getImageName(), //
 			"TimeStamp", module.getTimeStamp(), //
 			"Len", Integer.toHexString(module.getSize()) //
+			*/
 		), "Initialized");
 
+		/*
 		SBMemoryRegionInfo section = new SBMemoryRegionInfo(module);
 		Address min = space.getAddress(section.getStart());
 		// Ghidra ranges are not inclusive at the end.
@@ -88,10 +91,11 @@ public class LldbModelTargetModuleImpl extends LldbModelTargetObjectImpl
 		changeAttributes(List.of(), List.of(), Map.of( //
 			RANGE_ATTRIBUTE_NAME, range //
 		), "Initialized");
+		*/
 	}
 
 	protected Address doGetBase() {
-		return getModel().getAddressSpace("ram").getAddress(module.getKnownBase());
+		return null; //getModel().getAddressSpace("ram").getAddress(module.getKnownBase());
 	}
 
 	@Override

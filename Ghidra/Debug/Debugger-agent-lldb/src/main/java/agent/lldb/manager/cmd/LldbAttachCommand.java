@@ -20,12 +20,15 @@ import java.util.Set;
 
 import SWIG.SBProcess;
 import SWIG.SBThread;
+import agent.lldb.lldb.DebugClient;
+import agent.lldb.lldb.DebugClient.DebugAttachFlags;
 import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.evt.AbstractLldbCompletedCommandEvent;
 import agent.lldb.manager.evt.LldbProcessCreatedEvent;
 import agent.lldb.manager.evt.LldbStoppedEvent;
 import agent.lldb.manager.evt.LldbThreadCreatedEvent;
+import agent.lldb.manager.impl.LldbManagerImpl;
 import ghidra.comm.util.BitmaskSet;
 
 /**
@@ -64,21 +67,23 @@ public class LldbAttachCommand extends AbstractLldbCommand<Set<SBThread>> {
 
 	@Override
 	public Set<SBThread> complete(LldbPendingCommand<?> pending) {
-		DebugSystemObjects so = manager.getSystemObjects();
 		Set<SBThread> threads = new LinkedHashSet<>();
+		/*
+		DebugSystemObjects so = manager.getSystemObjects();
 		for (LldbThreadCreatedEvent adds : pending.findAllOf(LldbThreadCreatedEvent.class)) {
 			DebugThreadInfo info = adds.getInfo();
 			DebugThreadId tid = so.getThreadIdByHandle(info.handle);
 			threads.add(manager.getThread(tid));
 		}
+		*/
 		return threads;
 	}
 
 	@Override
 	public void invoke() {
 		DebugClient dbgeng = manager.getClient();
-		dbgeng.attachProcess(dbgeng.getLocalServer(), proc.getPid().intValue(), flags);
+		dbgeng.attachProcess(dbgeng.getLocalServer(), proc.GetProcessID().intValue(), flags);
 
-		manager.waitForEventEx();
+		manager.waitForEvent();
 	}
 }

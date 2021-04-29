@@ -22,8 +22,6 @@ import java.util.concurrent.CompletableFuture;
 import SWIG.SBProcess;
 import SWIG.SBThread;
 import SWIG.StateType;
-import agent.Lldbeng.manager.*;
-import agent.Lldbeng.model.iface2.*;
 import agent.lldb.lldb.DebugProcessId;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.impl.LldbManagerImpl;
@@ -34,8 +32,6 @@ import agent.lldb.model.iface2.LldbModelTargetModuleContainer;
 import agent.lldb.model.iface2.LldbModelTargetProcess;
 import agent.lldb.model.iface2.LldbModelTargetProcessContainer;
 import agent.lldb.model.iface2.LldbModelTargetThreadContainer;
-import ghidra.Lldb.target.*;
-import ghidra.Lldb.target.schema.*;
 import ghidra.dbg.target.TargetAttachable;
 import ghidra.dbg.target.TargetEventScope.TargetEventType;
 import ghidra.dbg.target.TargetFocusScope;
@@ -64,11 +60,11 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 		TargetAttachKind.BY_OBJECT_REF, TargetAttachKind.BY_ID);
 
 	protected static String indexProcess(DebugProcessId debugProcessId) {
-		return PathUtils.makeIndex(debugProcessId.id);
+		return PathUtils.makeIndex(debugProcessId.id.longValue());
 	}
 
 	protected static String indexProcess(SBProcess process) {
-		return indexProcess(process.getId());
+		return null; //indexProcess(process.getId());
 	}
 
 	protected static String keyProcess(SBProcess process) {
@@ -86,10 +82,10 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 
 	private Integer base = 16;
 
-	public LldbModelTargetProcessImpl(LldbModelTargetProcessContainer processes, LldbProcess process) {
+	public LldbModelTargetProcessImpl(LldbModelTargetProcessContainer processes, SBProcess process) {
 		super(processes.getModel(), processes, keyProcess(process), "Process");
 		this.getModel().addModelObject(process, this);
-		this.getModel().addModelObject(process.getId(), this);
+		//this.getModel().addModelObject(process.getId(), this);
 		this.process = process;
 
 		this.debug = new LldbModelTargetDebugContainerImpl(this);
@@ -122,11 +118,14 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 			return "[kernel]";
 		}
 
+		/*
 		String pidstr = Long.toString(process.getPid(), base);
 		if (base == 16) {
 			pidstr = "0x" + pidstr;
 		}
 		return "[" + process.getId().id + ":" + pidstr + "]";
+		*/
+		return null;
 	}
 
 	@Override
@@ -137,8 +136,8 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 	}
 
 	public void threadStateChangedSpecific(SBThread thread, StateType state) {
-		TargetExecutionState targetState = convertState(state);
-		setExecutionState(targetState, "ThreadStateChanged");
+		//TargetExecutionState targetState = convertState(state);
+		//setExecutionState(targetState, "ThreadStateChanged");
 	}
 
 	@Override
@@ -148,12 +147,12 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public CompletableFuture<Void> resume() {
-		return model.gateFuture(process.cont());
+		return null; //model.gateFuture(process.cont());
 	}
 
 	@Override
 	public CompletableFuture<Void> kill() {
-		return model.gateFuture(process.kill());
+		return null; //model.gateFuture(process.kill());
 	}
 
 	@Override
@@ -161,22 +160,22 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 		getModel().assertMine(TargetObject.class, attachable);
 		// NOTE: Get the object and type check it myself.
 		// The typed ref could have been unsafely cast
-		return model.gateFuture(process.reattach(attachable)).thenApply(set -> null);
+		return null; //model.gateFuture(process.reattach(attachable)).thenApply(set -> null);
 	}
 
 	@Override
 	public CompletableFuture<Void> attach(long pid) {
-		return model.gateFuture(process.attach(pid)).thenApply(set -> null);
+		return null; //model.gateFuture(process.attach(pid)).thenApply(set -> null);
 	}
 
 	@Override
 	public CompletableFuture<Void> detach() {
-		return model.gateFuture(process.detach());
+		return null; //model.gateFuture(process.detach());
 	}
 
 	@Override
 	public CompletableFuture<Void> delete() {
-		return model.gateFuture(process.remove());
+		return null; //model.gateFuture(process.remove());
 	}
 
 	@Override
@@ -187,13 +186,13 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 			case ADVANCE: // Why no exec-advance in Lldbeng?
 				throw new UnsupportedOperationException(kind.name());
 			default:
-				return model.gateFuture(process.step(convertToLldb(kind)));
+				return null; //model.gateFuture(process.step(convertToLldb(kind)));
 		}
 	}
 
 	@Override
 	public CompletableFuture<Void> step(Map<String, ?> args) {
-		return model.gateFuture(process.step(args));
+		return null; //model.gateFuture(process.step(args));
 	}
 
 	@Override
@@ -210,6 +209,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 	@Override
 	public void processExited(SBProcess proc, LldbCause cause) {
 		if (proc.equals(this.process)) {
+			/*
 			changeAttributes(List.of(), List.of(), Map.of( //
 				STATE_ATTRIBUTE_NAME, TargetExecutionState.TERMINATED, //
 				EXIT_CODE_ATTRIBUTE_NAME, proc.getExitCode() //
@@ -217,6 +217,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 			getListeners().fire.event(getProxy(), null, TargetEventType.PROCESS_EXITED,
 				"Process " + proc.getId() + " exited code=" + proc.getExitCode(),
 				List.of(getProxy()));
+			*/
 		}
 	}
 

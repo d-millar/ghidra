@@ -17,12 +17,13 @@ package agent.lldb.model.iface2;
 
 import java.util.concurrent.CompletableFuture;
 
+import SWIG.SBMemoryRegionInfo;
 import ghidra.dbg.target.TargetMemory;
 import ghidra.program.model.address.Address;
 
 public interface LldbModelTargetMemoryContainer extends LldbModelTargetObject, TargetMemory {
 
-	//public LldbModelTargetMemoryRegion getTargetMemory(DbgModuleMemory region);
+	public LldbModelTargetMemoryRegion getTargetMemory(SBMemoryRegionInfo region);
 
 	@Override
 	public CompletableFuture<byte[]> readMemory(Address address, int length);

@@ -15,9 +15,8 @@
  */
 package agent.lldb.manager.cmd;
 
-import agent.dbgeng.dbgeng.DebugSessionId;
-import agent.dbgeng.manager.DbgManager;
-import agent.dbgeng.manager.impl.DbgManagerImpl;
+import agent.lldb.lldb.DebugSessionId;
+import agent.lldb.manager.impl.LldbManagerImpl;
 
 /**
  * Implementation of {@link DbgManager#addProcess()}
@@ -25,7 +24,7 @@ import agent.dbgeng.manager.impl.DbgManagerImpl;
 public class LldbRemoveSessionCommand extends AbstractLldbCommand<Void> {
 	private DebugSessionId id;
 
-	public LldbRemoveSessionCommand(DbgManagerImpl manager, DebugSessionId id) {
+	public LldbRemoveSessionCommand(LldbManagerImpl manager, DebugSessionId id) {
 		super(manager);
 		this.id = id;
 	}

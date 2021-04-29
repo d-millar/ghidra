@@ -70,7 +70,7 @@ public class LldbModelTargetStackImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public synchronized LldbModelTargetStackFrame getTargetFrame(SBFrame frame) {
-		return framesByLevel.compute(frame.getLevel(), (l, f) -> {
+		return framesByLevel.compute(frame.GetFrameID(), (l, f) -> {
 			if (f == null) {
 				return new LldbModelTargetStackFrameImpl(this, thread, frame);
 			}
@@ -98,7 +98,7 @@ public class LldbModelTargetStackImpl extends LldbModelTargetObjectImpl
 	@Override
 	public void onStopped() {
 		setAccessible(true);
-		if (thread.getThread().getId().equals(getManager().getEventThread().getId())) {
+		if (thread.getThread().GetThreadID().equals(getManager().getEventThread().GetThreadID())) {
 			update();
 		}
 	}

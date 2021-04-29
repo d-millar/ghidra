@@ -47,10 +47,12 @@ public class LldbListProcessesCommand extends AbstractLldbCommand<Map<DebugProce
 			}
 			// Need to create the inferior as if we received =thread-group-created
 			Msg.warn(this, "Resync: Was missing group: i" + id);
+			/*
 			DebugSystemObjects so = manager.getSystemObjects();
 			so.setCurrentProcessId(id);
 			int pid = so.getCurrentProcessSystemId();
 			manager.getProcessComputeIfAbsent(id, pid);
+			*/
 		}
 		for (DebugProcessId id : new ArrayList<>(cur)) {
 			if (updatedProcessIds.contains(id)) {
@@ -65,7 +67,7 @@ public class LldbListProcessesCommand extends AbstractLldbCommand<Map<DebugProce
 
 	@Override
 	public void invoke() {
-		DebugSystemObjects so = manager.getSystemObjects();
-		updatedProcessIds = so.getProcesses();
+		//DebugSystemObjects so = manager.getSystemObjects();
+		//updatedProcessIds = so.getProcesses();
 	}
 }

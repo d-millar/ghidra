@@ -47,11 +47,13 @@ public interface LldbModelTargetObject extends SpiTargetObject {
 		if (impl == null) {
 			return impl;
 		}
+		/*
 		DebugStatus status = impl.getControl().getExecutionStatus();
 		if (status.equals(DebugStatus.GO)) {
 			System.err.println("Attempt to access LldbManager while GO");
 			throw new RuntimeException("Attempt to access LldbManager while GO");
 		}
+		*/
 		return impl;
 	}
 
