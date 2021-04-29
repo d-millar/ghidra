@@ -347,7 +347,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 
 	CompletableFuture<Void> waitForPrompt();
 
-	CompletableFuture<Void> waitForEventEx();
+	CompletableFuture<Void> waitForEvent();
 
 	<T> CompletableFuture<T> execute(LldbCommand<? extends T> cmd);
 

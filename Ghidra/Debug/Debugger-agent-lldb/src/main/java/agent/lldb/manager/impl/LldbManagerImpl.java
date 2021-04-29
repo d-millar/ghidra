@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +34,8 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.sun.jna.platform.win32.COM.COMException;
 
+import SWIG.SBEvent;
+import SWIG.SBListener;
 import SWIG.SBProcess;
 import SWIG.SBTarget;
 import SWIG.SBThread;
@@ -42,13 +43,9 @@ import SWIG.StateType;
 import agent.lldb.gadp.impl.AbstractClientThreadExecutor;
 import agent.lldb.gadp.impl.LldbClientThreadExecutor;
 import agent.lldb.lldb.DebugBreakpoint;
-import agent.lldb.lldb.DebugBreakpoint.BreakFlags;
-import agent.lldb.lldb.DebugBreakpoint.BreakType;
 import agent.lldb.lldb.DebugClient;
-import agent.lldb.lldb.DebugClient.ChangeEngineState;
 import agent.lldb.lldb.DebugClient.DebugEndSessionFlags;
 import agent.lldb.lldb.DebugClient.DebugStatus;
-import agent.lldb.lldb.DebugClient.ExecutionState;
 import agent.lldb.lldb.DebugClientReentrant;
 import agent.lldb.lldb.DebugProcessId;
 import agent.lldb.lldb.DebugSessionId;
@@ -77,8 +74,6 @@ import agent.lldb.manager.cmd.LldbListBreakpointsCommand;
 import agent.lldb.manager.cmd.LldbListProcessesCommand;
 import agent.lldb.manager.cmd.LldbOpenDumpCommand;
 import agent.lldb.manager.cmd.LldbPendingCommand;
-import agent.lldb.manager.cmd.LldbRemoveProcessCommand;
-import agent.lldb.manager.cmd.LldbRemoveSessionCommand;
 import agent.lldb.manager.cmd.LldbRequestActivationCommand;
 import agent.lldb.manager.cmd.LldbRequestFocusCommand;
 import agent.lldb.manager.cmd.LldbSetActiveProcessCommand;
@@ -98,6 +93,7 @@ import agent.lldb.manager.evt.LldbProcessCreatedEvent;
 import agent.lldb.manager.evt.LldbProcessExitedEvent;
 import agent.lldb.manager.evt.LldbProcessSelectedEvent;
 import agent.lldb.manager.evt.LldbRunningEvent;
+import agent.lldb.manager.evt.LldbSessionSelectedEvent;
 import agent.lldb.manager.evt.LldbStateChangedEvent;
 import agent.lldb.manager.evt.LldbStoppedEvent;
 import agent.lldb.manager.evt.LldbSystemsEvent;
@@ -111,7 +107,6 @@ import ghidra.async.AsyncClaimQueue;
 import ghidra.async.AsyncReference;
 import ghidra.async.AsyncUtils;
 import ghidra.async.TypeSpec;
-import ghidra.comm.util.BitmaskSet;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.util.HandlerMap;
 import ghidra.lifecycle.Internal;
@@ -201,8 +196,10 @@ public class LldbManagerImpl implements LldbManager {
 			int tid) {
 		synchronized (threads) {
 			if (!threads.containsKey(id)) {
+				/*
 				SBThread thread = new SBThread(this, process, id, tid);
 				thread.add();
+				*/
 			}
 			return threads.get(id);
 		}
@@ -237,7 +234,7 @@ public class LldbManagerImpl implements LldbManager {
 			Set<DebugThreadId> toRemove = new HashSet<>();
 			for (DebugThreadId tid : threads.keySet()) {
 				SBThread thread = threads.get(tid);
-				if (thread.getProcess().getId().equals(id)) {
+				if (thread.GetProcess().GetProcessID().equals(id)) {
 					toRemove.add(tid);
 				}
 			}
@@ -270,8 +267,10 @@ public class LldbManagerImpl implements LldbManager {
 	public SBProcess getProcessComputeIfAbsent(DebugProcessId id, int pid) {
 		synchronized (processes) {
 			if (!processes.containsKey(id)) {
+				/*
 				SBProcess process = new SBProcess(this, id, pid);
 				process.add();
+				*/
 			}
 			return processes.get(id);
 		}
@@ -307,8 +306,10 @@ public class LldbManagerImpl implements LldbManager {
 	public SBTarget getSessionComputeIfAbsent(DebugSessionId id) {
 		synchronized (sessions) {
 			if (!sessions.containsKey(id) && id.id >= 0) {
+				/*
 				SBTarget session = new SBTarget(this, id);
 				session.add();
+				*/
 			}
 			return sessions.get(id);
 		}
@@ -428,6 +429,7 @@ public class LldbManagerImpl implements LldbManager {
 		DebugClient client = engThread.getClient();
 		reentrantClient = client;
 
+		/*
 		status = client.getControl().getExecutionStatus();
 		// Take control of the session.
 		// Helps if the JVM is using it for SA, or when starting a new server during testing.
@@ -439,6 +441,7 @@ public class LldbManagerImpl implements LldbManager {
 		client.setOutputCallbacks(new LldbDebugOutputCallbacks(this));
 		client.setEventCallbacks(new LldbDebugEventCallbacksAdapter(this));
 		client.setInputCallbacks(new LldbDebugInputCallbacks(this));
+		*/
 		client.flushCallbacks();
 
 		if (!create) {
@@ -461,7 +464,7 @@ public class LldbManagerImpl implements LldbManager {
 		engThread.execute(100, client -> {
 			Msg.debug(this, "Disconnecting DebugClient from session");
 			client.endSession(DebugEndSessionFlags.DEBUG_END_DISCONNECT);
-			client.setOutputCallbacks(null);
+			//client.setOutputCallbacks(null);
 		});
 		engThread.shutdown();
 		try {
@@ -561,8 +564,8 @@ public class LldbManagerImpl implements LldbManager {
 	*/
 
 	public DebugStatus processEvent(LldbEvent<?> evt) {
-		if (state.get() == StateType.STARTING) {
-			state.set(StateType.STOPPED, Causes.UNCLAIMED);
+		if (state.get() == StateType.eStateInvalid) {
+			state.set(StateType.eStateStopped, Causes.UNCLAIMED);
 		}
 		StateType newState = evt.newState();
 		if (newState != null && !(evt instanceof LldbCommandDoneEvent)) {
@@ -601,7 +604,7 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	@Override
-	public void removeStateListener(LldbEventsListener listener) {
+	public void removeStateListener(LldbStateListener listener) {
 		state.removeChangeListener(listener);
 	}
 
@@ -646,7 +649,7 @@ public class LldbManagerImpl implements LldbManager {
 		handlerMap.put(LldbModuleLoadedEvent.class, this::processModuleLoaded);
 		handlerMap.put(LldbModuleUnloadedEvent.class, this::processModuleUnloaded);
 		handlerMap.put(LldbStateChangedEvent.class, this::processStateChanged);
-		handlerMap.put(LldbTargetSelectedEvent.class, this::processSessionSelected);
+		//handlerMap.put(LldbTargetSelectedEvent.class, this::processSessionSelected);
 		handlerMap.put(LldbSystemsEvent.class, this::processSystemsEvent);
 		handlerMap.putVoid(LldbCommandDoneEvent.class, this::processDefault);
 		handlerMap.putVoid(LldbStoppedEvent.class, this::processDefault);
@@ -663,9 +666,9 @@ public class LldbManagerImpl implements LldbManager {
 		statusMap.put(LldbStoppedEvent.class, DebugStatus.BREAK);
 	}
 
-	private DebugThreadId updateState() {
+	private DebugThreadId updateState(SBEvent event) {
 		DebugClient client = engThread.getClient();
-		DebugSystemObjects so = client.getSystemObjects();
+		/*
 		DebugThreadId etid = so.getEventThread();
 		DebugProcessId epid = so.getEventProcess();
 		DebugSessionId esid = so.getCurrentSystemId();
@@ -680,12 +683,12 @@ public class LldbManagerImpl implements LldbManager {
 		catch (Exception e) {
 			// Ignore for now
 		}
+		*/
 
 		/*
 		lastEventInformation = control.getLastEventInformation();
 		lastEventInformation.setSession(esid);
 		lastEventInformation.setExecutingProcessorType(execType);
-		*/
 		currentSession = eventSession = getSessionComputeIfAbsent(esid);
 		currentProcess =
 			eventProcess = getProcessComputeIfAbsent(epid, so.getCurrentProcessSystemId());
@@ -695,6 +698,8 @@ public class LldbManagerImpl implements LldbManager {
 			((SBThread) eventThread).setInfo(lastEventInformation);
 		}
 		return etid;
+		*/
+		return null;
 	}
 
 	/**
@@ -717,7 +722,8 @@ public class LldbManagerImpl implements LldbManager {
 	 * @return retval handling/break status
 	 */
 	protected DebugStatus processBreakpoint(LldbBreakpointEvent evt, Void v) {
-		updateState();
+		/*
+		updateState(evt);
 
 		DebugBreakpoint bp = evt.getInfo();
 		LldbBreakpointInfo info = new LldbBreakpointInfo(bp, getEventProcess(), getEventThread());
@@ -727,6 +733,7 @@ public class LldbManagerImpl implements LldbManager {
 		if (statusByNameMap.containsKey(key)) {
 			return statusByNameMap.get(key);
 		}
+		*/
 		return statusMap.get(evt.getClass());
 	}
 
@@ -738,13 +745,15 @@ public class LldbManagerImpl implements LldbManager {
 	 * @return retval handling/break status
 	 */
 	protected DebugStatus processException(LldbExceptionEvent evt, Void v) {
-		DebugThreadId eventId = updateState();
+		/*
+		DebugThreadId eventId = updateState(evt);
 
 		DebugExceptionRecord64 info = evt.getInfo();
 		String key = Integer.toHexString(info.code);
 		if (statusByNameMap.containsKey(key)) {
 			return statusByNameMap.get(key);
 		}
+		*/
 		return statusMap.get(evt.getClass());
 	}
 
@@ -757,6 +766,7 @@ public class LldbManagerImpl implements LldbManager {
 	 */
 	protected DebugStatus processThreadCreated(LldbThreadCreatedEvent evt, Void v) {
 		DebugClient Lldbeng = engThread.getClient();
+		/*
 		DebugSystemObjects so = Lldbeng.getSystemObjects();
 
 		DebugThreadId eventId = updateState();
@@ -765,11 +775,11 @@ public class LldbManagerImpl implements LldbManager {
 		SBThread thread = getThreadComputeIfAbsent(eventId, process, tid);
 		getEventListeners().fire.threadCreated(thread, LldbCause.Causes.UNCLAIMED);
 		getEventListeners().fire.threadSelected(thread, null, evt.getCause());
-
 		String key = Integer.toHexString(eventId.id);
 		if (statusByNameMap.containsKey(key)) {
 			return statusByNameMap.get(key);
 		}
+		*/
 		return statusMap.get(evt.getClass());
 	}
 
@@ -781,6 +791,7 @@ public class LldbManagerImpl implements LldbManager {
 	 * @return retval handling/break status
 	 */
 	protected DebugStatus processThreadExited(LldbThreadExitedEvent evt, Void v) {
+		/*
 		DebugThreadId eventId = updateState();
 		SBProcess process = getCurrentProcess();
 		SBThread thread = getCurrentThread();
@@ -794,6 +805,7 @@ public class LldbManagerImpl implements LldbManager {
 		if (statusByNameMap.containsKey(key)) {
 			return statusByNameMap.get(key);
 		}
+		*/
 		return statusMap.get(evt.getClass());
 	}
 
@@ -805,6 +817,7 @@ public class LldbManagerImpl implements LldbManager {
 	 * @return retval handling/break status
 	 */
 	protected DebugStatus processThreadSelected(LldbThreadSelectedEvent evt, Void v) {
+		/*
 		DebugThreadId eventId = updateState();
 
 		currentThread = evt.getThread();
@@ -815,6 +828,7 @@ public class LldbManagerImpl implements LldbManager {
 		if (statusByNameMap.containsKey(key)) {
 			return statusByNameMap.get(key);
 		}
+		*/
 		return statusMap.get(evt.getClass());
 	}
 
@@ -826,6 +840,7 @@ public class LldbManagerImpl implements LldbManager {
 	 * @return retval handling/break status
 	 */
 	protected DebugStatus processProcessCreated(LldbProcessCreatedEvent evt, Void v) {
+		/*
 		DebugThreadId eventId = updateState();
 		DebugClient Lldbeng = engThread.getClient();
 		DebugSystemObjects so = Lldbeng.getSystemObjects();
@@ -852,6 +867,7 @@ public class LldbManagerImpl implements LldbManager {
 		if (statusByNameMap.containsKey(key)) {
 			return statusByNameMap.get(key);
 		}
+		*/
 		return statusMap.get(evt.getClass());
 	}
 
@@ -863,6 +879,7 @@ public class LldbManagerImpl implements LldbManager {
 	 * @return retval handling/break status
 	 */
 	protected DebugStatus processProcessExited(LldbProcessExitedEvent evt, Void v) {
+		/*
 		DebugThreadId eventId = updateState();
 		SBThread thread = getCurrentThread();
 		SBProcess process = getCurrentProcess();
@@ -884,6 +901,7 @@ public class LldbManagerImpl implements LldbManager {
 		if (statusByNameMap.containsKey(key)) {
 			return statusByNameMap.get(key);
 		}
+		*/
 		return statusMap.get(evt.getClass());
 	}
 
@@ -895,6 +913,7 @@ public class LldbManagerImpl implements LldbManager {
 	 * @return retval handling/break status
 	 */
 	protected DebugStatus processProcessSelected(LldbProcessSelectedEvent evt, Void v) {
+		/*
 		DebugThreadId eventId = updateState();
 
 		currentProcess = evt.getProcess();
@@ -904,6 +923,7 @@ public class LldbManagerImpl implements LldbManager {
 		if (statusByNameMap.containsKey(key)) {
 			return statusByNameMap.get(key);
 		}
+		*/
 		return statusMap.get(evt.getClass());
 	}
 
@@ -915,6 +935,7 @@ public class LldbManagerImpl implements LldbManager {
 	 * @return retval handling/break status
 	 */
 	protected DebugStatus processModuleLoaded(LldbModuleLoadedEvent evt, Void v) {
+		/*
 		updateState();
 		SBProcess process = getCurrentProcess();
 		DebugModuleInfo info = evt.getInfo();
@@ -925,6 +946,7 @@ public class LldbManagerImpl implements LldbManager {
 		if (statusByNameMap.containsKey(key)) {
 			return statusByNameMap.get(key);
 		}
+		*/
 		return statusMap.get(evt.getClass());
 	}
 
@@ -936,6 +958,7 @@ public class LldbManagerImpl implements LldbManager {
 	 * @return retval handling/break status
 	 */
 	protected DebugStatus processModuleUnloaded(LldbModuleUnloadedEvent evt, Void v) {
+		/*
 		updateState();
 		SBProcess process = getCurrentProcess();
 		DebugModuleInfo info = evt.getInfo();
@@ -946,6 +969,7 @@ public class LldbManagerImpl implements LldbManager {
 		if (statusByNameMap.containsKey(key)) {
 			return statusByNameMap.get(key);
 		}
+		*/
 		return statusMap.get(evt.getClass());
 	}
 
@@ -957,6 +981,7 @@ public class LldbManagerImpl implements LldbManager {
 	 * @return retval handling/break status
 	 */
 	protected DebugStatus processStateChanged(LldbStateChangedEvent evt, Void v) {
+		/*
 		BitmaskSet<ChangeEngineState> flags = evt.getInfo();
 		long argument = evt.getArgument();
 		if (flags.contains(ChangeEngineState.EXECUTION_STATUS)) {
@@ -1033,6 +1058,7 @@ public class LldbManagerImpl implements LldbManager {
 		if (flags.contains(ChangeEngineState.SYSTEMS)) {
 			processEvent(new LldbSystemsEvent(argument));
 		}
+		*/
 		return DebugStatus.NO_CHANGE;
 	}
 
@@ -1043,7 +1069,8 @@ public class LldbManagerImpl implements LldbManager {
 	 * @param v nothing
 	 * @return retval handling/break status
 	 */
-	protected DebugStatus processSessionSelected(SBTargetSelectedEvent evt, Void v) {
+	protected DebugStatus processSessionSelected(LldbSessionSelectedEvent evt, Void v) {
+		/*
 		DebugThreadId eventId = updateState();
 
 		currentSession = evt.getSession();
@@ -1053,6 +1080,7 @@ public class LldbManagerImpl implements LldbManager {
 		if (statusByNameMap.containsKey(key)) {
 			return statusByNameMap.get(key);
 		}
+		*/
 		return statusMap.get(evt.getClass());
 	}
 
@@ -1064,7 +1092,7 @@ public class LldbManagerImpl implements LldbManager {
 	 * @return retval handling/break status
 	 */
 	protected DebugStatus processSystemsEvent(LldbSystemsEvent evt, Void v) {
-
+		/*
 		waiting = true;
 
 		Long info = evt.getInfo();
@@ -1074,6 +1102,7 @@ public class LldbManagerImpl implements LldbManager {
 		if (statusByNameMap.containsKey(key)) {
 			return statusByNameMap.get(key);
 		}
+		*/
 		return statusMap.get(evt.getClass());
 	}
 
@@ -1098,6 +1127,7 @@ public class LldbManagerImpl implements LldbManager {
 	 * @param v nothing
 	 */
 	protected void processBreakpointModified(LldbBreakpointModifiedEvent evt, Void v) {
+		/*
 		LldbBreakpointInfo breakpointInfo = evt.getBreakpointInfo();
 		if (breakpointInfo == null) {
 			long bptId = evt.getId();
@@ -1122,6 +1152,7 @@ public class LldbManagerImpl implements LldbManager {
 
 		}
 		doBreakpointModified(breakpointInfo, evt.getCause());
+		*/
 	}
 
 	/**
@@ -1209,6 +1240,7 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	private void changeBreakpoints() {
+		/*
 		Set<Integer> retained = new HashSet<>();
 		DebugSystemObjects so = getSystemObjects();
 		try (SavedFocus focus = new SavedFocus(so)) {
@@ -1238,13 +1270,6 @@ public class LldbManagerImpl implements LldbManager {
 						for (DebugThreadId tid : tids) {
 							Msg.debug(this, "TRAP Added: " + id + " on " + tid);
 							if (!claimsBreakpointAdded.satisfy(tid)) {
-								/*
-								AbstractSctlTrapSpec spec =
-									server.getDialect().create(AbstractSctlTrapSpec.class);
-								spec.setActionStop();
-								spec.setAddress(newOffset);
-								synth.synthSetTrap(null, tid.id, spec, id);
-								*/
 							}
 							else {
 								Msg.debug(this, "  claimed");
@@ -1253,16 +1278,6 @@ public class LldbManagerImpl implements LldbManager {
 						}
 					}
 					else if (tag.offset != newOffset) {
-						/*
-						for (DebugThreadId tid : tids) {
-							synth.synthClearTrap(null, tid.id, id);
-							AbstractSctlTrapSpec spec =
-								server.getDialect().create(AbstractSctlTrapSpec.class);
-							spec.setActionStop();
-							spec.setAddress(newOffset);
-							synth.synthSetTrap(null, tid.id, spec, id);
-						}
-						*/
 						tag.offset = newOffset;
 					} // else the breakpoint is unchanged
 				}
@@ -1275,9 +1290,6 @@ public class LldbManagerImpl implements LldbManager {
 					for (DebugThreadId tid : tids) {
 						Msg.debug(this, "TRAP Removed: " + id + " on " + tid);
 						if (!claimsBreakpointRemoved.satisfy(new BreakId(tid, id))) {
-							/*
-							synth.synthClearTrap(null, tid.id, id);
-							*/
 						}
 						else {
 							Msg.debug(this, "  claimed");
@@ -1290,6 +1302,7 @@ public class LldbManagerImpl implements LldbManager {
 		catch (COMException e) {
 			Msg.error(this, "Error retrieving processes: " + e);
 		}
+		*/
 	}
 
 	@Override
@@ -1314,7 +1327,7 @@ public class LldbManagerImpl implements LldbManager {
 		Msg.info(this, "Interrupting");
 		// NB: don't use "execute" here - engThread is paused on waitForEvents
 		//  and execute::sequence blocks on engThread 
-		reentrantClient.getControl().setInterrupt(DebugInterrupt.ACTIVE);
+		//reentrantClient.getControl().setInterrupt(DebugInterrupt.ACTIVE);
 	}
 
 	@Override
@@ -1324,7 +1337,8 @@ public class LldbManagerImpl implements LldbManager {
 
 	@Override
 	public CompletableFuture<Void> removeProcess(SBProcess process) {
-		return execute(new LldbRemoveProcessCommand(this, process.getId()));
+		//return execute(new LldbRemoveProcessCommand(this, process.GetProcessID()));
+		return null;
 	}
 
 	@Override
@@ -1334,7 +1348,8 @@ public class LldbManagerImpl implements LldbManager {
 
 	@Override
 	public CompletableFuture<Void> removeSession(SBTarget session) {
-		return execute(new LldbRemoveSessionCommand(this, session.getId()));
+		//return execute(new LldbRemoveSessionCommand(this, session.getId()));
+		return null;
 	}
 
 	@Override
@@ -1385,9 +1400,10 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	class SavedFocus implements AutoCloseable {
-		final DebugSystemObjects so;
 		DebugThreadId tid = null;
 
+		/*
+		final DebugSystemObjects so;
 		public SavedFocus(DebugSystemObjects so) {
 			this.so = so;
 			try {
@@ -1397,12 +1413,13 @@ public class LldbManagerImpl implements LldbManager {
 				Msg.debug(this, "Cannot save current thread id: " + e);
 			}
 		}
+		*/
 
 		@Override
 		public void close() {
 			if (tid != null) {
 				try {
-					so.setCurrentThreadId(tid);
+					//so.setCurrentThreadId(tid);
 				}
 				catch (COMException e) {
 					Msg.debug(this, "Could not restore current thread id: " + e);
@@ -1476,7 +1493,7 @@ public class LldbManagerImpl implements LldbManager {
 	@Override
 	public CompletableFuture<Void> console(String command) {
 		if (continuation != null) {
-			String prompt = command.equals("") ? LldbModelTargetInterpreter.Lldb_PROMPT : ">>>";
+			String prompt = command.equals("") ? LldbModelTargetInterpreter.LLDB_PROMPT : ">>>";
 			getEventListeners().fire.promptChanged(prompt);
 			continuation.complete(command);
 			setContinuation(null);
@@ -1508,14 +1525,15 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	@Override
-	public CompletableFuture<Void> waitForEventEx() {
+	public CompletableFuture<Void> waitForEvent() {
 		//System.err.println("ENTER");
-		DebugControl control = getControl();
+		SBListener listener = reentrantClient.getListener();
 		waiting = true;
-		control.waitForEvent();
+		SBEvent event = new SBEvent();
+		listener.WaitForEvent(0, event);
 		//System.err.println("EXIT");
 		waiting = false;
-		updateState();
+		updateState(event);
 		return CompletableFuture.completedFuture(null);
 	}
 

@@ -20,8 +20,10 @@ import java.util.Map;
 import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.LldbManager.ExecSuffix;
+import agent.lldb.manager.evt.AbstractLldbCompletedCommandEvent;
+import agent.lldb.manager.evt.LldbCommandErrorEvent;
+import agent.lldb.manager.evt.LldbRunningEvent;
 import agent.lldb.manager.impl.LldbManagerImpl;
-import ghidra.util.Msg;
 
 /**
  * Implementation of {@link DbgThread#stepInstruction()}
@@ -68,6 +70,7 @@ public class LldbStepCommand extends AbstractLldbCommand<Void> {
 	//  then the event thread.
 	@Override
 	public void invoke() {
+		/*
 		String cmd = "";
 		String prefix = id == null ? "" : "~" + id.id + " ";
 		DebugControl control = manager.getControl();
@@ -99,6 +102,7 @@ public class LldbStepCommand extends AbstractLldbCommand<Void> {
 				control.execute(prefix + cmd);
 			}
 		}
+		*/
 	}
 
 	public String getLastCommand() {

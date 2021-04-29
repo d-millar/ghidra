@@ -18,6 +18,7 @@ package agent.lldb.manager.evt;
 import SWIG.SBFrame;
 import SWIG.SBThread;
 import SWIG.StateType;
+import agent.lldb.lldb.DebugClient.ChangeEngineState;
 import ghidra.comm.util.BitmaskSet;
 
 public class LldbStateChangedEvent extends AbstractLldbEvent<BitmaskSet<ChangeEngineState>> {

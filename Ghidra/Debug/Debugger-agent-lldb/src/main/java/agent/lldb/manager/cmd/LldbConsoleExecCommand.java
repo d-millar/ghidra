@@ -15,7 +15,6 @@
  */
 package agent.lldb.manager.cmd;
 
-import agent.dbgeng.manager.DbgManager;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.evt.AbstractLldbCompletedCommandEvent;
 import agent.lldb.manager.evt.LldbConsoleOutputEvent;
@@ -63,6 +62,6 @@ public class LldbConsoleExecCommand extends AbstractLldbCommand<String> {
 
 	@Override
 	public void invoke() {
-		manager.getControl().execute(command);
+		//manager.getControl().execute(command);
 	}
 }

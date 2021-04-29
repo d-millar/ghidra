@@ -52,11 +52,14 @@ public class LldbOpenDumpCommand extends AbstractLldbCommand<SBThread> {
 
 	@Override
 	public SBThread complete(LldbPendingCommand<?> pending) {
+		/*
 		DebugProcessInfo info = created.getInfo();
 		DebugThreadInfo tinfo = info.initialThreadInfo;
 		DebugSystemObjects so = manager.getSystemObjects();
 		DebugThreadId tid = so.getThreadIdByHandle(tinfo.handle);
 		return manager.getThread(tid);
+		*/
+		return null;
 	}
 
 	@Override
@@ -70,6 +73,6 @@ public class LldbOpenDumpCommand extends AbstractLldbCommand<SBThread> {
 		}
 		f = f.replace("/", "\\");
 		dbgeng.openDumpFileWide(f);
-		manager.waitForEventEx();
+		manager.waitForEvent();
 	}
 }

@@ -15,12 +15,12 @@
  */
 package agent.lldb.manager.cmd;
 
-import agent.dbgeng.dbgeng.DebugSessionId;
-import agent.dbgeng.manager.DbgSession;
-import agent.dbgeng.manager.impl.DbgManagerImpl;
+import SWIG.SBTarget;
+import agent.lldb.lldb.DebugSessionId;
+import agent.lldb.manager.impl.LldbManagerImpl;
 
 public class LldbSetActiveSessionCommand extends AbstractLldbCommand<Void> {
-	private DbgSession session;
+	private SBTarget session;
 
 	/**
 	 * Set the active session
@@ -28,18 +28,20 @@ public class LldbSetActiveSessionCommand extends AbstractLldbCommand<Void> {
 	 * @param manager the manager to execute the command
 	 * @param process the desired process
 	 */
-	public LldbSetActiveSessionCommand(DbgManagerImpl manager, DbgSession session) {
+	public LldbSetActiveSessionCommand(LldbManagerImpl manager, SBTarget session) {
 		super(manager);
 		this.session = session;
 	}
 
 	@Override
 	public void invoke() {
+		/*
 		if (session != null) {
 			DebugSessionId id = session.getId();
 			if (id != null) {
 				manager.getSystemObjects().setCurrentSystemId(id);
 			}
 		}
+		*/
 	}
 }

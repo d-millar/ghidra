@@ -18,13 +18,7 @@ package agent.lldb.manager.cmd;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.jna.platform.win32.COM.COMException;
-
 import SWIG.SBMemoryRegionInfo;
-import agent.dbgeng.dbgeng.DebugDataSpaces;
-import agent.dbgeng.dbgeng.DebugDataSpaces.*;
-import agent.dbgeng.dbgeng.DebugModule;
-import agent.dbgeng.dbgeng.DebugModule.DebugModuleName;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 public class LldbListMemoryRegionsCommand extends AbstractLldbCommand<List<SBMemoryRegionInfo>> {
@@ -42,6 +36,7 @@ public class LldbListMemoryRegionsCommand extends AbstractLldbCommand<List<SBMem
 
 	@Override
 	public void invoke() {
+		/*
 		DebugDataSpaces dataSpaces = manager.getDataSpaces();
 		for (DebugMemoryBasicInformation info : dataSpaces.iterateVirtual(0)) {
 			if (info.state == PageState.FREE) {
@@ -87,6 +82,7 @@ public class LldbListMemoryRegionsCommand extends AbstractLldbCommand<List<SBMem
 					info.allocationBase, ap, ip, info.state, type, isRead, isWrite, isExec);
 			memoryRegions.add(section);
 		}
+		*/
 	}
 
 }

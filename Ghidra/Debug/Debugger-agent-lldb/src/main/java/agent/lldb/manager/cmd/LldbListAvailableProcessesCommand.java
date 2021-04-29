@@ -18,17 +18,14 @@ package agent.lldb.manager.cmd;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import agent.lldb.manager.impl.LldbManagerImpl;
-import ghidra.comm.util.BitmaskSet;
-import sun.tools.jconsole.ProxyClient.Snapshot;
 
 public class LldbListAvailableProcessesCommand
 		extends AbstractLldbCommand<List<Pair<Integer, String>>> {
 
-	private Snapshot snap;
+	//private Snapshot snap;
 
 	public LldbListAvailableProcessesCommand(LldbManagerImpl manager) {
 		super(manager);
@@ -37,19 +34,21 @@ public class LldbListAvailableProcessesCommand
 	@Override
 	public List<Pair<Integer, String>> complete(LldbPendingCommand<?> pending) {
 		List<Pair<Integer, String>> result = new ArrayList<>();
+		/*
 		for (PROCESSENTRY32W proc : snap.getProcesses()) {
 			int pid = proc.th32ProcessID.intValue();
 			char[] name = proc.szExeFile;
 			String exe = new String(name);
 			result.add(new ImmutablePair<>(pid, exe));
 		}
+		*/
 		return result;
 	}
 
 	@Override
 	public void invoke() {
-		snap = ToolhelpUtil
-				.createSnapshot(BitmaskSet.of(SnapshotFlags.PROCESS, SnapshotFlags.THREAD), 0);
+		//snap = ToolhelpUtil
+		//		.createSnapshot(BitmaskSet.of(SnapshotFlags.PROCESS, SnapshotFlags.THREAD), 0);
 	}
 
 }

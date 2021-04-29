@@ -17,7 +17,6 @@ package agent.lldb.manager.cmd;
 
 import java.nio.ByteBuffer;
 
-import agent.dbgeng.manager.DbgThread;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 /**
@@ -38,7 +37,7 @@ public class LldbWriteMemoryCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public void invoke() {
-		manager.getDataSpaces().writeVirtual(addr, buf, buf.remaining());
+		//manager.getDataSpaces().writeVirtual(addr, buf, buf.remaining());
 	}
 
 }

@@ -15,6 +15,7 @@
  */
 package agent.lldb.model.impl;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -23,9 +24,6 @@ import java.util.stream.Collectors;
 import SWIG.SBProcess;
 import SWIG.SBThread;
 import SWIG.StateType;
-import agent.Lldbeng.manager.*;
-import agent.Lldbeng.manager.reason.*;
-import agent.Lldbeng.model.iface2.*;
 import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbReason;
@@ -33,7 +31,6 @@ import agent.lldb.model.iface1.LldbModelTargetConfigurable;
 import agent.lldb.model.iface2.LldbModelTargetProcess;
 import agent.lldb.model.iface2.LldbModelTargetThread;
 import agent.lldb.model.iface2.LldbModelTargetThreadContainer;
-import ghidra.Lldb.target.schema.*;
 import ghidra.async.AsyncUtils;
 import ghidra.dbg.error.DebuggerIllegalArgumentException;
 import ghidra.dbg.target.TargetConfigurable;
@@ -67,9 +64,11 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 		changeElements(List.of(), List.of(getTargetThread(thread)), Map.of(), "Created");
 		LldbModelTargetThread targetThread = getTargetThread(thread);
 		changeElements(List.of(), List.of(targetThread), Map.of(), "Created");
-		targetThread.threadStateChangedSpecific(StateType.STARTING, LldbReason.getReason(null));
+		targetThread.threadStateChangedSpecific(StateType.eStateInvalid, LldbReason.getReason(null));
+		/*
 		getListeners().fire.event(getProxy(), targetThread, TargetEventType.THREAD_CREATED,
 			"Thread " + thread.getId() + " started", List.of(targetThread));
+		*/
 	}
 
 	@Override
@@ -77,8 +76,10 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 			LldbReason reason) {
 		LldbModelTargetThread targetThread = getTargetThread(thread);
 		TargetEventType eventType = getEventType(state, cause, reason);
+		/*
 		getListeners().fire.event(getProxy(), targetThread, eventType,
 			"Thread " + thread.getId() + " state changed", List.of(targetThread));
+		*/
 		targetThread.threadStateChangedSpecific(state, reason);
 	}
 
@@ -99,6 +100,7 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 	}
 
 	private TargetEventType getEventType(StateType state, LldbCause cause, LldbReason reason) {
+		/*
 		switch (state) {
 			case RUNNING:
 				return TargetEventType.RUNNING;
@@ -120,6 +122,7 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 			default:
 				break;
 		}
+		*/
 		return null;
 	}
 
@@ -167,4 +170,5 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 		}
 		return AsyncUtils.NIL;
 	}
+
 }

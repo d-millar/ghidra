@@ -15,13 +15,13 @@
  */
 package agent.lldb.manager.cmd;
 
-import agent.dbgeng.manager.impl.DbgManagerImpl;
-import agent.dbgeng.model.iface1.DbgModelTargetActiveScope;
+import agent.lldb.manager.impl.LldbManagerImpl;
+import agent.lldb.model.iface1.LldbModelTargetActiveScope;
 import ghidra.dbg.target.TargetObject;
 
 public class LldbRequestActivationCommand extends AbstractLldbCommand<Void> {
 
-	private DbgModelTargetActiveScope activator;
+	private LldbModelTargetActiveScope activator;
 	private TargetObject obj;
 
 	/**
@@ -31,7 +31,7 @@ public class LldbRequestActivationCommand extends AbstractLldbCommand<Void> {
 	 * @param activator in most cases the root object (must be an ancestor for the ref)
 	 * @param obj the desired object to be made active
 	 */
-	public LldbRequestActivationCommand(DbgManagerImpl manager, DbgModelTargetActiveScope activator,
+	public LldbRequestActivationCommand(LldbManagerImpl manager, LldbModelTargetActiveScope activator,
 			TargetObject obj) {
 		super(manager);
 		this.activator = activator;

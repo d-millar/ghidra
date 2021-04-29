@@ -15,18 +15,13 @@
  */
 package agent.lldb.manager.cmd;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import SWIG.SBMemoryRegionInfo;
 import SWIG.SBProcess;
-import SWIG.SBTarget;
-import SWIG.SBThread;
 import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.impl.LldbManagerImpl;
-import ghidra.util.Msg;
 
 public class LldbListMappingsCommand extends AbstractLldbCommand<Map<Long, SBMemoryRegionInfo>> {
 	protected final SBProcess process;
@@ -38,7 +33,8 @@ public class LldbListMappingsCommand extends AbstractLldbCommand<Map<Long, SBMem
 	}
 
 	@Override
-	public Map<Long, SBTarget> complete(LldbPendingCommand<?> pending) {
+	public Map<Long, SBMemoryRegionInfo> complete(LldbPendingCommand<?> pending) {
+		/*
 		Map<DebugThreadId, SBThread> threads = process.getKnownThreads();
 		Set<DebugThreadId> cur = threads.keySet();
 		DebugSystemObjects so = manager.getSystemObjects();
@@ -64,6 +60,8 @@ public class LldbListMappingsCommand extends AbstractLldbCommand<Map<Long, SBMem
 		}
 		so.setCurrentThreadId(previous);
 		return process.getKnownMappings();
+		*/
+		return null;
 	}
 
 	@Override

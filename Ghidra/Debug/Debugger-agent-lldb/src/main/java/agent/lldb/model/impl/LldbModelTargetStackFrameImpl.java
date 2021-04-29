@@ -78,7 +78,7 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetStackFrame {
 
 	protected static String indexFrame(SBFrame frame) {
-		return PathUtils.makeIndex(frame.getLevel());
+		return PathUtils.makeIndex(frame.GetFrameID());
 	}
 
 	protected static String keyFrame(SBFrame frame) {
@@ -116,11 +116,14 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 	}
 
 	protected static String computeDisplay(SBFrame frame) {
+		/*
 		if (frame.getFunction() == null) {
 			return String.format("#%d 0x%s", frame.getLevel(), frame.getAddress().toString(16));
 		}
 		return String.format("#%d 0x%s in %s ()", frame.getLevel(), frame.getAddress().toString(16),
 			frame.getFunction());
+		*/
+		return null;
 	}
 
 	@Override
@@ -132,8 +135,9 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public void setFrame(SBFrame frame) {
-		BigInteger address = frame.getAddress();
+		BigInteger address = frame.GetPC();
 		long lval = address == null ? -1 : address.longValue();
+		/*
 		this.pc = getModel().getAddressSpace("ram").getAddress(lval);
 		this.func = frame.getFunction();
 		if (func == null) {
@@ -145,6 +149,7 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 		this.stackOffset = frame.getStackOffset();
 		this.virtual = frame.getVirtual();
 		this.params = frame.getParams();
+		*/
 		// TODO: module? "from"
 		this.frame = frame;
 

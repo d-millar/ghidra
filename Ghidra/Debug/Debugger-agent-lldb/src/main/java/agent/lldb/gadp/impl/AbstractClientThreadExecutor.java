@@ -133,8 +133,8 @@ public abstract class AbstractClientThreadExecutor extends AbstractExecutorServi
 						Msg.error(this, "Task in executor threw: " + t);
 					}
 				}
-				/*
-				DebugStatus status = client.getControl().getExecutionStatus();
+				
+				DebugStatus status = client.getListener().getExecutionStatus();
 				if (status.shouldWait && status != DebugStatus.NO_DEBUGGEE ||
 					waitRegistered.get()) {
 					waitRegistered.set(false);
@@ -154,7 +154,7 @@ public abstract class AbstractClientThreadExecutor extends AbstractExecutorServi
 						Msg.error(this, "Error during DispatchCallbacks: " + e);
 					}
 				}
-				*/
+				
 			}
 		}
 		catch (Throwable t) {

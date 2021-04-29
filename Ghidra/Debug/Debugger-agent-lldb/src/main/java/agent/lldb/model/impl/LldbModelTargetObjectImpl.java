@@ -110,6 +110,7 @@ public class LldbModelTargetObjectImpl extends DefaultTargetObject<TargetObject,
 
 	protected void checkExited(StateType state, LldbCause cause) {
 		TargetExecutionState exec = TargetExecutionState.INACTIVE;
+		/*
 		switch (state.swigValue()) {
 			case eStateInvalid: {
 				exec = TargetExecutionState.INACTIVE;
@@ -147,6 +148,7 @@ public class LldbModelTargetObjectImpl extends DefaultTargetObject<TargetObject,
 			LldbModelTargetExecutionStateful stateful = (LldbModelTargetExecutionStateful) this;
 			stateful.setExecutionState(exec, "Refreshed");
 		}
+		*/
 	}
 
 	@Override

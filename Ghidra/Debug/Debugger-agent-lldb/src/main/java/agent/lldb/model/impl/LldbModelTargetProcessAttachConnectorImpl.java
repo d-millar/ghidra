@@ -83,8 +83,10 @@ public class LldbModelTargetProcessAttachConnectorImpl extends LldbModelTargetOb
 		String pidstr = (String) args.get("Pid");
 		int pid = Integer.decode(pidstr);
 		return AsyncUtils.sequence(TypeSpec.VOID).then(seq -> {
+			/*
 			SBProcess process = new SBProcess(getManager());
 			process.attach(pid).handle(seq::nextIgnore);
+			*/
 		}).finish().exceptionally((exc) -> {
 			throw new DebuggerUserException("Launch failed for " + args);
 		});

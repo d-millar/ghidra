@@ -15,18 +15,20 @@
  */
 package agent.lldb.manager.cmd;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
-import agent.dbgeng.dbgeng.DebugRegisters;
-import agent.dbgeng.dbgeng.DebugRegisters.DebugRegisterDescription;
-import agent.dbgeng.manager.impl.DbgManagerImpl;
+import agent.lldb.lldb.DebugRegisters;
+import agent.lldb.lldb.DebugRegisters.DebugRegisterDescription;
+import agent.lldb.manager.impl.LldbManagerImpl;
 
 public class LldbListRegisterDescriptionsCommand
 		extends AbstractLldbCommand<List<DebugRegisterDescription>> {
 
 	private List<DebugRegisterDescription> list;
 
-	public LldbListRegisterDescriptionsCommand(DbgManagerImpl manager) {
+	public LldbListRegisterDescriptionsCommand(LldbManagerImpl manager) {
 		super(manager);
 	}
 
@@ -37,12 +39,14 @@ public class LldbListRegisterDescriptionsCommand
 
 	@Override
 	public void invoke() {
+		/*
 		DebugRegisters registers = manager.getRegisters();
 		Set<DebugRegisterDescription> descs = registers.getAllDescriptions();
 		list = new ArrayList<DebugRegisterDescription>();
 		for (DebugRegisterDescription desc : descs) {
 			list.add(desc);
 		}
+		*/
 	}
 
 }

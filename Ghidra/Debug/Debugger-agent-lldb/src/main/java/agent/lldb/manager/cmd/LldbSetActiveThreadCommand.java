@@ -16,7 +16,6 @@
 package agent.lldb.manager.cmd;
 
 import SWIG.SBThread;
-import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 public class LldbSetActiveThreadCommand extends AbstractLldbCommand<Void> {
@@ -39,12 +38,14 @@ public class LldbSetActiveThreadCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public void invoke() {
-		DebugThreadId id = thread.getId();
+		/*
+		DebugThreadId id = thread.GetIndexID();
 		if (id != null) {
 			manager.getSystemObjects().setCurrentThreadId(id);
 			if (frameId != null) {
 				manager.getSymbols().setCurrentScopeFrameIndex(frameId);
 			}
 		}
+		*/
 	}
 }

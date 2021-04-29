@@ -28,13 +28,11 @@ import java.util.stream.Collectors;
 
 import SWIG.SBThread;
 import SWIG.StateType;
-import agent.Lldbeng.manager.*;
-import agent.Lldbeng.model.iface2.*;
+import agent.lldb.manager.LldbReason;
 import agent.lldb.manager.LldbRegister;
 import agent.lldb.model.iface2.LldbModelTargetRegister;
 import agent.lldb.model.iface2.LldbModelTargetRegisterContainerAndBank;
 import agent.lldb.model.iface2.LldbModelTargetThread;
-import ghidra.Lldb.target.schema.*;
 import ghidra.async.AsyncUtils;
 import ghidra.dbg.error.DebuggerRegisterAccessException;
 import ghidra.dbg.target.TargetObject;
@@ -92,7 +90,7 @@ public class LldbModelTargetRegisterContainerImpl extends LldbModelTargetObjectI
 	}
 
 	public void threadStateChangedSpecific(StateType state, LldbReason reason) {
-		if (state.equals(StateType.STOPPED)) {
+		if (state.equals(StateType.eStateStopped)) {
 			readRegistersNamed(getCachedElements().keySet());
 		}
 	}

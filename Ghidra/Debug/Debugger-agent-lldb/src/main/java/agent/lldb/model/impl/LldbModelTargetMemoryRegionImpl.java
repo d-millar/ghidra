@@ -52,7 +52,7 @@ public class LldbModelTargetMemoryRegionImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetMemoryRegion {
 
 	protected static String indexSection(SBMemoryRegionInfo section) {
-		return section.getName();
+		return null; //section.getName();
 	}
 
 	protected static String keySection(SBMemoryRegionInfo section) {
@@ -60,9 +60,9 @@ public class LldbModelTargetMemoryRegionImpl extends LldbModelTargetObjectImpl
 	}
 
 	protected final SBMemoryRegionInfo section;
-	protected final AddressRange range;
-	protected final List<String> protect;
-	protected final List<String> allocProtect;
+	protected AddressRange range;
+	protected List<String> protect;
+	protected List<String> allocProtect;
 	private boolean isRead;
 	private boolean isWrite;
 	private boolean isExec;
@@ -73,6 +73,7 @@ public class LldbModelTargetMemoryRegionImpl extends LldbModelTargetObjectImpl
 		this.getModel().addModelObject(region, this);
 		this.section = region;
 
+		/*
 		this.range = doGetRange(section);
 		allocProtect = region.getAllocationProtect();
 		String apx = "";
@@ -113,13 +114,17 @@ public class LldbModelTargetMemoryRegionImpl extends LldbModelTargetObjectImpl
 			"State", region.getState(), //
 			"Type", region.getType() //
 		), "Initialized");
+		*/
 	}
 
 	protected AddressRange doGetRange(SBMemoryRegionInfo s) {
 		AddressSpace addressSpace = getModel().getAddressSpace("ram");
+		/*
 		Address min = addressSpace.getAddress(s.getVmaStart());
 		Address max = addressSpace.getAddress(s.getVmaEnd() - 1);
 		return new AddressRangeImpl(min, max);
+		*/
+		return null;
 	}
 
 	@Override

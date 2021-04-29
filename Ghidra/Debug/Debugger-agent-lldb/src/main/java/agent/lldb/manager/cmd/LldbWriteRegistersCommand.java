@@ -16,26 +16,23 @@
 package agent.lldb.manager.cmd;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 
-import com.sun.jna.platform.win32.COM.COMException;
-
-import agent.dbgeng.dbgeng.*;
-import agent.dbgeng.dbgeng.DebugRegisters.DebugRegisterDescription;
-import agent.dbgeng.dbgeng.DebugRegisters.DebugRegisterSource;
-import agent.dbgeng.manager.DbgStackFrameOperations;
-import agent.dbgeng.manager.impl.*;
+import SWIG.SBThread;
+import agent.lldb.manager.LldbRegister;
+import agent.lldb.manager.impl.LldbManagerImpl;
 
 /**
  * Implementation of {@link DbgStackFrameOperations#readRegisters(Set)}
  */
 public class LldbWriteRegistersCommand extends AbstractLldbCommand<Void> {
 
-	private final DbgThreadImpl thread;
-	private final Map<DbgRegister, BigInteger> regVals;
+	private final SBThread thread;
+	private final Map<LldbRegister, BigInteger> regVals;
 
-	public LldbWriteRegistersCommand(DbgManagerImpl manager, DbgThreadImpl thread, Integer frameId,
-			Map<DbgRegister, BigInteger> regVals) {
+	public LldbWriteRegistersCommand(LldbManagerImpl manager, SBThread thread, Integer frameId,
+			Map<LldbRegister, BigInteger> regVals) {
 		super(manager);
 		this.thread = thread;
 		this.regVals = regVals;
@@ -43,12 +40,13 @@ public class LldbWriteRegistersCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public void invoke() {
+		/*
 		DebugSystemObjects so = manager.getSystemObjects();
 		DebugThreadId previous = so.getCurrentThreadId();
 		so.setCurrentThreadId(thread.getId());
 		DebugRegisters registers = manager.getRegisters();
 		Map<Integer, DebugValue> values = new LinkedHashMap<>();
-		for (DbgRegister r : regVals.keySet()) {
+		for (LldbRegister r : regVals.keySet()) {
 			try {
 				BigInteger val = regVals.get(r);
 				DebugRegisterDescription desc = registers.getDescription(r.getNumber());
@@ -66,6 +64,7 @@ public class LldbWriteRegistersCommand extends AbstractLldbCommand<Void> {
 			}
 		}
 		registers.setValues(DebugRegisterSource.DEBUG_REGSRC_DEBUGGEE, values);
+		*/
 		//so.setCurrentThreadId(previous);
 	}
 }

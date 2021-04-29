@@ -86,6 +86,7 @@ public class LldbModelTargetMemoryContainerImpl extends LldbModelTargetObjectImp
 
 	@Override
 	public synchronized LldbModelTargetMemoryRegion getTargetMemory(SBMemoryRegionInfo section) {
+		/*
 		LldbModelTargetMemoryRegionImpl region = memoryRegions.get(section.getName());
 		if (region != null && region.isSame(section)) {
 			return region;
@@ -93,6 +94,8 @@ public class LldbModelTargetMemoryContainerImpl extends LldbModelTargetObjectImp
 		region = new LldbModelTargetMemoryRegionImpl(this, section);
 		memoryRegions.put(section.getName(), region);
 		return region;
+		*/
+		return null;
 		// NB: The following logic will cause errors in setElements because of key re-use
 		//return memoryRegions.computeIfAbsent(section.getName(),
 		//	n -> new LldbModelTargetMemoryRegionImpl(this, section));
@@ -114,9 +117,12 @@ public class LldbModelTargetMemoryContainerImpl extends LldbModelTargetObjectImp
 		}
 		ByteBuffer buf = ByteBuffer.allocate(length);
 		long offset = address.getOffset();
+		return null;
+		/*
 		return process.getProcess().readMemory(offset, buf).thenApply(set -> {
 			return readAssist(address, buf, offset, set);
 		});
+		*/
 	}
 
 	private byte[] readAssist(Address address, ByteBuffer buf, long offset, RangeSet<Long> set) {
@@ -138,9 +144,12 @@ public class LldbModelTargetMemoryContainerImpl extends LldbModelTargetObjectImp
 				"Cannot process command writeMemory while engine is waiting for events");
 		}
 		long offset = address.getOffset();
+		return null;
+		/*
 		return process.getProcess().writeMemory(offset, ByteBuffer.wrap(data)).thenAccept(___ -> {
 			writeAssist(address, data);
 		});
+		*/
 	}
 
 	private void writeAssist(Address address, byte[] data) {

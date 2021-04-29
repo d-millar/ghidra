@@ -15,20 +15,17 @@
  */
 package agent.lldb.manager.cmd;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import SWIG.SBModule;
 import SWIG.SBProcess;
 import agent.lldb.manager.impl.LldbManagerImpl;
-import ghidra.util.Msg;
 
 public class LldbListModulesCommand extends AbstractLldbCommand<Map<String, SBModule>> {
 	protected final SBProcess process;
 	private Map<String, SBModule> updatedModules = new HashMap<>();
-	private Map<SBModule, DebugModuleInfo> moduleInfo = new HashMap<>();
+	//private Map<SBModule, DebugModuleInfo> moduleInfo = new HashMap<>();
 
 	public LldbListModulesCommand(LldbManagerImpl manager, SBProcess process) {
 		super(manager);
@@ -37,6 +34,7 @@ public class LldbListModulesCommand extends AbstractLldbCommand<Map<String, SBMo
 
 	@Override
 	public Map<String, SBModule> complete(LldbPendingCommand<?> pending) {
+		/*
 		Map<String, SBModule> modules = process.getKnownModules();
 		Set<String> cur = modules.keySet();
 		for (String id : updatedModules.keySet()) {
@@ -56,10 +54,13 @@ public class LldbListModulesCommand extends AbstractLldbCommand<Map<String, SBMo
 			process.removeModule(id);
 		}
 		return process.getKnownModules();
+		*/
+		return null;
 	}
 
 	@Override
 	public void invoke() {
+		/*
 		DebugSystemObjects so = manager.getSystemObjects();
 		so.setCurrentProcessId(process.getId());
 		DebugSymbols symbols = manager.getSymbols();
@@ -72,6 +73,7 @@ public class LldbListModulesCommand extends AbstractLldbCommand<Map<String, SBMo
 			updatedModules.put(info.toString(), module);
 			moduleInfo.put(module, info);
 		}
+		*/
 	}
 
 }

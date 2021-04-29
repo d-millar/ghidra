@@ -45,10 +45,11 @@ public interface LldbModelTargetThread extends //
 
 	public default SBThread getThread() {
 		LldbManagerImpl manager = getManager();
-		DebugSystemObjects so = manager.getSystemObjects();
 		try {
 			String index = PathUtils.parseIndex(getName());
 			int tid = Integer.decode(index);
+			/*
+			DebugSystemObjects so = manager.getSystemObjects();
 			DebugThreadId id = so.getThreadIdBySystemId(tid);
 			if (id == null) {
 				id = so.getCurrentThreadId();
@@ -57,6 +58,8 @@ public interface LldbModelTargetThread extends //
 			SBProcess process = (SBProcess) parentProcess.getProcess();
 			SBThread thread = manager.getThreadComputeIfAbsent(id, process, tid);
 			return thread;
+			*/
+			return null;
 		}
 		catch (IllegalArgumentException e) {
 			return manager.getCurrentThread();

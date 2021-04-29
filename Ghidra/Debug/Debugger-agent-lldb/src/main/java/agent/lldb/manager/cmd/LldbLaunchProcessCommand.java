@@ -15,21 +15,13 @@
  */
 package agent.lldb.manager.cmd;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 import SWIG.SBThread;
-import agent.Lldbeng.Lldbeng.*;
-import agent.Lldbeng.Lldbeng.DebugClient.DebugCreateFlags;
-import agent.Lldbeng.manager.*;
-import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.evt.AbstractLldbCompletedCommandEvent;
 import agent.lldb.manager.evt.LldbProcessCreatedEvent;
 import agent.lldb.manager.impl.LldbManagerImpl;
-import ghidra.comm.util.BitmaskSet;
 
 /**
  * Implementation of {@link LldbProcess#fileExecAndSymbols(String)}
@@ -58,15 +50,19 @@ public class LldbLaunchProcessCommand extends AbstractLldbCommand<SBThread> {
 
 	@Override
 	public SBThread complete(LldbPendingCommand<?> pending) {
+		/*
 		DebugProcessInfo info = created.getInfo();
 		DebugThreadInfo tinfo = info.initialThreadInfo;
 		DebugSystemObjects so = manager.getSystemObjects();
 		DebugThreadId tid = so.getThreadIdByHandle(tinfo.handle);
 		return manager.getThread(tid);
+		*/
+		return null;
 	}
 
 	@Override
 	public void invoke() {
+		/*
 		DebugClient dbgeng = manager.getClient();
 		//DebugControl control = Lldbeng.getControl();
 
@@ -81,6 +77,7 @@ public class LldbLaunchProcessCommand extends AbstractLldbCommand<SBThread> {
 		}
 		dbgeng.createProcess(dbgeng.getLocalServer(), StringUtils.join(newArgs, " "),
 			BitmaskSet.of(DebugCreateFlags.DEBUG_PROCESS));
-		manager.waitForEventEx();
+		*/
+		manager.waitForEvent();
 	}
 }

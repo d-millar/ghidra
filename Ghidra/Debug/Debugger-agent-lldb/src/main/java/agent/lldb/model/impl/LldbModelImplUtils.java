@@ -25,7 +25,7 @@ public enum LldbModelImplUtils {
 	;
 	public static CompletableFuture<Void> launch(AbstractLldbModel impl, SBProcess process,
 			List<String> args) {
-		return process.fileExecAndSymbols(args.get(0));
+		return null; //process.fileExecAndSymbols(args.get(0));
 	}
 
 	public static <V> V noDupMerge(V first, V second) {

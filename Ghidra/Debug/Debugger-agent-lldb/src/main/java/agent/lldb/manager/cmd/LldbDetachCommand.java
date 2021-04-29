@@ -35,6 +35,7 @@ public class LldbDetachCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public Void complete(LldbPendingCommand<?> pending) {
+		/*
 		// TODO: necessary?
 		Collection<SBThread> threads = new ArrayList<>(process.getKnownThreadsImpl().values());
 		for (SBThread t : threads) {
@@ -42,12 +43,15 @@ public class LldbDetachCommand extends AbstractLldbCommand<Void> {
 			t.remove();
 		}
 		manager.getEventListeners().fire.processRemoved(process.getId(), DbgCause.Causes.UNCLAIMED);
+		*/
 		return null;
 	}
 
 	@Override
 	public void invoke() {
+		/*
 		DebugClient dbgeng = manager.getClient();
 		dbgeng.detachCurrentProcess();
+		*/
 	}
 }
