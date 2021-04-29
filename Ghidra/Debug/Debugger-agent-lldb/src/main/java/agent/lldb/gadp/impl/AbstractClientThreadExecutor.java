@@ -139,7 +139,7 @@ public abstract class AbstractClientThreadExecutor extends AbstractExecutorServi
 					waitRegistered.get()) {
 					waitRegistered.set(false);
 					try {
-						getManager().waitForEventEx();
+						getManager().waitForEvent();
 						//client.getControl().waitForEvent();
 					}
 					catch (COMException e) {
