@@ -25,6 +25,7 @@ import SWIG.StateType;
 import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbReason;
+import agent.lldb.manager.cmd.LldbSetActiveThreadCommand;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import agent.lldb.model.iface1.LldbModelTargetFocusScope;
 import agent.lldb.model.iface2.LldbModelTargetProcess;
@@ -62,7 +63,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 	}
 
 	protected static String indexThread(SBThread thread) {
-		return indexThread(thread.getId());
+		return indexThread(thread.GetThreadID());
 	}
 
 	protected static String keyThread(SBThread thread) {
@@ -81,7 +82,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 			LldbModelTargetProcess process, SBThread thread) {
 		super(threads.getModel(), threads, keyThread(thread), "Thread");
 		this.getModel().addModelObject(thread, this);
-		this.getModel().addModelObject(thread.getId(), this);
+		this.getModel().addModelObject(thread.GetThreadID(), this);
 		this.process = process;
 		this.thread = thread;
 
@@ -105,13 +106,13 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 	@Override
 	public String getDisplay() {
 		if (getManager().isKernelMode()) {
-			return "[PR" + thread.getId().id + "]";
+			return "[PR" + thread.GetThreadID() + "]";
 		}
-		String tidstr = Long.toString(thread.getTid(), base);
+		String tidstr = Long.toString(thread.GetThreadID().longValue(), base);
 		if (base == 16) {
 			tidstr = "0x" + tidstr;
 		}
-		return "[" + thread.getId().id + ":" + tidstr + "]";
+		return "[" + thread.GetThreadID() + ":" + tidstr + "]";
 	}
 
 	@Override
@@ -123,12 +124,14 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public void threadStateChangedSpecific(StateType state, LldbReason reason) {
+		/*
 		TargetExecutionState targetState = convertState(state);
 		String executionType = thread.getExecutingProcessorType().description;
 		changeAttributes(List.of(), List.of(), Map.of( //
 			STATE_ATTRIBUTE_NAME, targetState, //
 			TargetEnvironment.ARCH_ATTRIBUTE_NAME, executionType //
 		), reason.desc());
+		*/
 		//setExecutionState(targetState, reason.desc());
 		registers.threadStateChangedSpecific(state, reason);
 	}
