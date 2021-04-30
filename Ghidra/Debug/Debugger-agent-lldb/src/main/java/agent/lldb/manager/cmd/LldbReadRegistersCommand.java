@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Set;
 
 import SWIG.SBThread;
-import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.LldbRegister;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
@@ -33,7 +32,7 @@ public class LldbReadRegistersCommand extends AbstractLldbCommand<Map<LldbRegist
 	private final SBThread thread;
 	private final Set<LldbRegister> regs;
 	//private DebugRegisters registers;
-	private DebugThreadId previous;
+	private Integer previous;
 
 	public LldbReadRegistersCommand(LldbManagerImpl manager, SBThread thread, Integer frameId,
 			Set<LldbRegister> regs) {

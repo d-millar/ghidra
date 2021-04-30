@@ -15,6 +15,7 @@
  */
 package agent.lldb.model.impl;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -22,7 +23,6 @@ import java.util.concurrent.CompletableFuture;
 import SWIG.SBProcess;
 import SWIG.SBThread;
 import SWIG.StateType;
-import agent.lldb.lldb.DebugProcessId;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import agent.lldb.model.iface1.LldbModelTargetFocusScope;
@@ -33,7 +33,6 @@ import agent.lldb.model.iface2.LldbModelTargetProcess;
 import agent.lldb.model.iface2.LldbModelTargetProcessContainer;
 import agent.lldb.model.iface2.LldbModelTargetThreadContainer;
 import ghidra.dbg.target.TargetAttachable;
-import ghidra.dbg.target.TargetEventScope.TargetEventType;
 import ghidra.dbg.target.TargetFocusScope;
 import ghidra.dbg.target.TargetMethod;
 import ghidra.dbg.target.TargetObject;
@@ -59,12 +58,12 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 	public static final TargetAttachKindSet SUPPORTED_KINDS = TargetAttachKindSet.of( //
 		TargetAttachKind.BY_OBJECT_REF, TargetAttachKind.BY_ID);
 
-	protected static String indexProcess(DebugProcessId debugProcessId) {
-		return PathUtils.makeIndex(debugProcessId.id.longValue());
+	protected static String indexProcess(Integer id) {
+		return PathUtils.makeIndex(id);
 	}
 
 	protected static String indexProcess(SBProcess process) {
-		return null; //indexProcess(process.getId());
+		return indexProcess(process.GetProcessID().intValue());
 	}
 
 	protected static String keyProcess(SBProcess process) {
@@ -118,14 +117,11 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 			return "[kernel]";
 		}
 
-		/*
-		String pidstr = Long.toString(process.getPid(), base);
+		String pidstr = Integer.toString(process.GetProcessID().intValue(), base);
 		if (base == 16) {
 			pidstr = "0x" + pidstr;
 		}
-		return "[" + process.getId().id + ":" + pidstr + "]";
-		*/
-		return null;
+		return "[" + pidstr + "]";
 	}
 
 	@Override

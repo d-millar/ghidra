@@ -17,10 +17,8 @@ package agent.lldb.model.iface2;
 
 import java.util.concurrent.CompletableFuture;
 
-import SWIG.SBProcess;
 import SWIG.SBThread;
 import SWIG.StateType;
-import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.LldbEventsListenerAdapter;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.manager.cmd.LldbSetActiveThreadCommand;

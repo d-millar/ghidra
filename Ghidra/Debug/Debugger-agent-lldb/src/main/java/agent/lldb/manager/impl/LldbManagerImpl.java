@@ -35,23 +35,20 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.sun.jna.platform.win32.COM.COMException;
 
 import SWIG.SBEvent;
-import SWIG.SBListener;
 import SWIG.SBProcess;
 import SWIG.SBTarget;
 import SWIG.SBThread;
 import SWIG.StateType;
 import agent.lldb.gadp.impl.AbstractClientThreadExecutor;
 import agent.lldb.gadp.impl.LldbClientThreadExecutor;
-import agent.lldb.lldb.DebugBreakpoint;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.lldb.DebugClient.DebugEndSessionFlags;
 import agent.lldb.lldb.DebugClient.DebugStatus;
 import agent.lldb.lldb.DebugClientReentrant;
-import agent.lldb.lldb.DebugProcessId;
-import agent.lldb.lldb.DebugSessionId;
-import agent.lldb.lldb.DebugThreadId;
+import agent.lldb.lldb.DebugProcessInfo;
+import agent.lldb.lldb.DebugSessionInfo;
+import agent.lldb.lldb.DebugThreadInfo;
 import agent.lldb.manager.LldbCause;
-import agent.lldb.manager.LldbCause.Causes;
 import agent.lldb.manager.LldbCommand;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.LldbEventsListener;
@@ -62,7 +59,6 @@ import agent.lldb.manager.breakpoint.LldbBreakpointType;
 import agent.lldb.manager.cmd.LldbAddProcessCommand;
 import agent.lldb.manager.cmd.LldbAddSessionCommand;
 import agent.lldb.manager.cmd.LldbAttachKernelCommand;
-import agent.lldb.manager.cmd.LldbCommandError;
 import agent.lldb.manager.cmd.LldbConsoleExecCommand;
 import agent.lldb.manager.cmd.LldbDeleteBreakpointsCommand;
 import agent.lldb.manager.cmd.LldbDisableBreakpointsCommand;
@@ -93,6 +89,8 @@ import agent.lldb.manager.evt.LldbProcessCreatedEvent;
 import agent.lldb.manager.evt.LldbProcessExitedEvent;
 import agent.lldb.manager.evt.LldbProcessSelectedEvent;
 import agent.lldb.manager.evt.LldbRunningEvent;
+import agent.lldb.manager.evt.LldbSessionCreatedEvent;
+import agent.lldb.manager.evt.LldbSessionExitedEvent;
 import agent.lldb.manager.evt.LldbSessionSelectedEvent;
 import agent.lldb.manager.evt.LldbStateChangedEvent;
 import agent.lldb.manager.evt.LldbStoppedEvent;
@@ -104,7 +102,6 @@ import agent.lldb.model.iface1.LldbModelTargetActiveScope;
 import agent.lldb.model.iface1.LldbModelTargetFocusScope;
 import agent.lldb.model.iface1.LldbModelTargetInterpreter;
 import ghidra.async.AsyncClaimQueue;
-import ghidra.async.AsyncReference;
 import ghidra.async.AsyncUtils;
 import ghidra.async.TypeSpec;
 import ghidra.dbg.target.TargetObject;
@@ -118,13 +115,13 @@ public class LldbManagerImpl implements LldbManager {
 	private String LldbSrvTransport;
 
 	//private final AsyncClaimQueue<DebugThreadInfo> claimsCreateThread = new AsyncClaimQueue<>();
-	//private final AsyncClaimQueue<DebugThreadId> claimsContinueThread = new AsyncClaimQueue<>();
-	//private final AsyncClaimQueue<DebugThreadId> claimsStopThread = new AsyncClaimQueue<>();
+	//private final AsyncClaimQueue<Integer> claimsContinueThread = new AsyncClaimQueue<>();
+	//private final AsyncClaimQueue<Integer> claimsStopThread = new AsyncClaimQueue<>();
 	//private final AsyncClaimQueue<ExitEvent> claimsExitThread = new AsyncClaimQueue<>();
 	//private final AsyncClaimQueue<DebugModuleInfo> claimsLoadModule = new AsyncClaimQueue<>();
-	private final AsyncClaimQueue<DebugThreadId> claimsBreakpointAdded = new AsyncClaimQueue<>();
+	private final AsyncClaimQueue<Integer> claimsBreakpointAdded = new AsyncClaimQueue<>();
 	private final AsyncClaimQueue<BreakId> claimsBreakpointRemoved = new AsyncClaimQueue<>();
-	//private final AsyncClaimQueue<DebugThreadId> claimsFocusThread = new AsyncClaimQueue<>();
+	//private final AsyncClaimQueue<Integer> claimsFocusThread = new AsyncClaimQueue<>();
 
 	public DebugStatus status;
 
@@ -138,17 +135,17 @@ public class LldbManagerImpl implements LldbManager {
 
 	private List<LldbPendingCommand<?>> activeCmds = new ArrayList<>();
 
-	protected final Map<DebugSessionId, SBTarget> sessions = new LinkedHashMap<>();
+	protected final Map<Integer, SBTarget> sessions = new LinkedHashMap<>();
 	protected SBTarget curSession = null;
-	private final Map<DebugSessionId, SBTarget> unmodifiableSessions =
+	private final Map<Integer, SBTarget> unmodifiableSessions =
 		Collections.unmodifiableMap(sessions);
 
-	protected final Map<DebugProcessId, SBProcess> processes = new LinkedHashMap<>();
-	private final Map<DebugProcessId, SBProcess> unmodifiableProcesses =
+	protected final Map<Integer, SBProcess> processes = new LinkedHashMap<>();
+	private final Map<Integer, SBProcess> unmodifiableProcesses =
 		Collections.unmodifiableMap(processes);
 
-	protected final Map<DebugThreadId, SBThread> threads = new LinkedHashMap<>();
-	private final Map<DebugThreadId, SBThread> unmodifiableThreads =
+	protected final Map<Integer, SBThread> threads = new LinkedHashMap<>();
+	private final Map<Integer, SBThread> unmodifiableThreads =
 		Collections.unmodifiableMap(threads);
 
 	private final Map<Long, LldbBreakpointInfo> breakpoints = new LinkedHashMap<>();
@@ -187,22 +184,19 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	@Override
-	public SBThread getThread(DebugThreadId tid) {
+	public SBThread getThread(Integer tid) {
 		synchronized (threads) {
 			return threads.get(tid);
 		}
 	}
 
-	public SBThread getThreadComputeIfAbsent(DebugThreadId id, SBProcess process,
-			int tid) {
+	public void addThread(SBThread thread) {
 		synchronized (threads) {
+			int id = thread.GetThreadID().intValue();
 			if (!threads.containsKey(id)) {
-				/*
-				SBThread thread = new SBThread(this, process, id, tid);
-				thread.add();
-				*/
+				threads.put(id, thread);
 			}
-			return threads.get(id);
+			getClient().fireEvent(new LldbThreadCreatedEvent(new DebugThreadInfo(thread)));
 		}
 	}
 
@@ -211,7 +205,7 @@ public class LldbManagerImpl implements LldbManager {
 	 * 
 	 * @param id the thread ID to remove
 	 */
-	public void removeThread(DebugThreadId id) {
+	public void removeThread(Integer id) {
 		synchronized (threads) {
 			if (threads.remove(id) == null) {
 				throw new IllegalArgumentException("There is no thread with id " + id);
@@ -226,20 +220,20 @@ public class LldbManagerImpl implements LldbManager {
 	 * @param cause the cause of removal
 	 */
 	@Internal
-	public void removeProcess(DebugProcessId id, LldbCause cause) {
+	public void removeProcess(Integer id, LldbCause cause) {
 		synchronized (processes) {
 			SBProcess proc = processes.remove(id);
 			if (proc == null) {
 				throw new IllegalArgumentException("There is no process with id " + id);
 			}
-			Set<DebugThreadId> toRemove = new HashSet<>();
-			for (DebugThreadId tid : threads.keySet()) {
+			Set<Integer> toRemove = new HashSet<>();
+			for (Integer tid : threads.keySet()) {
 				SBThread thread = threads.get(tid);
 				if (thread.GetProcess().GetProcessID().equals(id)) {
 					toRemove.add(tid);
 				}
 			}
-			for (DebugThreadId tid : toRemove) {
+			for (Integer tid : toRemove) {
 				removeThread(tid);
 			}
 			getEventListeners().fire.processRemoved(id, cause);
@@ -255,7 +249,7 @@ public class LldbManagerImpl implements LldbManager {
 	 * @return success status
 	 */
 	@Override
-	public SBProcess getProcess(DebugProcessId id) {
+	public SBProcess getProcess(Integer id) {
 		synchronized (processes) {
 			SBProcess result = processes.get(id);
 			if (result == null) {
@@ -265,15 +259,13 @@ public class LldbManagerImpl implements LldbManager {
 		}
 	}
 
-	public SBProcess getProcessComputeIfAbsent(DebugProcessId id, int pid) {
+	public void addProcess(SBProcess process) {
 		synchronized (processes) {
+			int id = process.GetProcessID().intValue();
 			if (!processes.containsKey(id)) {
-				/*
-				SBProcess process = new SBProcess(this, id, pid);
-				process.add();
-				*/
+				processes.put(id, process);
 			}
-			return processes.get(id);
+			getClient().fireEvent(new LldbProcessCreatedEvent(new DebugProcessInfo(process)));
 		}
 	}
 
@@ -284,7 +276,7 @@ public class LldbManagerImpl implements LldbManager {
 	 * @param cause the cause of removal
 	 */
 	@Internal
-	public void removeSession(DebugSessionId id, LldbCause cause) {
+	public void removeSession(Integer id, LldbCause cause) {
 		synchronized (sessions) {
 			if (sessions.remove(id) == null) {
 				throw new IllegalArgumentException("There is no session with id " + id);
@@ -294,7 +286,7 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	@Override
-	public SBTarget getSession(DebugSessionId id) {
+	public SBTarget getSession(Integer id) {
 		synchronized (sessions) {
 			SBTarget result = sessions.get(id);
 			if (result == null) {
@@ -304,30 +296,28 @@ public class LldbManagerImpl implements LldbManager {
 		}
 	}
 
-	public SBTarget getSessionComputeIfAbsent(DebugSessionId id) {
+	public void addSession(SBTarget session) {
 		synchronized (sessions) {
-			if (!sessions.containsKey(id) && id.id >= 0) {
-				/*
-				SBTarget session = new SBTarget(this, id);
-				session.add();
-				*/
+			int id = session.hashCode();
+			if (!sessions.containsKey(id)) {
+				sessions.put(id, session);
 			}
-			return sessions.get(id);
+			getClient().fireEvent(new LldbSessionCreatedEvent(new DebugSessionInfo(session)));
 		}
 	}
 
 	@Override
-	public Map<DebugThreadId, SBThread> getKnownThreads() {
+	public Map<Integer, SBThread> getKnownThreads() {
 		return unmodifiableThreads;
 	}
 
 	@Override
-	public Map<DebugProcessId, SBProcess> getKnownProcesses() {
+	public Map<Integer, SBProcess> getKnownProcesses() {
 		return unmodifiableProcesses;
 	}
 
 	@Override
-	public Map<DebugSessionId, SBTarget> getKnownSessions() {
+	public Map<Integer, SBTarget> getKnownSessions() {
 		return unmodifiableSessions;
 	}
 
@@ -568,6 +558,7 @@ public class LldbManagerImpl implements LldbManager {
 	}
 	*/
 
+	@Override
 	public DebugStatus processEvent(LldbEvent<?> evt) {
 		/*
 		if (state.get() == StateType.eStateInvalid) {
@@ -652,6 +643,8 @@ public class LldbManagerImpl implements LldbManager {
 		handlerMap.put(LldbThreadSelectedEvent.class, this::processThreadSelected);
 		handlerMap.put(LldbProcessCreatedEvent.class, this::processProcessCreated);
 		handlerMap.put(LldbProcessExitedEvent.class, this::processProcessExited);
+		handlerMap.put(LldbSessionCreatedEvent.class, this::processSessionCreated);
+		handlerMap.put(LldbSessionExitedEvent.class, this::processSessionExited);
 		handlerMap.put(LldbProcessSelectedEvent.class, this::processProcessSelected);
 		handlerMap.put(LldbModuleLoadedEvent.class, this::processModuleLoaded);
 		handlerMap.put(LldbModuleUnloadedEvent.class, this::processModuleUnloaded);
@@ -673,13 +666,16 @@ public class LldbManagerImpl implements LldbManager {
 		statusMap.put(LldbStoppedEvent.class, DebugStatus.BREAK);
 	}
 
-	private DebugThreadId updateState(SBEvent event) {
+	private Integer updateState(SBEvent event) {
 		DebugClient client = engThread.getClient();
 		currentSession = eventSession = SBTarget.GetTargetFromEvent(event);
 		currentProcess = eventProcess = SBProcess.GetProcessFromEvent(event);
 		currentThread = eventThread = SBThread.GetThreadFromEvent(event);
+		addSession(eventSession);
+		addProcess(eventProcess);
+		addThread(eventThread);
 		/*
-		DebugThreadId etid = so.getEventThread();
+		Integer etid = so.getEventThread();
 		DebugProcessId epid = so.getEventProcess();
 		DebugSessionId esid = so.getCurrentSystemId();
 
@@ -756,7 +752,7 @@ public class LldbManagerImpl implements LldbManager {
 	 */
 	protected DebugStatus processException(LldbExceptionEvent evt, Void v) {
 		/*
-		DebugThreadId eventId = updateState(evt);
+		Integer eventId = updateState(evt);
 
 		DebugExceptionRecord64 info = evt.getInfo();
 		String key = Integer.toHexString(info.code);
@@ -779,7 +775,7 @@ public class LldbManagerImpl implements LldbManager {
 		/*
 		DebugSystemObjects so = Lldbeng.getSystemObjects();
 
-		DebugThreadId eventId = updateState();
+		Integer eventId = updateState();
 		SBProcess process = getCurrentProcess();
 		int tid = so.getCurrentThreadSystemId();
 		SBThread thread = getThreadComputeIfAbsent(eventId, process, tid);
@@ -802,7 +798,7 @@ public class LldbManagerImpl implements LldbManager {
 	 */
 	protected DebugStatus processThreadExited(LldbThreadExitedEvent evt, Void v) {
 		/*
-		DebugThreadId eventId = updateState();
+		Integer eventId = updateState();
 		SBProcess process = getCurrentProcess();
 		SBThread thread = getCurrentThread();
 		if (thread != null) {
@@ -828,7 +824,7 @@ public class LldbManagerImpl implements LldbManager {
 	 */
 	protected DebugStatus processThreadSelected(LldbThreadSelectedEvent evt, Void v) {
 		/*
-		DebugThreadId eventId = updateState();
+		Integer eventId = updateState();
 
 		currentThread = evt.getThread();
 		currentThread.setState(evt.getState(), evt.getCause(), evt.getReason());
@@ -851,7 +847,7 @@ public class LldbManagerImpl implements LldbManager {
 	 */
 	protected DebugStatus processProcessCreated(LldbProcessCreatedEvent evt, Void v) {
 		/*
-		DebugThreadId eventId = updateState();
+		Integer eventId = updateState();
 		DebugClient Lldbeng = engThread.getClient();
 		DebugSystemObjects so = Lldbeng.getSystemObjects();
 
@@ -865,7 +861,7 @@ public class LldbManagerImpl implements LldbManager {
 		getEventListeners().fire.processSelected(proc, evt.getCause());
 
 		handle = info.initialThreadInfo.handle;
-		DebugThreadId idt = so.getThreadIdByHandle(handle);
+		Integer idt = so.getThreadIdByHandle(handle);
 		int tid = so.getCurrentThreadSystemId();
 		SBThread thread = getThreadComputeIfAbsent(idt, proc, tid);
 		getEventListeners().fire.threadSelected(thread, null, evt.getCause());
@@ -878,6 +874,13 @@ public class LldbManagerImpl implements LldbManager {
 			return statusByNameMap.get(key);
 		}
 		*/
+		DebugProcessInfo info = evt.getInfo();
+		SBProcess proc = info.process;
+		getEventListeners().fire.processAdded(proc, LldbCause.Causes.UNCLAIMED);
+		getEventListeners().fire.processSelected(proc, evt.getCause());
+		
+		SBThread thread = proc.GetSelectedThread();
+		getEventListeners().fire.threadSelected(thread, null, evt.getCause());
 		return statusMap.get(evt.getClass());
 	}
 
@@ -890,7 +893,6 @@ public class LldbManagerImpl implements LldbManager {
 	 */
 	protected DebugStatus processProcessExited(LldbProcessExitedEvent evt, Void v) {
 		/*
-		DebugThreadId eventId = updateState();
 		SBThread thread = getCurrentThread();
 		SBProcess process = getCurrentProcess();
 		process.setExitCode(Long.valueOf(evt.getInfo()));
@@ -924,7 +926,7 @@ public class LldbManagerImpl implements LldbManager {
 	 */
 	protected DebugStatus processProcessSelected(LldbProcessSelectedEvent evt, Void v) {
 		/*
-		DebugThreadId eventId = updateState();
+		Integer eventId = updateState();
 
 		currentProcess = evt.getProcess();
 		getEventListeners().fire.processSelected(currentProcess, evt.getCause());
@@ -934,9 +936,87 @@ public class LldbManagerImpl implements LldbManager {
 			return statusByNameMap.get(key);
 		}
 		*/
+		currentProcess = evt.getProcess();
+		getEventListeners().fire.processSelected(currentProcess, evt.getCause());
 		return statusMap.get(evt.getClass());
 	}
 
+	/**
+	 * Handler for process created events
+	 * 
+	 * @param evt the event
+	 * @param v nothing
+	 * @return retval handling/break status
+	 */
+	protected DebugStatus processSessionCreated(LldbSessionCreatedEvent evt, Void v) {
+		/*
+		Integer eventId = updateState();
+		DebugClient Lldbeng = engThread.getClient();
+		DebugSystemObjects so = Lldbeng.getSystemObjects();
+
+		DebugProcessInfo info = evt.getInfo();
+		long handle = info.handle;
+		DebugProcessId id = so.getProcessIdByHandle(handle);
+		so.setCurrentProcessId(id);
+		int pid = so.getCurrentProcessSystemId();
+		SBProcess proc = getProcessComputeIfAbsent(id, pid);
+		getEventListeners().fire.processAdded(proc, LldbCause.Causes.UNCLAIMED);
+		getEventListeners().fire.processSelected(proc, evt.getCause());
+
+		handle = info.initialThreadInfo.handle;
+		Integer idt = so.getThreadIdByHandle(handle);
+		int tid = so.getCurrentThreadSystemId();
+		SBThread thread = getThreadComputeIfAbsent(idt, proc, tid);
+		getEventListeners().fire.threadSelected(thread, null, evt.getCause());
+
+		//proc.moduleLoaded(info.moduleInfo);
+		//getEventListeners().fire.moduleLoaded(proc, info.moduleInfo, evt.getCause());
+
+		String key = Integer.toHexString(id.id);
+		if (statusByNameMap.containsKey(key)) {
+			return statusByNameMap.get(key);
+		}
+		*/
+		DebugSessionInfo info = evt.getInfo();
+		getEventListeners().fire.sessionAdded(info.session, LldbCause.Causes.UNCLAIMED);
+		getEventListeners().fire.sessionSelected(info.session, evt.getCause());
+		return statusMap.get(evt.getClass());
+	}
+
+	/**
+	 * Handler for process exited events
+	 * 
+	 * @param evt the event
+	 * @param v nothing
+	 * @return retval handling/break status
+	 */
+	protected DebugStatus processSessionExited(LldbSessionExitedEvent evt, Void v) {
+		/*
+		Integer eventId = updateState();
+		SBThread thread = getCurrentThread();
+		SBProcess process = getCurrentProcess();
+		process.setExitCode(Long.valueOf(evt.getInfo()));
+		getEventListeners().fire.threadExited(eventId, process, evt.getCause());
+
+		getEventListeners().fire.processExited(process, evt.getCause());
+
+		for (DebugBreakpoint bpt : getBreakpoints()) {
+			breaksById.remove(bpt.getId());
+		}
+		if (thread != null) {
+			thread.remove();
+		}
+		process.remove(evt.getCause());
+		getEventListeners().fire.processRemoved(process.getId(), evt.getCause());
+
+		String key = Integer.toHexString(process.getId().id);
+		if (statusByNameMap.containsKey(key)) {
+			return statusByNameMap.get(key);
+		}
+		*/
+		return statusMap.get(evt.getClass());
+	}
+	
 	/**
 	 * Handler for module loaded events
 	 * 
@@ -1055,7 +1135,7 @@ public class LldbManagerImpl implements LldbManager {
 		}
 		if (flags.contains(ChangeEngineState.CURRENT_THREAD)) {
 			long id = evt.getArgument();
-			for (DebugThreadId key : getThreads()) {
+			for (Integer key : getThreads()) {
 				if (key.id == id) {
 					SBThread thread = getThread(key);
 					if (thread != null) {
@@ -1081,7 +1161,7 @@ public class LldbManagerImpl implements LldbManager {
 	 */
 	protected DebugStatus processSessionSelected(LldbSessionSelectedEvent evt, Void v) {
 		/*
-		DebugThreadId eventId = updateState();
+		Integer eventId = updateState();
 
 		currentSession = evt.getSession();
 		getEventListeners().fire.sessionSelected(currentSession, evt.getCause());
@@ -1263,7 +1343,7 @@ public class LldbManagerImpl implements LldbManager {
 					Msg.debug(this, e.getMessage());
 					continue;
 				}
-				List<DebugThreadId> tids = so.getThreads();
+				List<Integer> tids = so.getThreads();
 				for (DebugBreakpoint bpt : getControl().getBreakpoints()) {
 					BitmaskSet<BreakFlags> f = bpt.getFlags();
 					if (!f.contains((BreakFlags.ENABLED)) || f.contains(BreakFlags.DEFERRED)) {
@@ -1277,7 +1357,7 @@ public class LldbManagerImpl implements LldbManager {
 					long newOffset = orZero(bpt.getOffset());
 					BreakpointTag tag = breaksById.get(id);
 					if (tag == null) {
-						for (DebugThreadId tid : tids) {
+						for (Integer tid : tids) {
 							Msg.debug(this, "TRAP Added: " + id + " on " + tid);
 							if (!claimsBreakpointAdded.satisfy(tid)) {
 							}
@@ -1297,7 +1377,7 @@ public class LldbManagerImpl implements LldbManager {
 					if (retained.contains(id)) {
 						continue;
 					}
-					for (DebugThreadId tid : tids) {
+					for (Integer tid : tids) {
 						Msg.debug(this, "TRAP Removed: " + id + " on " + tid);
 						if (!claimsBreakpointRemoved.satisfy(new BreakId(tid, id))) {
 						}
@@ -1316,7 +1396,7 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	@Override
-	public CompletableFuture<Map<DebugProcessId, SBProcess>> listProcesses() {
+	public CompletableFuture<Map<Integer, SBProcess>> listProcesses() {
 		return execute(new LldbListProcessesCommand(this));
 	}
 
@@ -1382,20 +1462,20 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	static class ExitEvent {
-		final DebugThreadId tid;
+		final Integer tid;
 		final long exitCode;
 
-		public ExitEvent(DebugThreadId tid, long exitCode) {
+		public ExitEvent(Integer tid, long exitCode) {
 			this.tid = tid;
 			this.exitCode = exitCode;
 		}
 	}
 
 	static class BreakId {
-		final DebugThreadId tid;
+		final Integer tid;
 		final int bpid;
 
-		public BreakId(DebugThreadId tid, int bpid) {
+		public BreakId(Integer tid, int bpid) {
 			this.tid = tid;
 			this.bpid = bpid;
 		}
@@ -1410,7 +1490,7 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	class SavedFocus implements AutoCloseable {
-		DebugThreadId tid = null;
+		Integer tid = null;
 
 		/*
 		final DebugSystemObjects so;
@@ -1520,7 +1600,7 @@ public class LldbManagerImpl implements LldbManager {
 			new LldbConsoleExecCommand(this, command, LldbConsoleExecCommand.Output.CAPTURE));
 	}
 
-	public void fireThreadExited(DebugThreadId id, SBProcess process, LldbCause cause) {
+	public void fireThreadExited(Integer id, SBProcess process, LldbCause cause) {
 		getEventListeners().fire.threadExited(id, process, cause);
 	}
 

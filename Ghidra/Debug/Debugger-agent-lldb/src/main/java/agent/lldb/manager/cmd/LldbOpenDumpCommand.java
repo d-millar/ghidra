@@ -19,7 +19,6 @@ import java.util.Map;
 
 import SWIG.SBThread;
 import agent.lldb.lldb.DebugClient;
-import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.evt.AbstractLldbCompletedCommandEvent;
 import agent.lldb.manager.evt.LldbProcessCreatedEvent;
@@ -73,6 +72,6 @@ public class LldbOpenDumpCommand extends AbstractLldbCommand<SBThread> {
 		}
 		f = f.replace("/", "\\");
 		dbgeng.openDumpFileWide(f);
-		manager.waitForEvent();
+		manager.waitForEventEx();
 	}
 }

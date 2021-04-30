@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Set;
 
 import SWIG.SBTarget;
-import agent.lldb.lldb.DebugSessionId;
 import agent.lldb.manager.LldbCause.Causes;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import ghidra.util.Msg;
@@ -29,26 +28,25 @@ import ghidra.util.Msg;
 /**
  * Implementation of {@link DbgManager#listSessions()}
  */
-public class LldbListSessionsCommand extends AbstractLldbCommand<Map<DebugSessionId, SBTarget>> {
-	private List<DebugSessionId> updatedSessionIds = new ArrayList<>();
+public class LldbListSessionsCommand extends AbstractLldbCommand<Map<Integer, SBTarget>> {
+	private List<Integer> updatedSessionIds = new ArrayList<>();
 
 	public LldbListSessionsCommand(LldbManagerImpl manager) {
 		super(manager);
 	}
 
 	@Override
-	public Map<DebugSessionId, SBTarget> complete(LldbPendingCommand<?> pending) {
-		Map<DebugSessionId, SBTarget> allSessions = manager.getKnownSessions();
-		Set<DebugSessionId> cur = allSessions.keySet();
-		for (DebugSessionId id : updatedSessionIds) {
+	public Map<Integer, SBTarget> complete(LldbPendingCommand<?> pending) {
+		Map<Integer, SBTarget> allSessions = manager.getKnownSessions();
+		Set<Integer> cur = allSessions.keySet();
+		for (Integer id : updatedSessionIds) {
 			if (cur.contains(id)) {
 				continue; // Do nothing, we're in sync
 			}
 			// Need to create the inferior as if we received =thread-group-created
 			Msg.warn(this, "Resync: Was missing group: i" + id);
-			manager.getSessionComputeIfAbsent(id);
 		}
-		for (DebugSessionId id : new ArrayList<>(cur)) {
+		for (Integer id : new ArrayList<>(cur)) {
 			if (updatedSessionIds.contains(id)) {
 				continue; // Do nothing, we're in sync
 			}

@@ -20,12 +20,11 @@ import java.util.Map;
 
 import SWIG.SBMemoryRegionInfo;
 import SWIG.SBProcess;
-import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 public class LldbListMappingsCommand extends AbstractLldbCommand<Map<Long, SBMemoryRegionInfo>> {
 	protected final SBProcess process;
-	private List<DebugThreadId> updatedThreadIds;
+	private List<Integer> updatedThreadIds;
 
 	public LldbListMappingsCommand(LldbManagerImpl manager, SBProcess process) {
 		super(manager);
@@ -35,11 +34,11 @@ public class LldbListMappingsCommand extends AbstractLldbCommand<Map<Long, SBMem
 	@Override
 	public Map<Long, SBMemoryRegionInfo> complete(LldbPendingCommand<?> pending) {
 		/*
-		Map<DebugThreadId, SBThread> threads = process.getKnownThreads();
-		Set<DebugThreadId> cur = threads.keySet();
+		Map<Integer, SBThread> threads = process.getKnownThreads();
+		Set<Integer> cur = threads.keySet();
 		DebugSystemObjects so = manager.getSystemObjects();
-		DebugThreadId previous = so.getCurrentThreadId();
-		for (DebugThreadId id : updatedThreadIds) {
+		Integer previous = so.getCurrentThreadId();
+		for (Integer id : updatedThreadIds) {
 			if (cur.contains(id)) {
 				continue; // Do nothing, we're in sync
 			}
@@ -49,7 +48,7 @@ public class LldbListMappingsCommand extends AbstractLldbCommand<Map<Long, SBMem
 			int tid = so.getCurrentThreadSystemId();
 			manager.getThreadComputeIfAbsent(id, process, tid);
 		}
-		for (DebugThreadId id : new ArrayList<>(cur)) {
+		for (Integer id : new ArrayList<>(cur)) {
 			if (updatedThreadIds.contains(id)) {
 				continue; // Do nothing, we're in sync
 			}

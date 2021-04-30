@@ -15,6 +15,7 @@
  */
 package agent.lldb.model.impl;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -24,8 +25,6 @@ import SWIG.SBProcess;
 import SWIG.SBThread;
 import SWIG.StateType;
 import agent.lldb.lldb.DebugModuleInfo;
-import agent.lldb.lldb.DebugProcessId;
-import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface1.LldbModelTargetConfigurable;
@@ -78,7 +77,7 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 	}
 
 	@Override
-	public void processRemoved(DebugProcessId processId, LldbCause cause) {
+	public void processRemoved(Integer processId, LldbCause cause) {
 		changeElements(List.of( //
 			LldbModelTargetProcessImpl.indexProcess(processId) //
 		), List.of(), Map.of(), "Removed");
@@ -98,7 +97,7 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 	}
 
 	@Override
-	public void threadExited(DebugThreadId threadId, SBProcess proc, LldbCause cause) {
+	public void threadExited(Integer threadId, SBProcess proc, LldbCause cause) {
 		LldbModelTargetProcess process = getTargetProcess(proc);
 		if (process != null) {
 			//process.getThreads().threadExited(threadId);
@@ -135,7 +134,7 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 	}
 
 	@Override
-	public synchronized LldbModelTargetProcess getTargetProcess(DebugProcessId id) {
+	public synchronized LldbModelTargetProcess getTargetProcess(Integer id) {
 		LldbModelImpl impl = (LldbModelImpl) model;
 		TargetObject modelObject = impl.getModelObject(id);
 		if (modelObject != null) {

@@ -52,6 +52,8 @@ public interface DebugEventCallbacks {
 		CHANGE_DEBUGEE_STATE(1 << 10), //
 		CHANGE_ENGINE_STATE(1 << 11), //
 		CHANGE_SYMBOL_STATE(1 << 12), //
+		CREATE_SESSION(1 << 13), //
+		EXIT_SESSION(1 << 14) //
 		;
 
 		private DebugEvent(int mask) {
@@ -99,6 +101,12 @@ public interface DebugEventCallbacks {
 
 	@ForInterest(DebugEvent.EXIT_PROCESS)
 	DebugStatus exitProcess(int exitCode);
+
+	@ForInterest(DebugEvent.CREATE_SESSION)
+	DebugStatus createSession(DebugSessionInfo debugSessionInfo);
+
+	@ForInterest(DebugEvent.EXIT_SESSION)
+	DebugStatus exitSession(int exitCode);
 
 	@ForInterest(DebugEvent.LOAD_MODULE)
 	DebugStatus loadModule(DebugModuleInfo debugModuleInfo);

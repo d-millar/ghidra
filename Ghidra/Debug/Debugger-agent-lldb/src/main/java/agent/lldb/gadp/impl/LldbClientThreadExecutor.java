@@ -17,9 +17,7 @@ package agent.lldb.gadp.impl;
 
 import java.util.function.Supplier;
 
-import SWIG.SBDebugger;
 import agent.lldb.lldb.DebugClient;
-import agent.lldb.lldb.DebugClientImpl;
 import agent.lldb.manager.LldbManager;
 
 /**
@@ -50,6 +48,7 @@ public class LldbClientThreadExecutor extends AbstractClientThreadExecutor {
 	@Override
 	protected void init() {
 		this.client = makeClient.get();
+		client.setManager(manager);
 	}
 
 	@Override

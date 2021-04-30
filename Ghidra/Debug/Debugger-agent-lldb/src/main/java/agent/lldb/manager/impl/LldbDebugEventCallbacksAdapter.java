@@ -23,6 +23,7 @@ import agent.lldb.lldb.DebugClient.ChangeEngineState;
 import agent.lldb.lldb.DebugClient.DebugStatus;
 import agent.lldb.lldb.DebugModuleInfo;
 import agent.lldb.lldb.DebugProcessInfo;
+import agent.lldb.lldb.DebugSessionInfo;
 import agent.lldb.lldb.DebugThreadInfo;
 import agent.lldb.lldb.util.DebugEventCallbacksAdapter;
 import agent.lldb.manager.evt.LldbBreakpointEvent;
@@ -30,6 +31,8 @@ import agent.lldb.manager.evt.LldbModuleLoadedEvent;
 import agent.lldb.manager.evt.LldbModuleUnloadedEvent;
 import agent.lldb.manager.evt.LldbProcessCreatedEvent;
 import agent.lldb.manager.evt.LldbProcessExitedEvent;
+import agent.lldb.manager.evt.LldbSessionCreatedEvent;
+import agent.lldb.manager.evt.LldbSessionExitedEvent;
 import agent.lldb.manager.evt.LldbStateChangedEvent;
 import agent.lldb.manager.evt.LldbThreadCreatedEvent;
 import agent.lldb.manager.evt.LldbThreadExitedEvent;
@@ -45,7 +48,7 @@ public class LldbDebugEventCallbacksAdapter extends DebugEventCallbacksAdapter {
 	}
 
 	protected DebugStatus checkInterrupt(DebugStatus normal) {
-		if (manager.getControl().getInterrupt()) {
+		if (manager.getClient().getInterrupt()) {
 			return DebugStatus.BREAK;
 		}
 		return normal;
@@ -59,7 +62,7 @@ public class LldbDebugEventCallbacksAdapter extends DebugEventCallbacksAdapter {
 
 	@Override
 	public DebugStatus createThread(DebugThreadInfo threadInfo) {
-		Msg.info(this, "***Thread created: " + Long.toHexString(threadInfo.handle));
+		Msg.info(this, "***Thread created: " + Integer.toHexString(threadInfo.id));
 		return checkInterrupt(manager.processEvent(new LldbThreadCreatedEvent(threadInfo)));
 	}
 
@@ -71,17 +74,26 @@ public class LldbDebugEventCallbacksAdapter extends DebugEventCallbacksAdapter {
 
 	@Override
 	public DebugStatus createProcess(DebugProcessInfo processInfo) {
-		Msg.info(this, "***Process created: " + Long.toHexString(processInfo.handle));
-		Msg.info(this,
-			" **Thread created: " + Long.toHexString(processInfo.initialThreadInfo.handle));
+		Msg.info(this, "***Process created: " + Integer.toHexString(processInfo.id));
 		return checkInterrupt(manager.processEvent(new LldbProcessCreatedEvent(processInfo)));
 	}
 
 	@Override
 	public DebugStatus exitProcess(int exitCode) {
 		Msg.info(this, "***Process exited: " + exitCode);
-		Msg.info(this, " **Thread exited");
 		return checkInterrupt(manager.processEvent(new LldbProcessExitedEvent(exitCode)));
+	}
+
+	@Override
+	public DebugStatus createSession(DebugSessionInfo sessionInfo) {
+		Msg.info(this, "***Session created: " + Integer.toHexString(sessionInfo.id));
+		return checkInterrupt(manager.processEvent(new LldbSessionCreatedEvent(sessionInfo)));
+	}
+
+	@Override
+	public DebugStatus exitSession(int exitCode) {
+		Msg.info(this, "***Session exited: " + exitCode);
+		return checkInterrupt(manager.processEvent(new LldbSessionExitedEvent(exitCode)));
 	}
 
 	@Override

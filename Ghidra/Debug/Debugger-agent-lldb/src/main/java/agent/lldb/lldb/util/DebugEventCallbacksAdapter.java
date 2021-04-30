@@ -26,6 +26,7 @@ import agent.lldb.lldb.DebugClient.SessionStatus;
 import agent.lldb.lldb.DebugEventCallbacks;
 import agent.lldb.lldb.DebugModuleInfo;
 import agent.lldb.lldb.DebugProcessInfo;
+import agent.lldb.lldb.DebugSessionInfo;
 import agent.lldb.lldb.DebugThreadInfo;
 import ghidra.comm.util.BitmaskSet;
 
@@ -88,6 +89,16 @@ public class DebugEventCallbacksAdapter implements DebugEventCallbacks {
 
 	@Override
 	public DebugStatus exitProcess(int exitCode) {
+		return DebugStatus.NO_CHANGE;
+	}
+
+	@Override
+	public DebugStatus createSession(DebugSessionInfo debugSessionInfo) {
+		return DebugStatus.NO_CHANGE;
+	}
+
+	@Override
+	public DebugStatus exitSession(int exitCode) {
 		return DebugStatus.NO_CHANGE;
 	}
 

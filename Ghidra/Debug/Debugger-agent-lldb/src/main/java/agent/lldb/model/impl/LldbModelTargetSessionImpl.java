@@ -22,7 +22,6 @@ import java.util.concurrent.CompletableFuture;
 import SWIG.SBTarget;
 import SWIG.SBThread;
 import SWIG.StateType;
-import agent.lldb.lldb.DebugSessionId;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface1.LldbModelSelectableObject;
@@ -57,12 +56,12 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 
 	// NB: This should almost certainly always be implemented by the root of the object tree
 
-	protected static String indexSession(DebugSessionId debugSystemId) {
-		return PathUtils.makeIndex(debugSystemId.id);
+	protected static String indexSession(Integer id) {
+		return PathUtils.makeIndex(id);
 	}
 
 	protected static String indexSession(SBTarget session) {
-		return indexSession(new DebugSessionId(session.hashCode()));
+		return indexSession(session.hashCode());
 	}
 
 	protected static String keySession(SBTarget session) {

@@ -16,15 +16,11 @@
 package agent.lldb.manager;
 
 import SWIG.SBFrame;
-import SWIG.SBModule;
 import SWIG.SBProcess;
 import SWIG.SBTarget;
 import SWIG.SBThread;
 import SWIG.StateType;
 import agent.lldb.lldb.DebugModuleInfo;
-import agent.lldb.lldb.DebugProcessId;
-import agent.lldb.lldb.DebugSessionId;
-import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.breakpoint.LldbBreakpointInfo;
 
 public interface LldbEventsListenerAdapter extends LldbEventsListener {
@@ -35,7 +31,7 @@ public interface LldbEventsListenerAdapter extends LldbEventsListener {
 	}
 
 	@Override
-	public default void sessionRemoved(DebugSessionId sessionId, LldbCause cause) {
+	public default void sessionRemoved(Integer sessionId, LldbCause cause) {
 		// Extension point
 	}
 
@@ -50,7 +46,7 @@ public interface LldbEventsListenerAdapter extends LldbEventsListener {
 	}
 
 	@Override
-	public default void processRemoved(DebugProcessId processId, LldbCause cause) {
+	public default void processRemoved(Integer processId, LldbCause cause) {
 		// Extension point
 	}
 
@@ -81,7 +77,7 @@ public interface LldbEventsListenerAdapter extends LldbEventsListener {
 	}
 
 	@Override
-	public default void threadExited(DebugThreadId threadId, SBProcess process, LldbCause cause) {
+	public default void threadExited(Integer threadId, SBProcess process, LldbCause cause) {
 		// Extension point
 
 	}

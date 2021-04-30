@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import SWIG.SBTarget;
-import agent.lldb.lldb.DebugSessionId;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.model.iface2.LldbModelTargetRoot;
 import agent.lldb.model.iface2.LldbModelTargetSession;
@@ -49,7 +48,7 @@ public class LldbModelTargetSessionContainerImpl extends LldbModelTargetObjectIm
 	}
 
 	@Override
-	public void sessionRemoved(DebugSessionId sessionId, LldbCause cause) {
+	public void sessionRemoved(Integer sessionId, LldbCause cause) {
 		//synchronized (this) {
 		//	sessionsById.remove(sessionId);
 		//}

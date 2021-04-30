@@ -20,6 +20,7 @@ import com.sun.jna.platform.win32.WinBase;
 import SWIG.SBEvent;
 import SWIG.SBListener;
 import SWIG.SBTarget;
+import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.LldbManager;
 import ghidra.comm.util.BitmaskSet;
 import ghidra.comm.util.BitmaskUniverse;
@@ -373,4 +374,9 @@ public interface DebugClient extends DebugClientReentrant {
 	
 	DebugStatus getExecutionStatus();
 
+	void fireEvent(LldbEvent<?> lldbEvt);
+
+	boolean getInterrupt();
+
+	public void setManager(LldbManager manager);
 }

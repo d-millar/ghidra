@@ -22,7 +22,6 @@ import java.util.concurrent.CompletableFuture;
 import SWIG.SBFrame;
 import SWIG.SBThread;
 import SWIG.StateType;
-import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.manager.cmd.LldbSetActiveThreadCommand;
@@ -58,12 +57,12 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 		TargetStepKind.UNTIL, //
 		TargetStepKind.EXTENDED);
 
-	protected static String indexThread(DebugThreadId debugThreadId) {
-		return PathUtils.makeIndex(debugThreadId.id);
+	protected static String indexThread(Integer id) {
+		return PathUtils.makeIndex(id);
 	}
 
 	protected static String indexThread(SBThread thread) {
-		return null; //indexThread(thread.GetThreadID());
+		return indexThread(thread.GetThreadID().intValue());
 	}
 
 	protected static String keyThread(SBThread thread) {

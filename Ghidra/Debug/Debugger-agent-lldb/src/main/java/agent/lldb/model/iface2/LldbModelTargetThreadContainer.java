@@ -16,7 +16,6 @@
 package agent.lldb.model.iface2;
 
 import SWIG.SBThread;
-import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.LldbEventsListenerAdapter;
 import agent.lldb.model.iface1.LldbModelTargetEventScope;
 
@@ -29,6 +28,6 @@ public interface LldbModelTargetThreadContainer extends //
 
 	public void threadCreated(SBThread thread);
 
-	public void threadExited(DebugThreadId threadId);
+	public void threadExited(Integer threadId);
 
 }

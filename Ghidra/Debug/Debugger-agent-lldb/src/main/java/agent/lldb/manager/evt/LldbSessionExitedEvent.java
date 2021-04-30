@@ -17,36 +17,15 @@ package agent.lldb.manager.evt;
 
 import SWIG.StateType;
 
-/**
- * The event corresponding with "{@code *running}"
- */
-public class LldbRunningEvent extends AbstractLldbEvent<Integer> {
-	private final Integer id;
+public class LldbSessionExitedEvent extends AbstractLldbEvent<Integer> {
 
-	/**
-	 * Construct a new event, parsing the tail for information
-	 * 
-	 * A thread ID must be specified by dbgeng.
-	 * 
-	 * @param id the event info
-	 */
-	public LldbRunningEvent(Integer id) {
-		super(id);
-		this.id = id;
-	}
-
-	/**
-	 * Get the ID of the thread causing the event
-	 * 
-	 * @return the thread ID
-	 */
-	public Integer getThreadId() {
-		return id;
+	public LldbSessionExitedEvent(Integer exitCode) {
+		super(exitCode);
 	}
 
 	@Override
 	public StateType newState() {
-		return StateType.eStateRunning;
+		return StateType.eStateExited;
 	}
 
 }

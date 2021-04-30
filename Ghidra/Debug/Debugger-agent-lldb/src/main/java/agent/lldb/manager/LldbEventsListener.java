@@ -21,9 +21,6 @@ import SWIG.SBTarget;
 import SWIG.SBThread;
 import SWIG.StateType;
 import agent.lldb.lldb.DebugModuleInfo;
-import agent.lldb.lldb.DebugProcessId;
-import agent.lldb.lldb.DebugSessionId;
-import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.breakpoint.LldbBreakpointInfo;
 
 public interface LldbEventsListener {
@@ -42,7 +39,7 @@ public interface LldbEventsListener {
 	 * @param sessionId the ID of the now-defunct session
 	 * @param cause the cause of this event
 	 */
-	void sessionRemoved(DebugSessionId sessionId, LldbCause cause);
+	void sessionRemoved(Integer sessionId, LldbCause cause);
 
 	/**
 	 * A different session has been selected (gained focus)
@@ -66,7 +63,7 @@ public interface LldbEventsListener {
 	 * @param processId the ID of the now-defunct process
 	 * @param cause the cause of this event
 	 */
-	void processRemoved(DebugProcessId processId, LldbCause cause);
+	void processRemoved(Integer processId, LldbCause cause);
 
 	/**
 	 * A different process has been selected (gained focus)
@@ -120,7 +117,7 @@ public interface LldbEventsListener {
 	 * @param process a handle to the process to which the thread belonged
 	 * @param cause the cause of this event
 	 */
-	void threadExited(DebugThreadId threadId, SBProcess process, LldbCause cause);
+	void threadExited(Integer threadId, SBProcess process, LldbCause cause);
 
 	/**
 	 * A different thread has been selected (gained focus)
