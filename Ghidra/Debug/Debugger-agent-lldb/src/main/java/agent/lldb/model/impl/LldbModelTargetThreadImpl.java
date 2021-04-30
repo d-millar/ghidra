@@ -63,7 +63,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 	}
 
 	protected static String indexThread(SBThread thread) {
-		return indexThread(thread.GetThreadID());
+		return null; //indexThread(thread.GetThreadID());
 	}
 
 	protected static String keyThread(SBThread thread) {
@@ -97,7 +97,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 			DISPLAY_ATTRIBUTE_NAME, getDisplay(), //
 			SUPPORTED_STEP_KINDS_ATTRIBUTE_NAME, SUPPORTED_KINDS //
 		), "Initialized");
-		setExecutionState(convertState(thread.getState()), "Initialized");
+		//setExecutionState(convertState(thread.getState()), "Initialized");
 		// TODO: Stack (Registers)
 
 		getManager().addEventsListener(this);
@@ -142,15 +142,15 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 			case SKIP:
 				throw new UnsupportedOperationException(kind.name());
 			case ADVANCE: // Why no exec-advance in GDB/MI?
-				return thread.console("advance");
+				return null; //thread.console("advance");
 			default:
-				return model.gateFuture(thread.step(convertToLldb(kind)));
+				return null; //model.gateFuture(thread.step(convertToLldb(kind)));
 		}
 	}
 
 	@Override
 	public CompletableFuture<Void> step(Map<String, ?> args) {
-		return model.gateFuture(thread.step(args));
+		return null; //model.gateFuture(thread.step(args));
 	}
 
 	@Override
@@ -184,7 +184,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public String getExecutingProcessorType() {
-		return thread.getExecutingProcessorType().description;
+		return null; //thread.getExecutingProcessorType().description;
 	}
 
 	public void setBase(Object value) {

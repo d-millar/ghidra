@@ -15,6 +15,8 @@
  */
 package agent.lldb.manager.evt;
 
+import agent.lldb.lldb.DebugModuleInfo;
+
 public class LldbModuleLoadedEvent extends AbstractLldbEvent<DebugModuleInfo> {
 
 	public LldbModuleLoadedEvent(DebugModuleInfo info) {

@@ -18,6 +18,7 @@ package agent.lldb.model.impl;
 import java.util.concurrent.CompletableFuture;
 
 import SWIG.SBModule;
+import agent.lldb.manager.LldbModuleSection;
 import agent.lldb.model.iface2.LldbModelTargetModule;
 import agent.lldb.model.iface2.LldbModelTargetModuleSection;
 import agent.lldb.model.iface2.LldbModelTargetModuleSectionContainer;
@@ -57,7 +58,7 @@ public class LldbModelTargetModuleSectionContainerImpl extends LldbModelTargetOb
 		*/
 	}
 
-	protected synchronized LldbModelTargetModuleSection getModuleSection(SBModuleSection section) {
+	protected synchronized LldbModelTargetModuleSection getModuleSection(LldbModuleSection section) {
 		LldbModelImpl impl = (LldbModelImpl) model;
 		TargetObject modelObject = impl.getModelObject(section);
 		if (modelObject != null) {

@@ -21,6 +21,7 @@ import SWIG.SBProcess;
 import SWIG.SBTarget;
 import SWIG.SBThread;
 import SWIG.StateType;
+import agent.lldb.lldb.DebugModuleInfo;
 import agent.lldb.lldb.DebugProcessId;
 import agent.lldb.lldb.DebugSessionId;
 import agent.lldb.lldb.DebugThreadId;
@@ -91,12 +92,12 @@ public interface LldbEventsListenerAdapter extends LldbEventsListener {
 	}
 
 	@Override
-	public default void moduleLoaded(SBProcess process, SBModule info, LldbCause cause) {
+	public default void moduleLoaded(SBProcess process, DebugModuleInfo info, LldbCause cause) {
 		// Extension point
 	}
 
 	@Override
-	public default void moduleUnloaded(SBProcess process, SBModule info, LldbCause cause) {
+	public default void moduleUnloaded(SBProcess process, DebugModuleInfo info, LldbCause cause) {
 		// Extension point
 	}
 

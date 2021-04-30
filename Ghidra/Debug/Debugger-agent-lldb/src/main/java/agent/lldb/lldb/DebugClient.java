@@ -18,6 +18,7 @@ package agent.lldb.lldb;
 import com.sun.jna.platform.win32.WinBase;
 
 import SWIG.SBListener;
+import SWIG.SBTarget;
 import ghidra.comm.util.BitmaskSet;
 import ghidra.comm.util.BitmaskUniverse;
 
@@ -25,6 +26,19 @@ import ghidra.comm.util.BitmaskUniverse;
  * A wrapper for {@code IDebugClient} and its newer variants.
  */
 public interface DebugClient extends DebugClientReentrant {
+
+	/**
+	 * Create a debug client.
+	 * 
+	 * Typically, this client is connected to the "local server". See {@code DebugCreate} on the
+	 * MSDN.
+	 * 
+	 * @return a new client
+	 */
+	public static DebugClient debugCreate() {
+		return new DebugClientImpl();
+	}
+	
 	public static enum ExecutionState {
 		RUNNING, STOPPED;
 	}
@@ -345,7 +359,7 @@ public interface DebugClient extends DebugClientReentrant {
 
 	void abandonCurrentProcess();
 
-	void connectSession(int flags);
+	SBTarget connectSession(String commandLine);
 
 	void endSession(DebugEndSessionFlags flags);
 

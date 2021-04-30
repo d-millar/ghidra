@@ -69,7 +69,6 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	}
 
 	static LldbManager newInstance() {
-		//return new DbgManagerModelImpl();
 		return new LldbManagerImpl();
 	}
 

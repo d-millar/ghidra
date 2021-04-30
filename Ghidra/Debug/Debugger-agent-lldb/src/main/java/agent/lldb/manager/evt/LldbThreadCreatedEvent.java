@@ -15,6 +15,8 @@
  */
 package agent.lldb.manager.evt;
 
+import agent.lldb.lldb.DebugThreadInfo;
+
 public class LldbThreadCreatedEvent extends AbstractLldbEvent<DebugThreadInfo> {
 
 	public LldbThreadCreatedEvent(DebugThreadInfo info) {

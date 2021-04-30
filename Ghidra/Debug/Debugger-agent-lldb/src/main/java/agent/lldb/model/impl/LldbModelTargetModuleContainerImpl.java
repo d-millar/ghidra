@@ -22,7 +22,6 @@ import java.util.concurrent.CompletableFuture;
 
 import SWIG.SBModule;
 import SWIG.SBProcess;
-import agent.Lldbeng.manager.LldbModule;
 import agent.lldb.model.iface2.LldbModelTargetModule;
 import agent.lldb.model.iface2.LldbModelTargetModuleContainer;
 import ghidra.dbg.target.TargetModule;
@@ -103,19 +102,20 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
 		List<TargetObject> result = new ArrayList<>();
-		return process.listModules().thenAccept(byName -> {
+		return null; /* process.listModules().thenAccept(byName -> {
 			synchronized (this) {
 				for (Map.Entry<String, LldbModule> ent : byName.entrySet()) {
 					result.add(getTargetModule(ent.getKey()));
 				}
 			}
 			changeElements(List.of(), result, Map.of(), "Refreshed");
-		});
+		});	
+		*/
 	}
 
 	public LldbModelTargetModule getTargetModule(String name) {
 		// Only get here from libraryLoaded or getElements. The known list should be fresh.
-		SBModule module = process.getKnownModules().get(name);
+		SBModule module = null; //process.getKnownModules().get(name);
 		if (module == null) {
 			return null;
 		}

@@ -74,9 +74,9 @@ public class LldbBreakpointInfo {
 		this.number = bpt.getId();
 		this.bptType = bpt.getType();
 		this.flags = bpt.getFlags();
-		if (bpt.getType().breakType.equals(BreakType.DATA)) {
-			this.parameters = bpt.getDataParameters();
-		}
+		//if (bpt.getType().breakType.equals(BreakType.DATA)) {
+		//	this.parameters = bpt.getDataParameters();
+		//}
 		this.access = parameters.access;
 		this.size = parameters.size;
 		this.offset = bpt.getOffset();
@@ -150,10 +150,12 @@ public class LldbBreakpointInfo {
 	 * @return the type
 	 */
 	public LldbBreakpointType getType() {
+		/*
 		boolean isCode = bpt.getType().breakType.equals(BreakType.CODE);
 		if (isCode) {
 			return LldbBreakpointType.BREAKPOINT;
 		}
+		*/
 		BreakDataParameters params = bpt.getDataParameters();
 		if (params == null || params.access.isEmpty()) {
 			return LldbBreakpointType.OTHER;
@@ -292,11 +294,13 @@ public class LldbBreakpointInfo {
 		this.flags = bpt.getFlags();
 		this.offset = bpt.getOffset();
 		this.expression = bpt.getOffsetExpression();
+		/*
 		if (bptType.breakType.equals(BreakType.DATA)) {
 			BreakDataParameters p = bpt.getDataParameters();
 			this.access = p.access;
 			this.size = p.size;
 		}
+		*/
 	}
 
 	/*public long getAddressAsLong() {

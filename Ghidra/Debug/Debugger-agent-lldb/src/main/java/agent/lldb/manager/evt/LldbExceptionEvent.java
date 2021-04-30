@@ -15,10 +15,11 @@
  */
 package agent.lldb.manager.evt;
 
+import agent.lldb.lldb.DebugProcessInfo;
 
-public class LldbExceptionEvent extends AbstractLldbEvent<DebugExceptionRecord64> {
+public class LldbExceptionEvent extends AbstractLldbEvent<DebugProcessInfo> {
 
-	public LldbExceptionEvent(DebugExceptionRecord64 info) {
+	public LldbExceptionEvent(DebugProcessInfo info) {
 		super(info);
 	}
 }
