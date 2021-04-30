@@ -62,29 +62,28 @@ public class LldbModelImpl extends AbstractLldbModel implements DebuggerObjectMo
 
 	protected LldbManager manager;
 	protected final LldbModelTargetRootImpl root;
-	protected LldbModelTargetSessionImpl session;
+	protected LldbModelTargetSession session;
 
 	protected final CompletableFuture<LldbModelTargetRootImpl> completedRoot;
 
 	protected Map<Object, TargetObject> objectMap = new HashMap<>();
 
 	public LldbModelImpl() {
-		//this.dbg = DbgManager.newInstance();
+		this.manager = LldbManager.newInstance();
 		//System.out.println(XmlSchemaContext.serialize(SCHEMA_CTX));
 		this.root = new LldbModelTargetRootImpl(this, ROOT_SCHEMA);
 		this.completedRoot = CompletableFuture.completedFuture(root);
 		/*
-		SBTarget s = new SBTarget((LldbManagerImpl) manager, new DebugSessionId(0));
-		s.add();
+		SBTarget s = manager.getSession(new DebugSessionId(0));
 		LldbModelTargetSessionContainer sessions = root.sessions;
-		this.session = (LLdbModelTargetSessionImpl) sessions.getTargetSession(s);
+		this.session = sessions.getTargetSession(s);
 		*/
 		addModelRoot(root);
 	}
 
 	@Override
 	public String getBrief() {
-		return "DBGENG@" + Integer.toHexString(System.identityHashCode(this));
+		return "LLDB@" + Integer.toHexString(System.identityHashCode(this));
 	}
 
 	@Override

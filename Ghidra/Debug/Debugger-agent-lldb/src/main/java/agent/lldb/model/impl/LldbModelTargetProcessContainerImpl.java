@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import SWIG.SBProcess;
 import SWIG.SBThread;
 import SWIG.StateType;
+import agent.lldb.lldb.DebugModuleInfo;
 import agent.lldb.lldb.DebugProcessId;
 import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.LldbCause;

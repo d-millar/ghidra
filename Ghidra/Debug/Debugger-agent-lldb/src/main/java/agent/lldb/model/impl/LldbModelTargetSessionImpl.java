@@ -116,8 +116,10 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 	@Override
 	public void threadStateChanged(SBThread thread, StateType state, LldbCause cause,
 			LldbReason reason) {
+		/*
 		TargetExecutionState targetState = convertState(state);
 		setExecutionState(targetState, "ThreadStateChanged");
+		*/
 	}
 
 }

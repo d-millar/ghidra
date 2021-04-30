@@ -15,6 +15,8 @@
  */
 package agent.lldb.manager.evt;
 
+import agent.lldb.lldb.DebugProcessInfo;
+
 public class LldbProcessCreatedEvent extends AbstractLldbEvent<DebugProcessInfo> {
 
 	public LldbProcessCreatedEvent(DebugProcessInfo info) {

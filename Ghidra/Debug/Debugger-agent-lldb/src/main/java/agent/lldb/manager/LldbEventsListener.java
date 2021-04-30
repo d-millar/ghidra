@@ -16,11 +16,11 @@
 package agent.lldb.manager;
 
 import SWIG.SBFrame;
-import SWIG.SBModule;
 import SWIG.SBProcess;
 import SWIG.SBTarget;
 import SWIG.SBThread;
 import SWIG.StateType;
+import agent.lldb.lldb.DebugModuleInfo;
 import agent.lldb.lldb.DebugProcessId;
 import agent.lldb.lldb.DebugSessionId;
 import agent.lldb.lldb.DebugThreadId;
@@ -138,7 +138,7 @@ public interface LldbEventsListener {
 	 * @param name the name of the module on the target
 	 * @param cause the cause of this event
 	 */
-	void moduleLoaded(SBProcess process, SBModule info, LldbCause cause);
+	void moduleLoaded(SBProcess process, DebugModuleInfo info, LldbCause cause);
 
 	/**
 	 * A module has been unloaded from an process
@@ -147,7 +147,7 @@ public interface LldbEventsListener {
 	 * @param name the name of the module on the target
 	 * @param cause the cause of this event
 	 */
-	void moduleUnloaded(SBProcess process, SBModule info, LldbCause cause);
+	void moduleUnloaded(SBProcess process, DebugModuleInfo info, LldbCause cause);
 
 	/**
 	 * A breakpoint has been created in the session

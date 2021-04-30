@@ -134,7 +134,7 @@ public abstract class AbstractClientThreadExecutor extends AbstractExecutorServi
 					}
 				}
 				
-				DebugStatus status = client.getListener().getExecutionStatus();
+				DebugStatus status = DebugStatus.WAIT_INPUT; //.getListener().getExecutionStatus();
 				if (status.shouldWait && status != DebugStatus.NO_DEBUGGEE ||
 					waitRegistered.get()) {
 					waitRegistered.set(false);

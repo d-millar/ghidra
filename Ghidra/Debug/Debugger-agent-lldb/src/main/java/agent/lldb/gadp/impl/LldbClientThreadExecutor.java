@@ -33,6 +33,7 @@ import agent.lldb.manager.LldbManager;
  */
 public class LldbClientThreadExecutor extends AbstractClientThreadExecutor {
 
+	private final Supplier<DebugClient> makeClient;
 	private LldbManager manager;
 
 	/**
@@ -40,14 +41,15 @@ public class LldbClientThreadExecutor extends AbstractClientThreadExecutor {
 	 * 
 	 * @param makeClient the callback to create the client
 	 */
-	public LldbClientThreadExecutor() {
+	public LldbClientThreadExecutor(Supplier<DebugClient> makeClient) {
+		this.makeClient = makeClient;
 		thread.setDaemon(true);
 		thread.start();
 	}
 
 	@Override
 	protected void init() {
-		this.client = new DebugClientImpl();
+		this.client = makeClient.get();
 	}
 
 	@Override

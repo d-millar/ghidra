@@ -1,10 +1,14 @@
 package agent.lldb.lldb;
 
+import static org.junit.Assume.assumeTrue;
+
 import SWIG.SBDebugger;
 import SWIG.SBListener;
+import SWIG.SBProcess;
+import SWIG.SBTarget;
 import ghidra.comm.util.BitmaskSet;
 
-public class DebugClientImpl implements DebugClient{
+public class DebugClientImpl implements DebugClient {
 
 	private SBDebugger sbd;
 
@@ -12,10 +16,16 @@ public class DebugClientImpl implements DebugClient{
 	}
 
 	@Override
-	public SBDebugger createClient() {
+	public DebugClient createClient() {
+		try {
+			System.load("/Users/llero/git/llvm-build/lib/liblldb.dylib");
+		}
+		catch (UnsatisfiedLinkError ex) {
+			assumeTrue("liblldb.dylib not found. Probably not OSX here.", false);
+		}
 		SBDebugger.InitializeWithErrorHandling();
 		sbd = SBDebugger.Create();
-		return sbd;
+		return this;
 	}
 	
 	@Override
@@ -31,8 +41,7 @@ public class DebugClientImpl implements DebugClient{
 
 	@Override
 	public DebugServerId getLocalServer() {
-		// TODO Auto-generated method stub
-		return null;
+		return new DebugServerId(0);
 	}
 
 	@Override
@@ -79,8 +88,8 @@ public class DebugClientImpl implements DebugClient{
 
 	@Override
 	public void createProcess(DebugServerId si, String commandLine, BitmaskSet<DebugCreateFlags> createFlags) {
-		// TODO Auto-generated method stub
-		
+		SBTarget session = connectSession(commandLine.split(" ")[0]);
+		SBProcess process = session.LaunchSimple(null, null, null);
 	}
 
 	@Override
@@ -121,9 +130,8 @@ public class DebugClientImpl implements DebugClient{
 	}
 
 	@Override
-	public void connectSession(int flags) {
-		// TODO Auto-generated method stub
-		
+	public SBTarget connectSession(String commandLine) {
+		return sbd.CreateTarget(commandLine);
 	}
 
 	@Override

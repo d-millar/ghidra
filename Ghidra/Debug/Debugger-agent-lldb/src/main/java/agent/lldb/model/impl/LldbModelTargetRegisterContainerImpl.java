@@ -69,7 +69,7 @@ public class LldbModelTargetRegisterContainerImpl extends LldbModelTargetObjectI
 
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
-		return thread.listRegisters().thenAccept(regs -> {
+		return null; /* thread.listRegisters().thenAccept(regs -> {
 			if (regs.size() != registersByName.size()) {
 				LldbModelImpl impl = (LldbModelImpl) model;
 				for (LldbRegister reg : regs) {
@@ -87,6 +87,7 @@ public class LldbModelTargetRegisterContainerImpl extends LldbModelTargetObjectI
 				readRegistersNamed(getCachedElements().keySet());
 			}
 		});
+		*/
 	}
 
 	public void threadStateChangedSpecific(StateType state, LldbReason reason) {
@@ -110,7 +111,7 @@ public class LldbModelTargetRegisterContainerImpl extends LldbModelTargetObjectI
 	@Override
 	public CompletableFuture<? extends Map<String, byte[]>> readRegistersNamed(
 			Collection<String> names) {
-		return model.gateFuture(thread.listRegisters().thenCompose(regs -> {
+		return null; /* model.gateFuture(thread.listRegisters().thenCompose(regs -> {
 			if (regs.size() != registersByName.size() || getCachedElements().isEmpty()) {
 				return requestElements(false);
 			}
@@ -151,11 +152,12 @@ public class LldbModelTargetRegisterContainerImpl extends LldbModelTargetObjectI
 			listeners.fire.registersUpdated(getProxy(), result);
 			return result;
 		}));
+		*/
 	}
 
 	@Override
 	public CompletableFuture<Void> writeRegistersNamed(Map<String, byte[]> values) {
-		return model.gateFuture(thread.listRegisters().thenCompose(regs -> {
+		return null; /* model.gateFuture(thread.listRegisters().thenCompose(regs -> {
 			return requestElements(false);
 		}).thenCompose(__ -> {
 			Map<String, ? extends TargetObject> regs = getCachedElements();
@@ -174,6 +176,7 @@ public class LldbModelTargetRegisterContainerImpl extends LldbModelTargetObjectI
 		}).thenAccept(__ -> {
 			listeners.fire.registersUpdated(getProxy(), values);
 		}));
+		*/
 	}
 
 	public Map<String, byte[]> getCachedRegisters() {

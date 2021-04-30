@@ -18,6 +18,7 @@ package agent.lldb.model.impl;
 import java.util.List;
 import java.util.Map;
 
+import agent.lldb.manager.LldbModuleSection;
 import agent.lldb.model.iface2.LldbModelTargetModuleSection;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetElementType;

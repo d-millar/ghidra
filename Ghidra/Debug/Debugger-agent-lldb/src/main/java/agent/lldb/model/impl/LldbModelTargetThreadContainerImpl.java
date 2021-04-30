@@ -128,7 +128,7 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
-		return process.listThreads().thenAccept(byTID -> {
+		return null; /*process.listThreads().thenAccept(byTID -> {
 			List<TargetObject> threads;
 			synchronized (this) {
 				threads =
@@ -136,6 +136,7 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 			}
 			setElements(threads, Map.of(), "Refreshed");
 		});
+		*/
 	}
 
 	@Override

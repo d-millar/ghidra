@@ -11,7 +11,7 @@ package SWIG;
 
 
 public final class StateType {
-  public final static StateType eStateInvalid = new StateType("eStateInvalid", lldbJNI.eStateInvalid_get());
+  public final static StateType eStateInvalid = new StateType("eStateInvalid");
   public final static StateType eStateUnloaded = new StateType("eStateUnloaded");
   public final static StateType eStateConnected = new StateType("eStateConnected");
   public final static StateType eStateAttaching = new StateType("eStateAttaching");
@@ -23,7 +23,7 @@ public final class StateType {
   public final static StateType eStateDetached = new StateType("eStateDetached");
   public final static StateType eStateExited = new StateType("eStateExited");
   public final static StateType eStateSuspended = new StateType("eStateSuspended");
-  public final static StateType kLastStateType = new StateType("kLastStateType", lldbJNI.kLastStateType_get());
+  public final static StateType kLastStateType = new StateType("kLastStateType");
 
   public final int swigValue() {
     return swigValue;

@@ -29,7 +29,7 @@ public interface DebugClientReentrant {
 	 * 
 	 * @return the new client
 	 */
-	SBDebugger createClient();
+	DebugClient createClient();
 
 	/**
 	 * Get the reentrant control interface to the client

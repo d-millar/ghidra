@@ -15,13 +15,19 @@
  */
 package agent.lldb.manager.cmd;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import SWIG.SBThread;
+import agent.lldb.lldb.DebugClient;
+import agent.lldb.lldb.DebugClient.DebugCreateFlags;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.evt.AbstractLldbCompletedCommandEvent;
 import agent.lldb.manager.evt.LldbProcessCreatedEvent;
 import agent.lldb.manager.impl.LldbManagerImpl;
+import ghidra.comm.util.BitmaskSet;
 
 /**
  * Implementation of {@link LldbProcess#fileExecAndSymbols(String)}
@@ -62,9 +68,7 @@ public class LldbLaunchProcessCommand extends AbstractLldbCommand<SBThread> {
 
 	@Override
 	public void invoke() {
-		/*
-		DebugClient dbgeng = manager.getClient();
-		//DebugControl control = Lldbeng.getControl();
+		DebugClient client = manager.getClient();
 
 		List<String> newArgs = new ArrayList<>();
 		for (String arg : args) {
@@ -75,9 +79,8 @@ public class LldbLaunchProcessCommand extends AbstractLldbCommand<SBThread> {
 			na = na.replace("/", "\\");
 			newArgs.add(na);
 		}
-		dbgeng.createProcess(dbgeng.getLocalServer(), StringUtils.join(newArgs, " "),
+		client.createProcess(client.getLocalServer(), StringUtils.join(newArgs, " "),
 			BitmaskSet.of(DebugCreateFlags.DEBUG_PROCESS));
-		*/
-		manager.waitForEvent();
+		//manager.waitForEvent();
 	}
 }
