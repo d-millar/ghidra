@@ -68,7 +68,7 @@ public class LldbLaunchProcessCommand extends AbstractLldbCommand<SBThread> {
 
 	@Override
 	public void invoke() {
-		DebugClient client = manager.getClient();
+		//DebugClient client = DebugClient.debugCreate(manager);
 
 		List<String> newArgs = new ArrayList<>();
 		for (String arg : args) {
@@ -79,6 +79,7 @@ public class LldbLaunchProcessCommand extends AbstractLldbCommand<SBThread> {
 			na = na.replace("/", "\\");
 			newArgs.add(na);
 		}
+		DebugClient client = manager.getClient();
 		client.createProcess(client.getLocalServer(), StringUtils.join(newArgs, " "),
 			BitmaskSet.of(DebugCreateFlags.DEBUG_PROCESS));
 		//manager.waitForEvent();

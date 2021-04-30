@@ -3,14 +3,27 @@ package agent.lldb.lldb;
 import static org.junit.Assume.assumeTrue;
 
 import SWIG.SBDebugger;
+import SWIG.SBEvent;
 import SWIG.SBListener;
 import SWIG.SBProcess;
 import SWIG.SBTarget;
+import SWIG.SBThread;
+import agent.lldb.manager.evt.AbstractLldbEvent;
+import agent.lldb.manager.evt.LldbBreakpointModifiedEvent;
+import agent.lldb.manager.evt.LldbConsoleOutputEvent;
+import agent.lldb.manager.evt.LldbModuleLoadedEvent;
+import agent.lldb.manager.evt.LldbModuleUnloadedEvent;
+import agent.lldb.manager.evt.LldbStateChangedEvent;
+import agent.lldb.manager.evt.LldbThreadExitedEvent;
+import agent.lldb.manager.evt.LldbThreadSelectedEvent;
 import ghidra.comm.util.BitmaskSet;
 
 public class DebugClientImpl implements DebugClient {
 
 	private SBDebugger sbd;
+	private SBTarget session;
+	private SBEvent event;
+	private DebugEventCallbacks cb;
 
 	public DebugClientImpl() {
 	}
@@ -24,8 +37,13 @@ public class DebugClientImpl implements DebugClient {
 			assumeTrue("liblldb.dylib not found. Probably not OSX here.", false);
 		}
 		SBDebugger.InitializeWithErrorHandling();
+		event = new SBEvent();
 		sbd = SBDebugger.Create();
 		return this;
+	}
+	
+	public SBDebugger getDebugger() {
+		return sbd;
 	}
 	
 	@Override
@@ -64,7 +82,6 @@ public class DebugClientImpl implements DebugClient {
 
 	@Override
 	public boolean dispatchCallbacks(int timeout) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -88,8 +105,16 @@ public class DebugClientImpl implements DebugClient {
 
 	@Override
 	public void createProcess(DebugServerId si, String commandLine, BitmaskSet<DebugCreateFlags> createFlags) {
-		SBTarget session = connectSession(commandLine.split(" ")[0]);
+		session = connectSession("/opt/X11/bin/xclock");
+		session.BreakpointCreateByName("c", "/opt/X11/bin/xclock");
 		SBProcess process = session.LaunchSimple(null, null, null);
+		/*
+		listener = new SBListener(process.GetProcessID().toString());
+		broadcaster = process.GetBroadcaster();
+		broadcaster.AddListener(listener, SBProcess.eBroadcastBitStateChanged);
+		event = new SBEvent();
+		executor = new LldbClientThreadExecutor(() -> createClient());
+		*/
 	}
 
 	@Override
@@ -144,6 +169,84 @@ public class DebugClientImpl implements DebugClient {
 	public void openDumpFileWide(String fileName) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public SBEvent waitForEvent() {
+		boolean eventFound = getListener().WaitForEvent(-1, event);
+		if (eventFound) {
+			translateAndFireEvent(event);
+			return event;
+		}
+		return null;
+	}
+
+	private void translateAndFireEvent(SBEvent evt) {
+		long type = evt.GetType();
+		if ((type & SBTarget.eBroadcastBitBreakpointChanged) != 0) {
+			fireEvent(new LldbBreakpointModifiedEvent(null));
+		}
+		if ((type & SBTarget.eBroadcastBitModulesLoaded) != 0) {
+			fireEvent(new LldbModuleLoadedEvent(null));
+		}
+		if ((type & SBTarget.eBroadcastBitModulesUnloaded) != 0) {
+			fireEvent(new LldbModuleUnloadedEvent(null));
+		}
+		if ((type & SBTarget.eBroadcastBitWatchpointChanged) != 0) {
+			//fireEvent(new LldbWatchpointModifiedEvent(null));
+		}
+		if ((type & SBTarget.eBroadcastBitSymbolsLoaded) != 0) {
+			//fireEvent(new LldbSymbolsLoadedEvent(null));
+		}
+		
+		if ((type & SBProcess.eBroadcastBitStateChanged) != 0) {
+			fireEvent(new LldbStateChangedEvent(null));
+		}
+		if ((type & SBProcess.eBroadcastBitInterrupt) != 0) {
+			//fireEvent(new LldbInterrupt(null));
+		}
+		if ((type & SBProcess.eBroadcastBitSTDOUT) != 0) {
+			fireEvent(new LldbConsoleOutputEvent(0, null));
+		}
+		if ((type & SBProcess.eBroadcastBitSTDERR) != 0) {
+			fireEvent(new LldbConsoleOutputEvent(0, null));
+		}
+		if ((type & SBProcess.eBroadcastBitProfileData) != 0) {
+			//fireEvent(new LldbProfileDataEvent(null));
+		}
+		if ((type & SBProcess.eBroadcastBitStructuredData) != 0) {
+			//fireEvent(new LldbStructuredDataEvent(null));
+		}
+		
+		if ((type & SBThread.eBroadcastBitStackChanged) != 0) {
+			//fireEvent(new LldbStackChangedEvent(null));
+		}
+		if ((type & SBThread.eBroadcastBitThreadSuspended) != 0) {
+			//fireEvent(new LldbThreadSuspendedEvent(null));
+		}
+		if ((type & SBThread.eBroadcastBitThreadResumed) != 0) {
+			//fireEvent(new LldbThreadResumedEvent(null));
+		}
+		if ((type & SBThread.eBroadcastBitSelectedFrameChanged) != 0) {
+			//fireEvent(new LldbSelectedFrameChangedEvent(null));
+		}
+		if ((type & SBThread.eBroadcastBitThreadSelected) != 0) {
+			fireEvent(new LldbThreadSelectedEvent(null, null, null));
+		}
+	}
+
+	private void fireEvent(AbstractLldbEvent lldbEvt) {
+		System.err.println(lldbEvt.toString());
+	}
+
+	@Override
+	public DebugStatus getExecutionStatus() {
+		return session != null ? DebugStatus.GO : DebugStatus.NO_DEBUGGEE;
+	}
+
+	@Override
+	public void setEventCallbacks(DebugEventCallbacks cb) {
+		this.cb = cb;
 	}
 
 }

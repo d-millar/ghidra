@@ -542,12 +542,10 @@ public class SBTarget {
     return lldbJNI.SBTarget___str__(swigCPtr, this);
   }
 
-  /*
-  public final static int eBroadcastBitBreakpointChanged = lldbJNI.SBTarget_eBroadcastBitBreakpointChanged_get();
-  public final static int eBroadcastBitModulesLoaded = lldbJNI.SBTarget_eBroadcastBitModulesLoaded_get();
-  public final static int eBroadcastBitModulesUnloaded = lldbJNI.SBTarget_eBroadcastBitModulesUnloaded_get();
-  public final static int eBroadcastBitWatchpointChanged = lldbJNI.SBTarget_eBroadcastBitWatchpointChanged_get();
-  public final static int eBroadcastBitSymbolsLoaded = lldbJNI.SBTarget_eBroadcastBitSymbolsLoaded_get();
-  */
+  public final static int eBroadcastBitBreakpointChanged = 1 << 0;
+  public final static int eBroadcastBitModulesLoaded     = 1 << 1;
+  public final static int eBroadcastBitModulesUnloaded   = 1 << 2;
+  public final static int eBroadcastBitWatchpointChanged = 1 << 3;
+  public final static int eBroadcastBitSymbolsLoaded     = 1 << 4;
 
 }
