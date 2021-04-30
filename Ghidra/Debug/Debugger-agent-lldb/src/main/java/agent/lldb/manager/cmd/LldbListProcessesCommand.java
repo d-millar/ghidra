@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import SWIG.SBProcess;
+import SWIG.SBTarget;
 import agent.lldb.manager.LldbCause.Causes;
 import agent.lldb.manager.LldbManager;
 import agent.lldb.manager.impl.LldbManagerImpl;
@@ -40,19 +41,6 @@ public class LldbListProcessesCommand extends AbstractLldbCommand<Map<Integer, S
 	public Map<Integer, SBProcess> complete(LldbPendingCommand<?> pending) {
 		Map<Integer, SBProcess> allProcesses = manager.getKnownProcesses();
 		Set<Integer> cur = allProcesses.keySet();
-		for (Integer id : updatedProcessIds) {
-			if (cur.contains(id)) {
-				continue; // Do nothing, we're in sync
-			}
-			// Need to create the inferior as if we received =thread-group-created
-			Msg.warn(this, "Resync: Was missing group: i" + id);
-			/*
-			DebugSystemObjects so = manager.getSystemObjects();
-			so.setCurrentProcessId(id);
-			int pid = so.getCurrentProcessSystemId();
-			manager.getProcessComputeIfAbsent(id, pid);
-			*/
-		}
 		for (Integer id : new ArrayList<>(cur)) {
 			if (updatedProcessIds.contains(id)) {
 				continue; // Do nothing, we're in sync
@@ -66,7 +54,8 @@ public class LldbListProcessesCommand extends AbstractLldbCommand<Map<Integer, S
 
 	@Override
 	public void invoke() {
-		//DebugSystemObjects so = manager.getSystemObjects();
-		//updatedProcessIds = so.getProcesses();
+		SBProcess p = manager.getCurrentProcess();
+		updatedProcessIds = new ArrayList<>();
+		updatedProcessIds.add(p.GetProcessID().intValue());
 	}
 }

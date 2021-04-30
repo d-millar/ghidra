@@ -54,7 +54,7 @@ public interface LldbModelTargetProcess extends //
 		LldbEventsListenerAdapter, //
 		LldbModelSelectableObject {
 
-	public void processStarted(Long pid);
+	public void processStarted(SBProcess proc);
 
 	public LldbModelTargetThreadContainer getThreads();
 
