@@ -442,9 +442,9 @@ public class LldbManagerImpl implements LldbManager {
 
 		status = client.getControl().getExecutionStatus();
 		client.setOutputCallbacks(new LldbDebugOutputCallbacks(this));
-		client.setEventCallbacks(new LldbDebugEventCallbacksAdapter(this));
 		client.setInputCallbacks(new LldbDebugInputCallbacks(this));
 		*/
+		client.setEventCallbacks(new LldbDebugEventCallbacksAdapter(this));
 		client.flushCallbacks();
 
 		if (!create) {
@@ -675,6 +675,9 @@ public class LldbManagerImpl implements LldbManager {
 
 	private DebugThreadId updateState(SBEvent event) {
 		DebugClient client = engThread.getClient();
+		currentSession = eventSession = SBTarget.GetTargetFromEvent(event);
+		currentProcess = eventProcess = SBProcess.GetProcessFromEvent(event);
+		currentThread = eventThread = SBThread.GetThreadFromEvent(event);
 		/*
 		DebugThreadId etid = so.getEventThread();
 		DebugProcessId epid = so.getEventProcess();
@@ -1530,14 +1533,12 @@ public class LldbManagerImpl implements LldbManager {
 	public SBProcess currentProcess() {
 		return getCurrentProcess();
 	}
-
+	
 	@Override
-	public CompletableFuture<Void> waitForEvent() {
+	public CompletableFuture<Void> waitForEventEx() {
 		//System.err.println("ENTER");
-		SBListener listener = reentrantClient.getListener();
 		waiting = true;
-		SBEvent event = new SBEvent();
-		listener.WaitForEvent(0, event);
+		SBEvent event = getClient().waitForEvent();	
 		//System.err.println("EXIT");
 		waiting = false;
 		updateState(event);

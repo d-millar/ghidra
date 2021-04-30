@@ -17,8 +17,10 @@ package agent.lldb.lldb;
 
 import com.sun.jna.platform.win32.WinBase;
 
+import SWIG.SBEvent;
 import SWIG.SBListener;
 import SWIG.SBTarget;
+import agent.lldb.manager.LldbManager;
 import ghidra.comm.util.BitmaskSet;
 import ghidra.comm.util.BitmaskUniverse;
 
@@ -321,12 +323,12 @@ public interface DebugClient extends DebugClientReentrant {
 		exitDispatch(this);
 	}
 
+	void setEventCallbacks(DebugEventCallbacks cb);
+
 	/*
 	void setInputCallbacks(DebugInputCallbacks cb);
 
 	void setOutputCallbacks(DebugOutputCallbacks cb);
-
-	void setEventCallbacks(DebugEventCallbacks cb);
 
 	List<DebugRunningProcess> getRunningProcesses(DebugServerId server);
 
@@ -366,5 +368,9 @@ public interface DebugClient extends DebugClientReentrant {
 	// Only in IDebugClient4+
 
 	void openDumpFileWide(String fileName);
+	
+	SBEvent waitForEvent();
+	
+	DebugStatus getExecutionStatus();
 
 }

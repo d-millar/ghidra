@@ -302,12 +302,10 @@ public class SBThread {
     return lldbJNI.SBThread___str__(swigCPtr, this);
   }
 
-  /*
-  public final static int eBroadcastBitStackChanged = lldbJNI.SBThread_eBroadcastBitStackChanged_get();
-  public final static int eBroadcastBitThreadSuspended = lldbJNI.SBThread_eBroadcastBitThreadSuspended_get();
-  public final static int eBroadcastBitThreadResumed = lldbJNI.SBThread_eBroadcastBitThreadResumed_get();
-  public final static int eBroadcastBitSelectedFrameChanged = lldbJNI.SBThread_eBroadcastBitSelectedFrameChanged_get();
-  public final static int eBroadcastBitThreadSelected = lldbJNI.SBThread_eBroadcastBitThreadSelected_get();
-  */
+  public final static int eBroadcastBitStackChanged 		= 1 << 0;
+  public final static int eBroadcastBitThreadSuspended 		= 1 << 1;
+  public final static int eBroadcastBitThreadResumed 		= 1 << 2;
+  public final static int eBroadcastBitSelectedFrameChanged = 1 << 3;
+  public final static int eBroadcastBitThreadSelected 		= 1 << 4;
 
 }
