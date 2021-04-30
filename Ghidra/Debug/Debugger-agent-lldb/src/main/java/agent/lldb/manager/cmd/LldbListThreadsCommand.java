@@ -15,12 +15,15 @@
  */
 package agent.lldb.manager.cmd;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import SWIG.SBProcess;
 import SWIG.SBThread;
 import agent.lldb.manager.impl.LldbManagerImpl;
+import ghidra.util.Msg;
 
 public class LldbListThreadsCommand extends AbstractLldbCommand<Map<Integer, SBThread>> {
 	protected final SBProcess process;
@@ -33,8 +36,7 @@ public class LldbListThreadsCommand extends AbstractLldbCommand<Map<Integer, SBT
 
 	@Override
 	public Map<Integer, SBThread> complete(LldbPendingCommand<?> pending) {
-		/*
-		Map<Integer, SBThread> threads = process.getKnownThreads();
+		Map<Integer, SBThread> threads = manager.getKnownThreads();
 		Set<Integer> cur = threads.keySet();
 		for (Integer id : updatedThreadIds) {
 			if (cur.contains(id)) {
@@ -42,10 +44,6 @@ public class LldbListThreadsCommand extends AbstractLldbCommand<Map<Integer, SBT
 			}
 			// Need to create the thread as if we receive =thread-created
 			Msg.warn(this, "Resync: Was missing thread: " + id);
-			DebugSystemObjects so = manager.getSystemObjects();
-			so.setCurrentThreadId(id);
-			int tid = so.getCurrentThreadSystemId();
-			manager.getThreadComputeIfAbsent(id, process, tid);
 		}
 		for (Integer id : new ArrayList<>(cur)) {
 			if (updatedThreadIds.contains(id)) {
@@ -53,21 +51,18 @@ public class LldbListThreadsCommand extends AbstractLldbCommand<Map<Integer, SBT
 			}
 			// Need to remove the thread as if we received =thread-exited
 			Msg.warn(this, "Resync: Had extra thread: " + id);
-			process.removeThread(id);
 			manager.removeThread(id);
 		}
-		return process.getKnownThreads();
-		*/
-		return null;
+		return manager.getKnownThreads();
 	}
 
 	@Override
 	public void invoke() {
-		/*
-		DebugSystemObjects so = manager.getSystemObjects();
-		so.setCurrentProcessId(process.getId());
-		updatedThreadIds = so.getThreads();
-		*/
+		long n = process.GetNumThreads();
+		for (int i = 0; i < n; i++) {
+			SBThread thread = process.GetThreadByIndexID(i);
+			updatedThreadIds.add(thread.GetThreadID().intValue());
+		}
 	}
 
 }

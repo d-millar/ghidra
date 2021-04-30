@@ -15,7 +15,6 @@
  */
 package agent.lldb.model.impl;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -33,6 +32,7 @@ import agent.lldb.model.iface2.LldbModelTargetProcess;
 import agent.lldb.model.iface2.LldbModelTargetProcessContainer;
 import agent.lldb.model.iface2.LldbModelTargetThreadContainer;
 import ghidra.dbg.target.TargetAttachable;
+import ghidra.dbg.target.TargetEventScope.TargetEventType;
 import ghidra.dbg.target.TargetFocusScope;
 import ghidra.dbg.target.TargetMethod;
 import ghidra.dbg.target.TargetObject;
@@ -47,7 +47,7 @@ import ghidra.dbg.util.PathUtils;
 		@TargetAttributeType(name = "Memory", type = LldbModelTargetMemoryContainerImpl.class, required = true, fixed = true),
 		@TargetAttributeType(name = "Modules", type = LldbModelTargetModuleContainerImpl.class, required = true, fixed = true),
 		@TargetAttributeType(name = "Threads", type = LldbModelTargetThreadContainerImpl.class, required = true, fixed = true),
-		@TargetAttributeType(name = LldbModelTargetProcessImpl.EXIT_CODE_ATTRIBUTE_NAME, type = Long.class),
+		@TargetAttributeType(name = LldbModelTargetProcessImpl.EXIT_CODE_ATTRIBUTE_NAME, type = String.class),
 		@TargetAttributeType(type = Void.class) })
 public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetProcess {
@@ -192,10 +192,10 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 	}
 
 	@Override
-	public void processStarted(Long pid) {
-		if (pid != null) {
+	public void processStarted(SBProcess proc) {
+		if (proc != null) {
 			changeAttributes(List.of(), List.of(), Map.of( //
-				PID_ATTRIBUTE_NAME, pid, //
+				PID_ATTRIBUTE_NAME, proc.GetProcessID().longValue(), //
 				DISPLAY_ATTRIBUTE_NAME, getDisplay()//
 			), "Started");
 		}
@@ -205,15 +205,13 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 	@Override
 	public void processExited(SBProcess proc, LldbCause cause) {
 		if (proc.equals(this.process)) {
-			/*
 			changeAttributes(List.of(), List.of(), Map.of( //
 				STATE_ATTRIBUTE_NAME, TargetExecutionState.TERMINATED, //
-				EXIT_CODE_ATTRIBUTE_NAME, proc.getExitCode() //
+				EXIT_CODE_ATTRIBUTE_NAME, proc.GetExitDescription() //
 			), "Exited");
 			getListeners().fire.event(getProxy(), null, TargetEventType.PROCESS_EXITED,
-				"Process " + proc.getId() + " exited code=" + proc.getExitCode(),
+				"Process " + proc.GetProcessID().intValue() + " exited code=" + proc.GetExitDescription(),
 				List.of(getProxy()));
-			*/
 		}
 	}
 

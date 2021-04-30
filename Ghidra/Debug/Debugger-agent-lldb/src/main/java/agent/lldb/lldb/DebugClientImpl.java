@@ -8,6 +8,7 @@ import SWIG.SBListener;
 import SWIG.SBProcess;
 import SWIG.SBTarget;
 import SWIG.SBThread;
+import SWIG.StateType;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.LldbManager;
 import agent.lldb.manager.evt.LldbBreakpointModifiedEvent;
@@ -242,7 +243,11 @@ public class DebugClientImpl implements DebugClient {
 
 	@Override
 	public DebugStatus getExecutionStatus() {
-		return session != null ? DebugStatus.GO : DebugStatus.NO_DEBUGGEE;
+		//TODO: THIS NEEDS TO BE FIXED BEFORE ANYTHING CAN RUN
+		if  (session == null) return DebugStatus.NO_DEBUGGEE;
+		StateType state = manager.getState();
+		boolean invalid = state.equals(StateType.eStateInvalid);
+		return invalid ? DebugStatus.GO : DebugStatus.BREAK; 
 	}
 
 	@Override

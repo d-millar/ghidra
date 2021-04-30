@@ -18,6 +18,7 @@ package agent.lldb.model.impl;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import SWIG.SBProcess;
 import SWIG.SBThread;
@@ -61,11 +62,9 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 		changeElements(List.of(), List.of(getTargetThread(thread)), Map.of(), "Created");
 		LldbModelTargetThread targetThread = getTargetThread(thread);
 		changeElements(List.of(), List.of(targetThread), Map.of(), "Created");
-		targetThread.threadStateChangedSpecific(StateType.eStateInvalid, LldbReason.getReason(null));
-		/*
+		targetThread.threadStateChangedSpecific(StateType.eStateConnected, LldbReason.getReason(null));
 		getListeners().fire.event(getProxy(), targetThread, TargetEventType.THREAD_CREATED,
-			"Thread " + thread.getId() + " started", List.of(targetThread));
-		*/
+			"Thread " + thread.GetThreadID().intValue() + " started", List.of(targetThread));
 	}
 
 	@Override
@@ -88,9 +87,6 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 			getListeners().fire.event(getProxy(), targetThread, TargetEventType.THREAD_EXITED,
 				"Thread " + threadId + " exited", List.of(targetThread));
 		}
-		//synchronized (this) {
-		//	threadsById.remove(threadId);
-		//}
 		changeElements(List.of( //
 			LldbModelTargetThreadImpl.indexThread(threadId) //
 		), List.of(), Map.of(), "Exited");
@@ -125,7 +121,7 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
-		return null; /*process.listThreads().thenAccept(byTID -> {
+		return getManager().listThreads(process).thenAccept(byTID -> {
 			List<TargetObject> threads;
 			synchronized (this) {
 				threads =
@@ -133,7 +129,6 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 			}
 			setElements(threads, Map.of(), "Refreshed");
 		});
-		*/
 	}
 
 	@Override

@@ -68,6 +68,7 @@ import agent.lldb.manager.cmd.LldbLaunchProcessCommand;
 import agent.lldb.manager.cmd.LldbListAvailableProcessesCommand;
 import agent.lldb.manager.cmd.LldbListBreakpointsCommand;
 import agent.lldb.manager.cmd.LldbListProcessesCommand;
+import agent.lldb.manager.cmd.LldbListThreadsCommand;
 import agent.lldb.manager.cmd.LldbOpenDumpCommand;
 import agent.lldb.manager.cmd.LldbPendingCommand;
 import agent.lldb.manager.cmd.LldbRequestActivationCommand;
@@ -114,14 +115,8 @@ public class LldbManagerImpl implements LldbManager {
 
 	private String LldbSrvTransport;
 
-	//private final AsyncClaimQueue<DebugThreadInfo> claimsCreateThread = new AsyncClaimQueue<>();
-	//private final AsyncClaimQueue<Integer> claimsContinueThread = new AsyncClaimQueue<>();
-	//private final AsyncClaimQueue<Integer> claimsStopThread = new AsyncClaimQueue<>();
-	//private final AsyncClaimQueue<ExitEvent> claimsExitThread = new AsyncClaimQueue<>();
-	//private final AsyncClaimQueue<DebugModuleInfo> claimsLoadModule = new AsyncClaimQueue<>();
 	private final AsyncClaimQueue<Integer> claimsBreakpointAdded = new AsyncClaimQueue<>();
 	private final AsyncClaimQueue<BreakId> claimsBreakpointRemoved = new AsyncClaimQueue<>();
-	//private final AsyncClaimQueue<Integer> claimsFocusThread = new AsyncClaimQueue<>();
 
 	public DebugStatus status;
 
@@ -179,8 +174,6 @@ public class LldbManagerImpl implements LldbManager {
 		//state.filter(this::stateFilter);
 		//state.addChangeListener(this::trackRunningInterpreter);
 		defaultHandlers();
-		//TODO: this.server = createSctlSide(addr);
-		//TODO: this.LldbSrvTransport = LldbSrvTransport;
 	}
 
 	@Override
@@ -522,41 +515,6 @@ public class LldbManagerImpl implements LldbManager {
 		processEvent(new LldbCommandDoneEvent(cmd));
 	}
 
-	/*@Override
-	public <T> LldbPendingCommand<T> execute1(LldbCommand<? extends T> cmd) {
-		assert cmd != null;
-		checkStarted();
-		LldbPendingCommand<T> pcmd = new LldbPendingCommand<>(cmd);
-		sequence(TypeSpec.VOID).then((seq) -> {
-			Msg.debug(this, "WAITING cmdLock: " + pcmd);
-			cmdLock.acquire(null).handle(seq::next);
-		}, cmdLockHold).then((seq) -> {
-			Msg.debug(this, "ACQUIRED cmdLock: " + pcmd);
-			synchronized (this) {
-				if (curCmd != null) {
-					throw new AssertionError("Cannot execute more than one command at a time");
-				}
-				if (!cmd.validInState(state.get())) {
-					throw new LldbCommandError(
-						"Command " + cmd + " is not valid while " + state.get());
-				}
-				curCmd = pcmd;
-			}
-			cmd.invoke();
-			processEvent(new LldbCommandDoneEvent(cmd.toString()));
-			seq.exit();
-		}).finish().exceptionally((exc) -> {
-			pcmd.completeExceptionally(exc);
-			Msg.debug(this, "ON_EXCEPTION: CURCMD = " + curCmd);
-			curCmd = null;
-			Msg.debug(this, "SET CURCMD = null");
-			Msg.debug(this, "RELEASING cmdLock");
-			cmdLockHold.getAndSet(null).release();
-			return null;
-		});
-		return pcmd;
-	}
-	*/
 
 	@Override
 	public DebugStatus processEvent(LldbEvent<?> evt) {
@@ -1396,6 +1354,11 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	@Override
+	public CompletableFuture<Map<Integer, SBThread>> listThreads(SBProcess process) {
+		return execute(new LldbListThreadsCommand(this, process));
+	}
+
+	@Override
 	public CompletableFuture<Map<Integer, SBProcess>> listProcesses() {
 		return execute(new LldbListProcessesCommand(this));
 	}
@@ -1606,7 +1569,7 @@ public class LldbManagerImpl implements LldbManager {
 
 	@Override
 	public StateType getState() {
-		return null; //return state.get();
+		return currentProcess == null ? StateType.eStateInvalid : currentProcess.GetState();
 	}
 
 	@Override

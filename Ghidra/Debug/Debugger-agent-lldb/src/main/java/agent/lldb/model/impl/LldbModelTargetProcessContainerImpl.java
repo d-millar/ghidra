@@ -15,7 +15,6 @@
  */
 package agent.lldb.model.impl;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -49,6 +48,8 @@ import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetProcessContainer, LldbModelTargetConfigurable {
 
+	private LldbModelTargetSession session;
+
 	public LldbModelTargetProcessContainerImpl(LldbModelTargetSession session) {
 		super(session.getModel(), session, "Processes", "ProcessContainer");
 		this.changeAttributes(List.of(), Map.of(BASE_ATTRIBUTE_NAME, 16), "Initialized");
@@ -62,18 +63,16 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 		session.setAccessible(true);
 		LldbModelTargetProcess process = getTargetProcess(proc);
 		changeElements(List.of(), List.of(process), Map.of(), "Added");
-		/*
-		process.processStarted(proc.getPid());
+		process.processStarted(proc);
 		getListeners().fire.event(getProxy(), null, TargetEventType.PROCESS_CREATED,
-			"Process " + proc.getId() + " started " + process.getName() + "pid=" + proc.getPid(),
+			"Process " + proc.GetProcessID().intValue() + " started " + process.getName(),
 			List.of(process));
-		*/
 	}
 
 	@Override
 	public void processStarted(SBProcess proc, LldbCause cause) {
 		LldbModelTargetProcess process = getTargetProcess(proc);
-		//process.processStarted(proc.getPid());
+		process.processStarted(proc);
 	}
 
 	@Override
@@ -100,7 +99,7 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 	public void threadExited(Integer threadId, SBProcess proc, LldbCause cause) {
 		LldbModelTargetProcess process = getTargetProcess(proc);
 		if (process != null) {
-			//process.getThreads().threadExited(threadId);
+			process.getThreads().threadExited(threadId);
 		}
 	}
 

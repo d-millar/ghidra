@@ -270,6 +270,13 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	CompletableFuture<String> consoleCapture(String command);
 
 	/**
+	 * List dbgeng's threads
+	 * 
+	 * @return a future that completes with a map of process IDs to process handles
+	 */
+	CompletableFuture<Map<Integer, SBThread>> listThreads(SBProcess process);
+
+	/**
 	 * List dbgeng's processes
 	 * 
 	 * @return a future that completes with a map of process IDs to process handles
