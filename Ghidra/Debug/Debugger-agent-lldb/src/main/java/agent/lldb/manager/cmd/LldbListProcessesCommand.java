@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Set;
 
 import SWIG.SBProcess;
-import agent.lldb.lldb.DebugProcessId;
 import agent.lldb.manager.LldbCause.Causes;
 import agent.lldb.manager.LldbManager;
 import agent.lldb.manager.impl.LldbManagerImpl;
@@ -30,18 +29,18 @@ import ghidra.util.Msg;
 /**
  * Implementation of {@link LldbManager#listProcesses()}
  */
-public class LldbListProcessesCommand extends AbstractLldbCommand<Map<DebugProcessId, SBProcess>> {
-	private List<DebugProcessId> updatedProcessIds;
+public class LldbListProcessesCommand extends AbstractLldbCommand<Map<Integer, SBProcess>> {
+	private List<Integer> updatedProcessIds;
 
 	public LldbListProcessesCommand(LldbManagerImpl manager) {
 		super(manager);
 	}
 
 	@Override
-	public Map<DebugProcessId, SBProcess> complete(LldbPendingCommand<?> pending) {
-		Map<DebugProcessId, SBProcess> allProcesses = manager.getKnownProcesses();
-		Set<DebugProcessId> cur = allProcesses.keySet();
-		for (DebugProcessId id : updatedProcessIds) {
+	public Map<Integer, SBProcess> complete(LldbPendingCommand<?> pending) {
+		Map<Integer, SBProcess> allProcesses = manager.getKnownProcesses();
+		Set<Integer> cur = allProcesses.keySet();
+		for (Integer id : updatedProcessIds) {
 			if (cur.contains(id)) {
 				continue; // Do nothing, we're in sync
 			}
@@ -54,7 +53,7 @@ public class LldbListProcessesCommand extends AbstractLldbCommand<Map<DebugProce
 			manager.getProcessComputeIfAbsent(id, pid);
 			*/
 		}
-		for (DebugProcessId id : new ArrayList<>(cur)) {
+		for (Integer id : new ArrayList<>(cur)) {
 			if (updatedProcessIds.contains(id)) {
 				continue; // Do nothing, we're in sync
 			}

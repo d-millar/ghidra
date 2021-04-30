@@ -25,9 +25,7 @@ import SWIG.SBProcess;
 import SWIG.SBTarget;
 import SWIG.SBThread;
 import SWIG.StateType;
-import agent.lldb.lldb.DebugProcessId;
-import agent.lldb.lldb.DebugSessionId;
-import agent.lldb.lldb.DebugThreadId;
+import agent.lldb.lldb.DebugClient.DebugStatus;
 import agent.lldb.manager.LldbManager.ExecSuffix;
 import agent.lldb.manager.breakpoint.LldbBreakpointInfo;
 import agent.lldb.manager.breakpoint.LldbBreakpointInsertions;
@@ -134,7 +132,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * @param id the dbgeng-asigned thread ID
 	 * @return a handle to the thread, if it exists
 	 */
-	SBThread getThread(DebugThreadId id);
+	SBThread getThread(Integer id);
 
 	/**
 	 * Get an process by its dbgeng-assigned ID
@@ -145,7 +143,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * @param id the process ID
 	 * @return a handle to the process, if it exists
 	 */
-	SBProcess getProcess(DebugProcessId id);
+	SBProcess getProcess(Integer id);
 
 	/**
 	 * Get an session by its dbgeng-assigned ID
@@ -156,7 +154,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * @param id the process ID
 	 * @return a handle to the process, if it exists
 	 */
-	SBTarget getSession(DebugSessionId id);
+	SBTarget getSession(Integer id);
 
 	/**
 	 * Get all threads known to the manager
@@ -166,7 +164,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a map of dbgeng-assigned thread IDs to corresponding thread handles
 	 */
-	Map<DebugThreadId, SBThread> getKnownThreads();
+	Map<Integer, SBThread> getKnownThreads();
 
 	/**
 	 * Get all processes known to the manager
@@ -176,7 +174,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a map of process IDs to corresponding process handles
 	 */
-	Map<DebugProcessId, SBProcess> getKnownProcesses();
+	Map<Integer, SBProcess> getKnownProcesses();
 
 	/**
 	 * Get all sessions known to the manager
@@ -186,7 +184,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a map of session IDs to corresponding session handles
 	 */
-	Map<DebugSessionId, SBTarget> getKnownSessions();
+	Map<Integer, SBTarget> getKnownSessions();
 
 	/**
 	 * Get all breakpoints known to the manager
@@ -276,7 +274,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a future that completes with a map of process IDs to process handles
 	 */
-	CompletableFuture<Map<DebugProcessId, SBProcess>> listProcesses();
+	CompletableFuture<Map<Integer, SBProcess>> listProcesses();
 
 	/**
 	 * List the available processes on target
@@ -349,6 +347,8 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	CompletableFuture<Void> waitForEventEx();
 
 	<T> CompletableFuture<T> execute(LldbCommand<? extends T> cmd);
+
+	DebugStatus processEvent(LldbEvent<?> evt);
 
 	//DebugEventInformation getLastEventInformation();
 

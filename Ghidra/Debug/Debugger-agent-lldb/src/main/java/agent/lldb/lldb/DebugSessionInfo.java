@@ -13,39 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package agent.lldb.manager.evt;
+package agent.lldb.lldb;
 
 import SWIG.SBTarget;
 
 /**
- * The event corresponding with "{@code =thread-selected}"
+ * Information about a session.
+ * 
+ * The fields correspond to the parameters taken by {@code LoadModule} of
+ * {@code IDebugEventCallbacks}. They also appear as a subset of parameters taken by
+ * {@code CreateProcess} of {@code IDebugEventCallbacks}.
  */
-public class LldbSessionSelectedEvent extends AbstractLldbEvent<Integer> {
-	private final Integer id;
-	private SBTarget session;
+public class DebugSessionInfo {
 
-	/**
-	 * The selected session ID must be specified by dbgeng.
-	 * 
-	 * @param session dbgeng-defined session
-	 */
-	public LldbSessionSelectedEvent(SBTarget session) {
-		super(session.hashCode());
+	public SBTarget session;
+	public Integer id;
+
+	public DebugSessionInfo(SBTarget session) {
 		this.session = session;
 		this.id = session.hashCode();
 	}
 
-	/**
-	 * Get the selected session ID
-	 * 
-	 * @return the session ID
-	 */
-	public Integer getSessionId() {
-		return id;
-	}
-
-	public SBTarget getSession() {
-		return session;
+	public String toString() {
+		return Integer.toHexString(id);
 	}
 
 }

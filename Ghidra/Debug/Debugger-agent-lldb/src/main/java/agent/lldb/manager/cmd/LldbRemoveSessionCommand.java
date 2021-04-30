@@ -15,16 +15,15 @@
  */
 package agent.lldb.manager.cmd;
 
-import agent.lldb.lldb.DebugSessionId;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 /**
  * Implementation of {@link DbgManager#addProcess()}
  */
 public class LldbRemoveSessionCommand extends AbstractLldbCommand<Void> {
-	private DebugSessionId id;
+	private Integer id;
 
-	public LldbRemoveSessionCommand(LldbManagerImpl manager, DebugSessionId id) {
+	public LldbRemoveSessionCommand(LldbManagerImpl manager, Integer id) {
 		super(manager);
 		this.id = id;
 	}

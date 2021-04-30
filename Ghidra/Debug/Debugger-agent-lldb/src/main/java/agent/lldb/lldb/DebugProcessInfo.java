@@ -15,6 +15,8 @@
  */
 package agent.lldb.lldb;
 
+import SWIG.SBProcess;
+
 /**
  * Information about a module (program or library image).
  * 
@@ -23,42 +25,16 @@ package agent.lldb.lldb;
  * {@code CreateProcess} of {@code IDebugEventCallbacks}.
  */
 public class DebugProcessInfo {
-	public final long imageFileHandle;
-	public final long baseOffset;
-	public final int moduleSize;
-	public final int checkSum;
-	public final int timeDateStamp;
-	private String moduleName;
-	private String imageName;
 
-	public DebugProcessInfo(long imageFileHandle, long baseOffset, int moduleSize, String moduleName,
-			String imageName, int checkSum, int timeDateStamp) {
-		this.imageFileHandle = imageFileHandle;
-		this.baseOffset = baseOffset;
-		this.moduleSize = moduleSize;
-		this.setModuleName(moduleName);
-		this.setImageName(imageName);
-		this.checkSum = checkSum;
-		this.timeDateStamp = timeDateStamp; // TODO: Convert to DateTime?
+	public SBProcess process;
+	public Integer id;
+
+	public DebugProcessInfo(SBProcess process) {
+		this.process = process;
+		this.id = process.GetProcessID().intValue();
 	}
 
 	public String toString() {
-		return Long.toHexString(baseOffset);
-	}
-
-	public String getModuleName() {
-		return moduleName;
-	}
-
-	public void setModuleName(String moduleName) {
-		this.moduleName = moduleName;
-	}
-
-	public String getImageName() {
-		return imageName;
-	}
-
-	public void setImageName(String imageName) {
-		this.imageName = imageName;
+		return Integer.toHexString(id);
 	}
 }

@@ -22,7 +22,6 @@ import SWIG.SBProcess;
 import SWIG.SBThread;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.lldb.DebugClient.DebugAttachFlags;
-import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.evt.AbstractLldbCompletedCommandEvent;
 import agent.lldb.manager.evt.LldbProcessCreatedEvent;
@@ -84,6 +83,6 @@ public class LldbAttachCommand extends AbstractLldbCommand<Set<SBThread>> {
 		DebugClient dbgeng = manager.getClient();
 		dbgeng.attachProcess(dbgeng.getLocalServer(), proc.GetProcessID().intValue(), flags);
 
-		manager.waitForEvent();
+		manager.waitForEventEx();
 	}
 }

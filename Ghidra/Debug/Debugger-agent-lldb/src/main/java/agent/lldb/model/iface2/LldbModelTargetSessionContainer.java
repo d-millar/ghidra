@@ -16,7 +16,6 @@
 package agent.lldb.model.iface2;
 
 import SWIG.SBTarget;
-import agent.lldb.lldb.DebugSessionId;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbEventsListenerAdapter;
 
@@ -29,7 +28,7 @@ public interface LldbModelTargetSessionContainer
 	}
 
 	@Override
-	public void sessionRemoved(DebugSessionId sessionId, LldbCause cause);
+	public void sessionRemoved(Integer sessionId, LldbCause cause);
 
 	public LldbModelTargetSession getTargetSession(SBTarget session);
 

@@ -16,7 +16,6 @@
 package agent.lldb.manager.cmd;
 
 import SWIG.SBTarget;
-import agent.lldb.lldb.DebugSessionId;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 public class LldbSetActiveSessionCommand extends AbstractLldbCommand<Void> {

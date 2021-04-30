@@ -23,14 +23,11 @@ import java.util.concurrent.RejectedExecutionException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import SWIG.SBTarget;
-import agent.lldb.lldb.DebugSessionId;
 import agent.lldb.manager.LldbManager;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import agent.lldb.model.AbstractLldbModel;
 import agent.lldb.model.iface2.LldbModelTargetProcess;
 import agent.lldb.model.iface2.LldbModelTargetSession;
-import agent.lldb.model.iface2.LldbModelTargetSessionContainer;
 import ghidra.async.AsyncUtils;
 import ghidra.dbg.DebuggerModelClosedReason;
 import ghidra.dbg.DebuggerObjectModelWithMemory;

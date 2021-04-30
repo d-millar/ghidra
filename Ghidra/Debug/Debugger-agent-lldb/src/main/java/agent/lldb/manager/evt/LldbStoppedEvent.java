@@ -18,13 +18,12 @@ package agent.lldb.manager.evt;
 import SWIG.SBFrame;
 import SWIG.SBThread;
 import SWIG.StateType;
-import agent.lldb.lldb.DebugThreadId;
 
 /**
  * The event corresponding with "{@code *stopped}"
  */
-public class LldbStoppedEvent extends AbstractLldbEvent<DebugThreadId> {
-	private final DebugThreadId id;
+public class LldbStoppedEvent extends AbstractLldbEvent<Integer> {
+	private final Integer id;
 
 	/**
 	 * Construct a new event, parsing the tail for information
@@ -33,7 +32,7 @@ public class LldbStoppedEvent extends AbstractLldbEvent<DebugThreadId> {
 	 * 
 	 * @param id the event info
 	 */
-	public LldbStoppedEvent(DebugThreadId id) {
+	public LldbStoppedEvent(Integer id) {
 		super(id);
 		this.id = id;
 	}
@@ -43,7 +42,7 @@ public class LldbStoppedEvent extends AbstractLldbEvent<DebugThreadId> {
 	 * 
 	 * @return the thread ID
 	 */
-	public DebugThreadId getThreadId() {
+	public Integer getThreadId() {
 		return id;
 	}
 

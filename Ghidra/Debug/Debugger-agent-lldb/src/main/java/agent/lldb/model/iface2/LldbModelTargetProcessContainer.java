@@ -16,7 +16,6 @@
 package agent.lldb.model.iface2;
 
 import SWIG.SBProcess;
-import agent.lldb.lldb.DebugProcessId;
 import agent.lldb.manager.LldbEventsListenerAdapter;
 import agent.lldb.model.iface1.LldbModelTargetEventScope;
 
@@ -25,7 +24,7 @@ public interface LldbModelTargetProcessContainer extends //
 		LldbModelTargetEventScope, //
 		LldbEventsListenerAdapter {
 
-	public LldbModelTargetProcess getTargetProcess(DebugProcessId id);
+	public LldbModelTargetProcess getTargetProcess(Integer id);
 
 	public LldbModelTargetProcess getTargetProcess(SBProcess process);
 

@@ -33,7 +33,7 @@ public class LldbBreakpointModifiedEvent extends AbstractLldbEvent<LldbBreakpoin
 	 */
 	public LldbBreakpointModifiedEvent(LldbBreakpointInfo info) {
 		super(info);
-		this.bptId = info.getNumber();
+		//this.bptId = info.getNumber();
 	}
 
 	public LldbBreakpointModifiedEvent(long bptId) {

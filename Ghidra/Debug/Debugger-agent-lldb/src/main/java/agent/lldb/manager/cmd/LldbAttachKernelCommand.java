@@ -18,7 +18,6 @@ package agent.lldb.manager.cmd;
 import java.util.Map;
 
 import SWIG.SBThread;
-import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.evt.AbstractLldbCompletedCommandEvent;
 import agent.lldb.manager.evt.LldbProcessCreatedEvent;
@@ -69,6 +68,6 @@ public class LldbAttachKernelCommand extends AbstractLldbCommand<SBThread> {
 		String options = (String) args.get("Options");
 		dbgeng.attachKernel(flags, options);
 		*/
-		manager.waitForEvent();
+		manager.waitForEventEx();
 	}
 }

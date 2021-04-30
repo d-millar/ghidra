@@ -15,16 +15,13 @@
  */
 package agent.lldb.model.impl;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 import SWIG.SBProcess;
 import SWIG.SBThread;
 import SWIG.StateType;
-import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface1.LldbModelTargetConfigurable;
@@ -84,7 +81,7 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 	}
 
 	@Override
-	public void threadExited(DebugThreadId threadId) {
+	public void threadExited(Integer threadId) {
 		LldbModelImpl impl = (LldbModelImpl) model;
 		LldbModelTargetThread targetThread = (LldbModelTargetThread) impl.getModelObject(threadId);
 		if (targetThread != null) {

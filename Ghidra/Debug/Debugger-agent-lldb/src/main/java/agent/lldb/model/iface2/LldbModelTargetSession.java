@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import SWIG.SBTarget;
-import agent.lldb.lldb.DebugSessionId;
 import agent.lldb.manager.LldbEventsListenerAdapter;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import agent.lldb.model.iface1.LldbModelSelectableObject;
@@ -47,19 +46,6 @@ public interface LldbModelTargetSession extends //
 
 	LldbModelTargetProcessContainer getProcesses();
 
-	public default SBTarget getSession() {
-		LldbManagerImpl manager = getManager();
-		try {
-			String index = PathUtils.parseIndex(getName());
-			Integer sid = Integer.decode(index);
-			DebugSessionId id = new DebugSessionId(sid);
-			return manager.getSessionComputeIfAbsent(id);
-		}
-		catch (IllegalArgumentException e) {
-			return manager.getCurrentSession();
-		}
-	}
-
 	@Override
 	public default void consoleOutput(String output, int mask) {
 
@@ -85,13 +71,4 @@ public interface LldbModelTargetSession extends //
 		), "Refreshed");
 	}
 
-	@Override
-	public default CompletableFuture<Void> setActive() {
-		LldbManagerImpl manager = getManager();
-		SBTarget session = getSession();
-		if (session == null) {
-			session = manager.getEventSession();
-		}
-		return manager.setActiveSession(session);
-	}
 }

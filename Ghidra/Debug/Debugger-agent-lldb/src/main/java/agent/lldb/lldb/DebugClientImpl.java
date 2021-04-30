@@ -8,18 +8,19 @@ import SWIG.SBListener;
 import SWIG.SBProcess;
 import SWIG.SBTarget;
 import SWIG.SBThread;
-import agent.lldb.manager.evt.AbstractLldbEvent;
+import agent.lldb.manager.LldbEvent;
+import agent.lldb.manager.LldbManager;
 import agent.lldb.manager.evt.LldbBreakpointModifiedEvent;
 import agent.lldb.manager.evt.LldbConsoleOutputEvent;
 import agent.lldb.manager.evt.LldbModuleLoadedEvent;
 import agent.lldb.manager.evt.LldbModuleUnloadedEvent;
 import agent.lldb.manager.evt.LldbStateChangedEvent;
-import agent.lldb.manager.evt.LldbThreadExitedEvent;
 import agent.lldb.manager.evt.LldbThreadSelectedEvent;
 import ghidra.comm.util.BitmaskSet;
 
 public class DebugClientImpl implements DebugClient {
 
+	private LldbManager manager;
 	private SBDebugger sbd;
 	private SBTarget session;
 	private SBEvent event;
@@ -235,8 +236,8 @@ public class DebugClientImpl implements DebugClient {
 		}
 	}
 
-	private void fireEvent(AbstractLldbEvent lldbEvt) {
-		System.err.println(lldbEvt.toString());
+	public void fireEvent(LldbEvent<?> lldbEvt) {
+		manager.processEvent(lldbEvt);
 	}
 
 	@Override
@@ -247,6 +248,16 @@ public class DebugClientImpl implements DebugClient {
 	@Override
 	public void setEventCallbacks(DebugEventCallbacks cb) {
 		this.cb = cb;
+	}
+
+	@Override
+	public boolean getInterrupt() {
+		return false;
+	}
+
+	@Override
+	public void setManager(LldbManager manager) {
+		this.manager = manager;
 	}
 
 }

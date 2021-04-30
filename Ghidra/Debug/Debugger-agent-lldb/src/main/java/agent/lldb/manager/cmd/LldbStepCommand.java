@@ -17,7 +17,6 @@ package agent.lldb.manager.cmd;
 
 import java.util.Map;
 
-import agent.lldb.lldb.DebugThreadId;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.LldbManager.ExecSuffix;
 import agent.lldb.manager.evt.AbstractLldbCompletedCommandEvent;
@@ -30,17 +29,17 @@ import agent.lldb.manager.impl.LldbManagerImpl;
  */
 public class LldbStepCommand extends AbstractLldbCommand<Void> {
 
-	private DebugThreadId id;
+	private Integer id;
 	protected final ExecSuffix suffix;
 	private String lastCommand = "tct";
 
-	public LldbStepCommand(LldbManagerImpl manager, DebugThreadId id, ExecSuffix suffix) {
+	public LldbStepCommand(LldbManagerImpl manager, Integer id, ExecSuffix suffix) {
 		super(manager);
 		this.id = id;
 		this.suffix = suffix;
 	}
 
-	public LldbStepCommand(LldbManagerImpl manager, DebugThreadId id, Map<String, ?> args) {
+	public LldbStepCommand(LldbManagerImpl manager, Integer id, Map<String, ?> args) {
 		super(manager);
 		this.id = id;
 		this.suffix = ExecSuffix.EXTENDED;
