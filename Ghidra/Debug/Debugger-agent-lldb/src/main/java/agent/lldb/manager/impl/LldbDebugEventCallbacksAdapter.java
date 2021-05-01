@@ -17,9 +17,7 @@ package agent.lldb.manager.impl;
 
 import java.nio.file.Paths;
 
-import SWIG.StateType;
 import agent.lldb.lldb.DebugBreakpoint;
-import agent.lldb.lldb.DebugClient.ChangeEngineState;
 import agent.lldb.lldb.DebugClient.DebugStatus;
 import agent.lldb.lldb.DebugModuleInfo;
 import agent.lldb.lldb.DebugProcessInfo;
@@ -33,10 +31,8 @@ import agent.lldb.manager.evt.LldbProcessCreatedEvent;
 import agent.lldb.manager.evt.LldbProcessExitedEvent;
 import agent.lldb.manager.evt.LldbSessionCreatedEvent;
 import agent.lldb.manager.evt.LldbSessionExitedEvent;
-import agent.lldb.manager.evt.LldbStateChangedEvent;
 import agent.lldb.manager.evt.LldbThreadCreatedEvent;
 import agent.lldb.manager.evt.LldbThreadExitedEvent;
-import ghidra.comm.util.BitmaskSet;
 import ghidra.util.Msg;
 
 public class LldbDebugEventCallbacksAdapter extends DebugEventCallbacksAdapter {
@@ -115,9 +111,10 @@ public class LldbDebugEventCallbacksAdapter extends DebugEventCallbacksAdapter {
 		return Paths.get(path).getFileName().toString();
 	}
 
+	/*
 	@Override
 	public DebugStatus changeEngineState(BitmaskSet<ChangeEngineState> flags, long argument) {
-		LldbStateChangedEvent event = new LldbStateChangedEvent(flags);
+		LldbStateChangedEvent event = new LldbStateChangedEvent(null);
 		event.setArgument(argument);
 		if (flags.contains(ChangeEngineState.EXECUTION_STATUS)) {
 			if (DebugStatus.isInsideWait(argument)) {
@@ -146,6 +143,7 @@ public class LldbDebugEventCallbacksAdapter extends DebugEventCallbacksAdapter {
 		}
 		return checkInterrupt(DebugStatus.NO_CHANGE);
 	}
+	*/
 
 	//@Override
 	//public DebugStatus changeDebuggeeState(BitmaskSet<ChangeDebuggeeState> flags, long argument) {

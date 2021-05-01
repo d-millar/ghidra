@@ -42,13 +42,19 @@ import SWIG.StateType;
 import agent.lldb.gadp.impl.AbstractClientThreadExecutor;
 import agent.lldb.gadp.impl.LldbClientThreadExecutor;
 import agent.lldb.lldb.DebugClient;
+import agent.lldb.lldb.DebugClient.ChangeEngineState;
+import agent.lldb.lldb.DebugClient.ChangeProcessState;
+import agent.lldb.lldb.DebugClient.ChangeSessionState;
 import agent.lldb.lldb.DebugClient.DebugEndSessionFlags;
 import agent.lldb.lldb.DebugClient.DebugStatus;
+import agent.lldb.lldb.DebugClient.ExecutionState;
 import agent.lldb.lldb.DebugClientReentrant;
+import agent.lldb.lldb.DebugEventInfo;
 import agent.lldb.lldb.DebugProcessInfo;
 import agent.lldb.lldb.DebugSessionInfo;
 import agent.lldb.lldb.DebugThreadInfo;
 import agent.lldb.manager.LldbCause;
+import agent.lldb.manager.LldbCause.Causes;
 import agent.lldb.manager.LldbCommand;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.LldbEventsListener;
@@ -59,6 +65,7 @@ import agent.lldb.manager.breakpoint.LldbBreakpointType;
 import agent.lldb.manager.cmd.LldbAddProcessCommand;
 import agent.lldb.manager.cmd.LldbAddSessionCommand;
 import agent.lldb.manager.cmd.LldbAttachKernelCommand;
+import agent.lldb.manager.cmd.LldbCommandError;
 import agent.lldb.manager.cmd.LldbConsoleExecCommand;
 import agent.lldb.manager.cmd.LldbDeleteBreakpointsCommand;
 import agent.lldb.manager.cmd.LldbDisableBreakpointsCommand;
@@ -103,8 +110,10 @@ import agent.lldb.model.iface1.LldbModelTargetActiveScope;
 import agent.lldb.model.iface1.LldbModelTargetFocusScope;
 import agent.lldb.model.iface1.LldbModelTargetInterpreter;
 import ghidra.async.AsyncClaimQueue;
+import ghidra.async.AsyncReference;
 import ghidra.async.AsyncUtils;
 import ghidra.async.TypeSpec;
+import ghidra.comm.util.BitmaskSet;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.util.HandlerMap;
 import ghidra.lifecycle.Internal;
@@ -147,9 +156,9 @@ public class LldbManagerImpl implements LldbManager {
 	private final Map<Long, LldbBreakpointInfo> unmodifiableBreakpoints =
 		Collections.unmodifiableMap(breakpoints);
 
-	//protected final AsyncReference<StateType, LldbCause> state =
-	//	new AsyncReference<>(StateType.eStateInvalid);
-	private StateType state = StateType.eStateInvalid;
+	protected final AsyncReference<StateType, LldbCause> state =
+		new AsyncReference<>(StateType.eStateInvalid);
+	//private StateType state = StateType.eStateInvalid;
 	private final HandlerMap<LldbEvent<?>, Void, DebugStatus> handlerMap = new HandlerMap<>();
 	private final Map<Class<?>, DebugStatus> statusMap = new LinkedHashMap<>();
 	private final Map<String, DebugStatus> statusByNameMap = new LinkedHashMap<>();
@@ -390,7 +399,7 @@ public class LldbManagerImpl implements LldbManager {
 
 	@Override
 	public CompletableFuture<Void> start(String[] args) {
-		//state.set(StateType.eStateInvalid, Causes.UNCLAIMED);
+		state.set(StateType.eStateInvalid, Causes.UNCLAIMED);
 		boolean create = true;
 		if (args.length == 0) {
 			engThread = new LldbClientThreadExecutor(() -> DebugClient.debugCreate().createClient());
@@ -415,8 +424,8 @@ public class LldbManagerImpl implements LldbManager {
 		DebugClient client = engThread.getClient();
 		reentrantClient = client;
 
+		status = client.getExecutionStatus();
 		/*
-		status = client.getControl().getExecutionStatus();
 		// Take control of the session.
 		// Helps if the JVM is using it for SA, or when starting a new server during testing.
 		if (create) {
@@ -430,10 +439,6 @@ public class LldbManagerImpl implements LldbManager {
 		client.setEventCallbacks(new LldbDebugEventCallbacksAdapter(this));
 		client.flushCallbacks();
 
-		if (!create) {
-			//client.connectSession(0);
-		}
-
 		if (LldbSrvTransport != null && !"none".equalsIgnoreCase(LldbSrvTransport)) {
 			client.startServer(LldbSrvTransport);
 		}
@@ -446,7 +451,6 @@ public class LldbManagerImpl implements LldbManager {
 
 	@Override
 	public void terminate() {
-		//TODO: server.terminate();
 		engThread.execute(100, client -> {
 			Msg.debug(this, "Disconnecting DebugClient from session");
 			client.endSession(DebugEndSessionFlags.DEBUG_END_DISCONNECT);
@@ -478,10 +482,6 @@ public class LldbManagerImpl implements LldbManager {
 		assert cmd != null;
 		checkStarted();
 		LldbPendingCommand<T> pcmd = new LldbPendingCommand<>(cmd);
-		//if (isWaiting()) {
-		//	throw new DebuggerModelAccessException(
-		//		"Cannot process command " + cmd.toString() + " while engine is waiting for events");
-		//}
 
 		if (engThread.isCurrentThread()) {
 			try {
@@ -504,11 +504,9 @@ public class LldbManagerImpl implements LldbManager {
 
 	private <T> void addCommand(LldbCommand<? extends T> cmd, LldbPendingCommand<T> pcmd) {
 		synchronized (this) {
-			/*
 			if (!cmd.validInState(state.get())) {
 				throw new LldbCommandError("Command " + cmd + " is not valid while " + state.get());
 			}
-			*/
 			activeCmds.add(pcmd);
 		}
 		cmd.invoke();
@@ -518,15 +516,13 @@ public class LldbManagerImpl implements LldbManager {
 
 	@Override
 	public DebugStatus processEvent(LldbEvent<?> evt) {
-		/*
 		if (state.get() == StateType.eStateInvalid) {
 			state.set(StateType.eStateStopped, Causes.UNCLAIMED);
 		}
-		*/
 		StateType newState = evt.newState();
 		if (newState != null && !(evt instanceof LldbCommandDoneEvent)) {
 			Msg.debug(this, evt + " transitions state to " + newState);
-			//state.set(newState, evt.getCause());
+			state.set(newState, evt.getCause());
 		}
 
 		boolean cmdFinished = false;
@@ -556,12 +552,12 @@ public class LldbManagerImpl implements LldbManager {
 
 	@Override
 	public void addStateListener(LldbStateListener listener) {
-		//state.addChangeListener(listener);
+		state.addChangeListener(listener);
 	}
 
 	@Override
 	public void removeStateListener(LldbStateListener listener) {
-		//state.removeChangeListener(listener);
+		state.removeChangeListener(listener);
 	}
 
 	public ListenerSet<LldbEventsListener> getEventListeners() {
@@ -1029,10 +1025,9 @@ public class LldbManagerImpl implements LldbManager {
 	 * @return retval handling/break status
 	 */
 	protected DebugStatus processStateChanged(LldbStateChangedEvent evt, Void v) {
-		/*
-		BitmaskSet<ChangeEngineState> flags = evt.getInfo();
-		long argument = evt.getArgument();
-		if (flags.contains(ChangeEngineState.EXECUTION_STATUS)) {
+		DebugEventInfo info = evt.getInfo();
+		BitmaskSet<?> flags = info.getFlags();
+		if (flags.contains(ChangeProcessState.PROCESS_STATE_CHANGED)) {
 			if (DebugStatus.isInsideWait(argument)) {
 				return DebugStatus.NO_CHANGE;
 			}
@@ -1046,24 +1041,24 @@ public class LldbManagerImpl implements LldbManager {
 				//SBTargetImpl session = getCurrentSession();
 				//SBProcessImpl process = getCurrentProcess();
 				eventThread = getCurrentThread();
-				LldbState LldbState = null;
+				LldbStateState LldbState = null;
 				if (eventThread != null) {
 					if (status.threadState.equals(ExecutionState.STOPPED)) {
 						LldbState = LldbState.STOPPED;
 						//System.err.println("STOPPED " + id);
-						processEvent(new LldbStoppedEvent(eventThread.getId()));
+						processEvent(new LldbStoppedEvent(eventThread.GetThreadID().intValue()));
 					}
 					if (status.threadState.equals(ExecutionState.RUNNING)) {
 						//System.err.println("RUNNING " + id);
 						LldbState = LldbState.RUNNING;
-						processEvent(new LldbRunningEvent(eventThread.getId()));
+						processEvent(new LldbRunningEvent(eventThread.GetThreadID().intValue()));
 					}
 					if (!threads.containsValue(eventThread)) {
 						LldbState = LldbState.EXIT;
 					}
 					// Don't fire 
 					if (LldbState != null && LldbState != LldbState.EXIT) {
-						processEvent(new SBThreadSelectedEvent(LldbState, eventThread,
+						processEvent(new LldbThreadSelectedEvent(eventProcess.GetState(), eventThread,
 							evt.getFrame(eventThread)));
 					}
 					return DebugStatus.NO_CHANGE;
@@ -1071,22 +1066,22 @@ public class LldbManagerImpl implements LldbManager {
 			}
 			if (status.equals(DebugStatus.BREAK)) {
 				waiting = false;
-				processEvent(new LldbStoppedEvent(getSystemObjects().getCurrentThreadId()));
-				SBProcessImpl process = getCurrentProcess();
+				processEvent(new LldbStoppedEvent(eventThread.GetThreadID().intValue()));
+				SBProcess process = getCurrentProcess();
 				if (process != null) {
-					processEvent(new SBProcessSelectedEvent(process));
+					processEvent(new LldbProcessSelectedEvent(process));
 				}
 				return DebugStatus.BREAK;
 			}
 			if (status.equals(DebugStatus.GO)) {
 				waiting = true;
-				processEvent(new LldbRunningEvent(getSystemObjects().getCurrentThreadId()));
+				processEvent(new LldbRunningEvent(eventThread.GetThreadID().intValue()));
 				return DebugStatus.GO;
 			}
 			waiting = false;
 			return DebugStatus.NO_CHANGE;
 		}
-		if (flags.contains(ChangeEngineState.BREAKPOINTS)) {
+		if (flags.contains(ChangeSessionState.SESSION_BREAKPOINT_CHANGED)) {
 			long bptId = evt.getArgument();
 			//System.err.println("BPT: " + bptId + ":" + flags + ":" + argument);
 			processEvent(new LldbBreakpointModifiedEvent(bptId));
@@ -1106,7 +1101,6 @@ public class LldbManagerImpl implements LldbManager {
 		if (flags.contains(ChangeEngineState.SYSTEMS)) {
 			processEvent(new LldbSystemsEvent(argument));
 		}
-		*/
 		return DebugStatus.NO_CHANGE;
 	}
 

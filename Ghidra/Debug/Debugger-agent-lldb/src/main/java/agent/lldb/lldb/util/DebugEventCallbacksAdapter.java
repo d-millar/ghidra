@@ -18,9 +18,9 @@ package agent.lldb.lldb.util;
 import java.lang.reflect.Method;
 
 import agent.lldb.lldb.DebugBreakpoint;
-import agent.lldb.lldb.DebugClient.ChangeDebuggeeState;
-import agent.lldb.lldb.DebugClient.ChangeEngineState;
-import agent.lldb.lldb.DebugClient.ChangeSymbolState;
+import agent.lldb.lldb.DebugClient.ChangeProcessState;
+import agent.lldb.lldb.DebugClient.ChangeSessionState;
+import agent.lldb.lldb.DebugClient.ChangeThreadState;
 import agent.lldb.lldb.DebugClient.DebugStatus;
 import agent.lldb.lldb.DebugClient.SessionStatus;
 import agent.lldb.lldb.DebugEventCallbacks;
@@ -123,17 +123,17 @@ public class DebugEventCallbacksAdapter implements DebugEventCallbacks {
 	}
 
 	@Override
-	public DebugStatus changeDebuggeeState(BitmaskSet<ChangeDebuggeeState> flags, long argument) {
+	public DebugStatus changeSessionState(BitmaskSet<ChangeSessionState> flags) {
 		return DebugStatus.NO_CHANGE;
 	}
 
 	@Override
-	public DebugStatus changeEngineState(BitmaskSet<ChangeEngineState> flags, long argument) {
+	public DebugStatus changeProcessState(BitmaskSet<ChangeProcessState> flags) {
 		return DebugStatus.NO_CHANGE;
 	}
 
 	@Override
-	public DebugStatus changeSymbolState(BitmaskSet<ChangeSymbolState> flags, long argument) {
+	public DebugStatus changeThreadState(BitmaskSet<ChangeThreadState> flags) {
 		return DebugStatus.NO_CHANGE;
 	}
 }

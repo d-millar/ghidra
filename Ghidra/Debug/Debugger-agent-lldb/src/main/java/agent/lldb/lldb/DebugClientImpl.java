@@ -185,55 +185,61 @@ public class DebugClientImpl implements DebugClient {
 
 	private void translateAndFireEvent(SBEvent evt) {
 		long type = evt.GetType();
-		if ((type & SBTarget.eBroadcastBitBreakpointChanged) != 0) {
-			fireEvent(new LldbBreakpointModifiedEvent(null));
-		}
-		if ((type & SBTarget.eBroadcastBitModulesLoaded) != 0) {
-			fireEvent(new LldbModuleLoadedEvent(null));
-		}
-		if ((type & SBTarget.eBroadcastBitModulesUnloaded) != 0) {
-			fireEvent(new LldbModuleUnloadedEvent(null));
-		}
-		if ((type & SBTarget.eBroadcastBitWatchpointChanged) != 0) {
-			//fireEvent(new LldbWatchpointModifiedEvent(null));
-		}
-		if ((type & SBTarget.eBroadcastBitSymbolsLoaded) != 0) {
-			//fireEvent(new LldbSymbolsLoadedEvent(null));
-		}
-		
-		if ((type & SBProcess.eBroadcastBitStateChanged) != 0) {
-			fireEvent(new LldbStateChangedEvent(null));
-		}
-		if ((type & SBProcess.eBroadcastBitInterrupt) != 0) {
-			//fireEvent(new LldbInterrupt(null));
-		}
-		if ((type & SBProcess.eBroadcastBitSTDOUT) != 0) {
-			fireEvent(new LldbConsoleOutputEvent(0, null));
-		}
-		if ((type & SBProcess.eBroadcastBitSTDERR) != 0) {
-			fireEvent(new LldbConsoleOutputEvent(0, null));
-		}
-		if ((type & SBProcess.eBroadcastBitProfileData) != 0) {
-			//fireEvent(new LldbProfileDataEvent(null));
-		}
-		if ((type & SBProcess.eBroadcastBitStructuredData) != 0) {
-			//fireEvent(new LldbStructuredDataEvent(null));
+		if (SBTarget.EventIsTargetEvent(evt)) {
+			if ((type & SBTarget.eBroadcastBitBreakpointChanged) != 0) {
+				fireEvent(new LldbBreakpointModifiedEvent(null));
+			}
+			if ((type & SBTarget.eBroadcastBitModulesLoaded) != 0) {
+				fireEvent(new LldbModuleLoadedEvent(null));
+			}
+			if ((type & SBTarget.eBroadcastBitModulesUnloaded) != 0) {
+				fireEvent(new LldbModuleUnloadedEvent(null));
+			}
+			if ((type & SBTarget.eBroadcastBitWatchpointChanged) != 0) {
+				//fireEvent(new LldbWatchpointModifiedEvent(null));
+			}
+			if ((type & SBTarget.eBroadcastBitSymbolsLoaded) != 0) {
+				//fireEvent(new LldbSymbolsLoadedEvent(null));
+			}
 		}
 		
-		if ((type & SBThread.eBroadcastBitStackChanged) != 0) {
-			//fireEvent(new LldbStackChangedEvent(null));
+		if (SBProcess.EventIsProcessEvent(evt)) {
+			if ((type & SBProcess.eBroadcastBitStateChanged) != 0) {
+				fireEvent(new LldbStateChangedEvent(new DebugEventInfo(evt)));
+			}
+			if ((type & SBProcess.eBroadcastBitInterrupt) != 0) {
+				//fireEvent(new LldbInterrupt(null));
+			}
+			if ((type & SBProcess.eBroadcastBitSTDOUT) != 0) {
+				fireEvent(new LldbConsoleOutputEvent(0, null));
+			}
+			if ((type & SBProcess.eBroadcastBitSTDERR) != 0) {
+				fireEvent(new LldbConsoleOutputEvent(0, null));
+			}
+			if ((type & SBProcess.eBroadcastBitProfileData) != 0) {
+				//fireEvent(new LldbProfileDataEvent(null));
+			}
+			if ((type & SBProcess.eBroadcastBitStructuredData) != 0) {
+				//fireEvent(new LldbStructuredDataEvent(null));
+			}
 		}
-		if ((type & SBThread.eBroadcastBitThreadSuspended) != 0) {
-			//fireEvent(new LldbThreadSuspendedEvent(null));
-		}
-		if ((type & SBThread.eBroadcastBitThreadResumed) != 0) {
-			//fireEvent(new LldbThreadResumedEvent(null));
-		}
-		if ((type & SBThread.eBroadcastBitSelectedFrameChanged) != 0) {
-			//fireEvent(new LldbSelectedFrameChangedEvent(null));
-		}
-		if ((type & SBThread.eBroadcastBitThreadSelected) != 0) {
-			fireEvent(new LldbThreadSelectedEvent(null, null, null));
+		
+		if (SBThread.EventIsThreadEvent(evt)) {
+			if ((type & SBThread.eBroadcastBitStackChanged) != 0) {
+				//fireEvent(new LldbStackChangedEvent(null));
+			}
+			if ((type & SBThread.eBroadcastBitThreadSuspended) != 0) {
+				//fireEvent(new LldbThreadSuspendedEvent(null));
+			}
+			if ((type & SBThread.eBroadcastBitThreadResumed) != 0) {
+				//fireEvent(new LldbThreadResumedEvent(null));
+			}
+			if ((type & SBThread.eBroadcastBitSelectedFrameChanged) != 0) {
+				//fireEvent(new LldbSelectedFrameChangedEvent(null));
+			}
+			if ((type & SBThread.eBroadcastBitThreadSelected) != 0) {
+				fireEvent(new LldbThreadSelectedEvent(null, null, null));
+			}
 		}
 	}
 
