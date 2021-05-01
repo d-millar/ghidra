@@ -20,9 +20,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import agent.lldb.lldb.DebugClient.ChangeDebuggeeState;
-import agent.lldb.lldb.DebugClient.ChangeEngineState;
-import agent.lldb.lldb.DebugClient.ChangeSymbolState;
+import agent.lldb.lldb.DebugClient.ChangeProcessState;
+import agent.lldb.lldb.DebugClient.ChangeSessionState;
+import agent.lldb.lldb.DebugClient.ChangeThreadState;
 import agent.lldb.lldb.DebugClient.DebugStatus;
 import agent.lldb.lldb.DebugClient.SessionStatus;
 import ghidra.comm.util.BitmaskSet;
@@ -49,9 +49,9 @@ public interface DebugEventCallbacks {
 		UNLOAD_MODULE(1 << 7), //
 		SYSTEM_ERROR(1 << 8), //
 		SESSION_STATUS(1 << 9), //
-		CHANGE_DEBUGEE_STATE(1 << 10), //
-		CHANGE_ENGINE_STATE(1 << 11), //
-		CHANGE_SYMBOL_STATE(1 << 12), //
+		CHANGE_SESSION_STATE(1 << 10), //
+		CHANGE_PROCESS_STATE(1 << 11), //
+		CHANGE_THREAD_STATE(1 << 12), //
 		CREATE_SESSION(1 << 13), //
 		EXIT_SESSION(1 << 14) //
 		;
@@ -120,12 +120,12 @@ public interface DebugEventCallbacks {
 	@ForInterest(DebugEvent.SESSION_STATUS)
 	DebugStatus sessionStatus(SessionStatus status);
 
-	@ForInterest(DebugEvent.CHANGE_DEBUGEE_STATE)
-	DebugStatus changeDebuggeeState(BitmaskSet<ChangeDebuggeeState> flags, long argument);
+	@ForInterest(DebugEvent.CHANGE_SESSION_STATE)
+	DebugStatus changeSessionState(BitmaskSet<ChangeSessionState> flags);
 
-	@ForInterest(DebugEvent.CHANGE_ENGINE_STATE)
-	DebugStatus changeEngineState(BitmaskSet<ChangeEngineState> flags, long argument);
+	@ForInterest(DebugEvent.CHANGE_PROCESS_STATE)
+	DebugStatus changeProcessState(BitmaskSet<ChangeProcessState> flags);
 
-	@ForInterest(DebugEvent.CHANGE_SYMBOL_STATE)
-	DebugStatus changeSymbolState(BitmaskSet<ChangeSymbolState> flags, long argument);
+	@ForInterest(DebugEvent.CHANGE_THREAD_STATE)
+	DebugStatus changeThreadState(BitmaskSet<ChangeThreadState> flags);
 }

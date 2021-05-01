@@ -19,7 +19,9 @@ import com.sun.jna.platform.win32.WinBase;
 
 import SWIG.SBEvent;
 import SWIG.SBListener;
+import SWIG.SBProcess;
 import SWIG.SBTarget;
+import SWIG.SBThread;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.LldbManager;
 import ghidra.comm.util.BitmaskSet;
@@ -106,14 +108,16 @@ public interface DebugClient extends DebugClientReentrant {
 		;
 	}
 
-	public static enum ChangeDebuggeeState implements BitmaskUniverse {
-		ALL(0xffffffff), //
-		REGISTERS(1 << 0), //
-		DATA(1 << 1), //
-		REFRESH(1 << 2), //
+	public static enum ChangeSessionState implements BitmaskUniverse {
+		SESSION_ALL(0xffffffff), //
+		SESSION_BREAKPOINT_CHANGED(SBTarget.eBroadcastBitBreakpointChanged), //
+		SESSION_MODULE_LOADED(SBTarget.eBroadcastBitModulesLoaded), //
+		SESSION_MODULE_UNLOADED(SBTarget.eBroadcastBitModulesUnloaded), //
+		SESSION_WATCHPOINT_CHANGED(SBTarget.eBroadcastBitWatchpointChanged), //
+		SESSION_SYMBOLS_LOADED(SBTarget.eBroadcastBitSymbolsLoaded), //
 		;
 
-		private ChangeDebuggeeState(int mask) {
+		private ChangeSessionState(int mask) {
 			this.mask = mask;
 		}
 
@@ -124,27 +128,18 @@ public interface DebugClient extends DebugClientReentrant {
 			return mask;
 		}
 	}
-
-	public static enum ChangeEngineState implements BitmaskUniverse {
-		ALL(0xffffffff), //
-		CURRENT_THREAD(1 << 0), //
-		EFFECTIVE_PROCESSOR(1 << 1), //
-		BREAKPOINTS(1 << 2), //
-		CODE_LEVEL(1 << 3), //
-		EXECUTION_STATUS(1 << 4), //
-		ENGINE_OPTIONS(1 << 5), //
-		LOG_FILE(1 << 6), //
-		RADIX(1 << 7), //
-		EVENT_FILTERS(1 << 8), //
-		PROCESS_OPTIONS(1 << 9), //
-		EXTENSIONS(1 << 10), //
-		SYSTEMS(1 << 11), //
-		ASSEMBLY_OPTIONS(1 << 12), //
-		EXPRESSION_SYNTAX(1 << 13), //
-		TEXT_REPLACEMENTS(1 << 14), //
+	
+	public static enum ChangeProcessState implements BitmaskUniverse {
+		PROCESS_ALL(0xffffffff), //
+		PROCESS_STATE_CHANGED(SBProcess.eBroadcastBitStateChanged), //
+		PROCESS_INTERRUPT(SBProcess.eBroadcastBitInterrupt), //
+		PROCESS_STDOUT(SBProcess.eBroadcastBitSTDOUT), //
+		PROCESS_STDERR(SBProcess.eBroadcastBitSTDERR), //
+		PROCESS_PROFILE_DATA(SBProcess.eBroadcastBitProfileData), //
+		PROCESS_STRUCTURED_DATA(SBProcess.eBroadcastBitStructuredData), //
 		;
 
-		private ChangeEngineState(int mask) {
+		private ChangeProcessState(int mask) {
 			this.mask = mask;
 		}
 
@@ -155,18 +150,17 @@ public interface DebugClient extends DebugClientReentrant {
 			return mask;
 		}
 	}
-
-	public static enum ChangeSymbolState implements BitmaskUniverse {
-		ALL(0xffffffff), //
-		LOADS(1 << 0), //
-		UNLOADS(1 << 1), //
-		SCOPE(1 << 2), //
-		PATHS(1 << 3), //
-		SYMBOL_OPTIONS(1 << 4), //
-		TYPE_OPTIONS(1 << 5), //
+	
+	public static enum ChangeThreadState implements BitmaskUniverse {
+		THREAD_ALL(0xffffffff), //
+		THREAD_STACK_CHANGED(SBThread.eBroadcastBitStackChanged), //
+		THREAD_SUSPENDED(SBThread.eBroadcastBitThreadSuspended), //
+		THREAD_RESUMED(SBThread.eBroadcastBitThreadResumed), //
+		THREAD_FRAME_CHANGED(SBThread.eBroadcastBitSelectedFrameChanged), //
+		THREAD_SELECTED(SBThread.eBroadcastBitThreadSelected), //
 		;
 
-		private ChangeSymbolState(int mask) {
+		private ChangeThreadState(int mask) {
 			this.mask = mask;
 		}
 
@@ -177,6 +171,7 @@ public interface DebugClient extends DebugClientReentrant {
 			return mask;
 		}
 	}
+	
 
 	public static enum DebugAttachFlags implements BitmaskUniverse {
 		DEFAULT(0), //

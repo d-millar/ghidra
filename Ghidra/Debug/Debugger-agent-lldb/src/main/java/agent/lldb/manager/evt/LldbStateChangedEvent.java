@@ -19,15 +19,16 @@ import SWIG.SBFrame;
 import SWIG.SBThread;
 import SWIG.StateType;
 import agent.lldb.lldb.DebugClient.ChangeEngineState;
+import agent.lldb.lldb.DebugEventInfo;
 import ghidra.comm.util.BitmaskSet;
 
-public class LldbStateChangedEvent extends AbstractLldbEvent<BitmaskSet<ChangeEngineState>> {
+public class LldbStateChangedEvent extends AbstractLldbEvent<DebugEventInfo> {
 
 	private long argument;
 	private StateType state = null;
 
-	public LldbStateChangedEvent(BitmaskSet<ChangeEngineState> flags) {
-		super(flags);
+	public LldbStateChangedEvent(DebugEventInfo info) {
+		super(info);
 	}
 
 	public long getArgument() {
