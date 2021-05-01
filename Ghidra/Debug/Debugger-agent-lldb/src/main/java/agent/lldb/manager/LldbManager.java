@@ -359,4 +359,5 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 
 	//DebugEventInformation getLastEventInformation();
 
+	DebugStatus getStatus();
 }

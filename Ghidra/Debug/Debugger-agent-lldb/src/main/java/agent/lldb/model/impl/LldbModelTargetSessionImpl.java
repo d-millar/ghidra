@@ -61,7 +61,7 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 	}
 
 	protected static String indexSession(SBTarget session) {
-		return indexSession(session.hashCode());
+		return indexSession((int) session.GetProcess().GetUniqueID());
 	}
 
 	protected static String keySession(SBTarget session) {

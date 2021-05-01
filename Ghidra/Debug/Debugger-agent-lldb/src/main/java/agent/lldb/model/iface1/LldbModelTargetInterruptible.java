@@ -32,11 +32,8 @@ public interface LldbModelTargetInterruptible extends LldbModelTargetObject, Tar
 
 	@Override
 	public default CompletableFuture<Void> interrupt() {
-		/*
 		getManager().sendInterruptNow();
 		return CompletableFuture.completedFuture(null);
-		*/
-		return AsyncUtils.NIL;
 	}
 
 }

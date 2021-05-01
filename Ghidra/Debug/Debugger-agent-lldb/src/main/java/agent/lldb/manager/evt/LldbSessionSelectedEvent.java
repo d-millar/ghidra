@@ -30,9 +30,9 @@ public class LldbSessionSelectedEvent extends AbstractLldbEvent<Integer> {
 	 * @param session dbgeng-defined session
 	 */
 	public LldbSessionSelectedEvent(SBTarget session) {
-		super(session.hashCode());
+		super((int) session.GetProcess().GetUniqueID());
 		this.session = session;
-		this.id = session.hashCode();
+		this.id = (int) session.GetProcess().GetUniqueID();
 	}
 
 	/**

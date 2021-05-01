@@ -104,11 +104,11 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 	}
 
 	@Override
-	public void moduleLoaded(SBProcess proc, DebugModuleInfo info, LldbCause cause) {
+	public void moduleLoaded(SBProcess proc, DebugModuleInfo info, int index, LldbCause cause) {
 		LldbModelTargetProcess process = getTargetProcess(proc);
 		LldbModelTargetModuleContainer modules = process.getModules();
 		if (modules != null) {
-			modules.libraryLoaded(info.toString());
+			modules.libraryLoaded(info, index);
 		}
 	}
 

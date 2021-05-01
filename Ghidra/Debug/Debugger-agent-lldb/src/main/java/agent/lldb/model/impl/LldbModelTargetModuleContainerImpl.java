@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 
 import SWIG.SBModule;
 import SWIG.SBProcess;
+import agent.lldb.lldb.DebugModuleInfo;
 import agent.lldb.model.iface2.LldbModelTargetModule;
 import agent.lldb.model.iface2.LldbModelTargetModuleContainer;
 import ghidra.dbg.target.TargetModule;
@@ -56,8 +57,9 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 
 	@Override
 	@Internal
-	public void libraryLoaded(String name) {
+	public void libraryLoaded(DebugModuleInfo info, int index) {
 		LldbModelTargetModule module;
+		String name = info.getModuleName(index);
 		synchronized (this) {
 			/**
 			 * It's not a good idea to remove "stale" entries. If the entry's already present, it's

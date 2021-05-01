@@ -135,7 +135,7 @@ public interface LldbEventsListener {
 	 * @param name the name of the module on the target
 	 * @param cause the cause of this event
 	 */
-	void moduleLoaded(SBProcess process, DebugModuleInfo info, LldbCause cause);
+	void moduleLoaded(SBProcess process, DebugModuleInfo info, int index, LldbCause cause);
 
 	/**
 	 * A module has been unloaded from an process
