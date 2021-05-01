@@ -110,28 +110,34 @@ public class LldbModelTargetObjectImpl extends DefaultTargetObject<TargetObject,
 
 	protected void checkExited(StateType state, LldbCause cause) {
 		TargetExecutionState exec = TargetExecutionState.INACTIVE;
-		/*
 		switch (state.swigValue()) {
-			case eStateInvalid: {
+			case 0: // eStateInvalid
+			case 9: // eStateDetached
+			{ 
 				exec = TargetExecutionState.INACTIVE;
 				break;
 			}
-			case eStateConnected: {
+			case 2: // eStateConnected
+			case 3: // eStateAttaching
+			case 4: // eStateLaunching
+			{ 
 				exec = TargetExecutionState.ALIVE;
 				break;
 			}
-			case RUNNING: {
+			case 5: { // eStateStopped
+				exec = TargetExecutionState.STOPPED;
+				onStopped();
+				break;
+			}
+			case 6: // eStateRunning
+			case 7: // eStateStepping
+			{ 
 				exec = TargetExecutionState.RUNNING;
 				resetModified();
 				onRunning();
 				break;
 			}
-			case STOPPED: {
-				exec = TargetExecutionState.STOPPED;
-				onStopped();
-				break;
-			}
-			case EXIT: {
+			case 10: { // eStateExited
 				exec = TargetExecutionState.TERMINATED;
 				if (getParentProcess() != null || this instanceof TargetProcess) {
 					getManager().removeStateListener(accessListener);
@@ -139,7 +145,9 @@ public class LldbModelTargetObjectImpl extends DefaultTargetObject<TargetObject,
 				onExit();
 				break;
 			}
-			case SESSION_EXIT: {
+			case 1: // eStateUnloaded
+			case 8: // eStateCrashed
+			{ 
 				getModel().close();
 				return;
 			}
@@ -148,7 +156,6 @@ public class LldbModelTargetObjectImpl extends DefaultTargetObject<TargetObject,
 			LldbModelTargetExecutionStateful stateful = (LldbModelTargetExecutionStateful) this;
 			stateful.setExecutionState(exec, "Refreshed");
 		}
-		*/
 	}
 
 	@Override

@@ -17,6 +17,7 @@ package agent.lldb.model.iface2;
 
 import java.util.concurrent.CompletableFuture;
 
+import agent.lldb.lldb.DebugModuleInfo;
 import agent.lldb.model.iface1.LldbModelTargetEventScope;
 import ghidra.dbg.target.TargetModule;
 import ghidra.dbg.target.TargetModuleContainer;
@@ -29,7 +30,7 @@ public interface LldbModelTargetModuleContainer
 
 	public LldbModelTargetModule getTargetModule(String name);
 
-	public void libraryLoaded(String name);
+	public void libraryLoaded(DebugModuleInfo info, int index);
 
 	public void libraryUnloaded(String name);
 

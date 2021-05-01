@@ -42,14 +42,13 @@ import SWIG.StateType;
 import agent.lldb.gadp.impl.AbstractClientThreadExecutor;
 import agent.lldb.gadp.impl.LldbClientThreadExecutor;
 import agent.lldb.lldb.DebugClient;
-import agent.lldb.lldb.DebugClient.ChangeEngineState;
 import agent.lldb.lldb.DebugClient.ChangeProcessState;
-import agent.lldb.lldb.DebugClient.ChangeSessionState;
 import agent.lldb.lldb.DebugClient.DebugEndSessionFlags;
 import agent.lldb.lldb.DebugClient.DebugStatus;
-import agent.lldb.lldb.DebugClient.ExecutionState;
+import agent.lldb.lldb.DebugClientImpl;
 import agent.lldb.lldb.DebugClientReentrant;
 import agent.lldb.lldb.DebugEventInfo;
+import agent.lldb.lldb.DebugModuleInfo;
 import agent.lldb.lldb.DebugProcessInfo;
 import agent.lldb.lldb.DebugSessionInfo;
 import agent.lldb.lldb.DebugThreadInfo;
@@ -192,13 +191,13 @@ public class LldbManagerImpl implements LldbManager {
 		}
 	}
 
-	public void addThread(SBThread thread) {
+	public void addThreadIfAbsent(SBThread thread) {
 		synchronized (threads) {
 			int id = thread.GetThreadID().intValue();
 			if (!threads.containsKey(id)) {
 				threads.put(id, thread);
+				getClient().processEvent(new LldbThreadCreatedEvent(new DebugThreadInfo(thread)));
 			}
-			getClient().fireEvent(new LldbThreadCreatedEvent(new DebugThreadInfo(thread)));
 		}
 	}
 
@@ -261,13 +260,13 @@ public class LldbManagerImpl implements LldbManager {
 		}
 	}
 
-	public void addProcess(SBProcess process) {
+	public void addProcessIfAbsent(SBProcess process) {
 		synchronized (processes) {
 			int id = process.GetProcessID().intValue();
 			if (!processes.containsKey(id)) {
 				processes.put(id, process);
+				getClient().processEvent(new LldbProcessCreatedEvent(new DebugProcessInfo(process)));
 			}
-			getClient().fireEvent(new LldbProcessCreatedEvent(new DebugProcessInfo(process)));
 		}
 	}
 
@@ -298,13 +297,13 @@ public class LldbManagerImpl implements LldbManager {
 		}
 	}
 
-	public void addSession(SBTarget session) {
+	public void addSessionIfAbsent(SBTarget session) {
 		synchronized (sessions) {
-			int id = session.hashCode();
+			int id = (int) session.GetProcess().GetUniqueID();
 			if (!sessions.containsKey(id)) {
 				sessions.put(id, session);
+				getClient().processEvent(new LldbSessionCreatedEvent(new DebugSessionInfo(session)));
 			}
-			getClient().fireEvent(new LldbSessionCreatedEvent(new DebugSessionInfo(session)));
 		}
 	}
 
@@ -621,13 +620,14 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	private Integer updateState(SBEvent event) {
-		DebugClient client = engThread.getClient();
+		DebugClientImpl client = (DebugClientImpl) engThread.getClient();
 		currentSession = eventSession = SBTarget.GetTargetFromEvent(event);
 		currentProcess = eventProcess = SBProcess.GetProcessFromEvent(event);
 		currentThread = eventThread = SBThread.GetThreadFromEvent(event);
-		addSession(eventSession);
-		addProcess(eventProcess);
-		addThread(eventThread);
+		addSessionIfAbsent(eventSession);
+		addProcessIfAbsent(eventProcess);
+		addThreadIfAbsent(eventThread);
+		client.translateAndFireEvent(event);
 		/*
 		Integer etid = so.getEventThread();
 		DebugProcessId epid = so.getEventProcess();
@@ -979,18 +979,12 @@ public class LldbManagerImpl implements LldbManager {
 	 * @return retval handling/break status
 	 */
 	protected DebugStatus processModuleLoaded(LldbModuleLoadedEvent evt, Void v) {
-		/*
-		updateState();
-		SBProcess process = getCurrentProcess();
 		DebugModuleInfo info = evt.getInfo();
-		process.moduleLoaded(info);
-		getEventListeners().fire.moduleLoaded(process, info, evt.getCause());
-
-		String key = info.getModuleName();
-		if (statusByNameMap.containsKey(key)) {
-			return statusByNameMap.get(key);
+		long n = info.getNumberOfModules();
+		SBProcess process = SBProcess.GetProcessFromEvent(info.event);
+		for (int i = 0; i < n; i++) {
+			getEventListeners().fire.moduleLoaded(process, info, i, evt.getCause());
 		}
-		*/
 		return statusMap.get(evt.getClass());
 	}
 
@@ -1026,22 +1020,24 @@ public class LldbManagerImpl implements LldbManager {
 	 */
 	protected DebugStatus processStateChanged(LldbStateChangedEvent evt, Void v) {
 		DebugEventInfo info = evt.getInfo();
+		StateType state = SBProcess.GetStateFromEvent(info.event);
 		BitmaskSet<?> flags = info.getFlags();
 		if (flags.contains(ChangeProcessState.PROCESS_STATE_CHANGED)) {
-			if (DebugStatus.isInsideWait(argument)) {
-				return DebugStatus.NO_CHANGE;
-			}
-			status = DebugStatus.fromArgument(argument);
+			//if (DebugStatus.isInsideWait(argument)) {
+			//	return DebugStatus.NO_CHANGE;
+			//}
+			status = DebugStatus.fromArgument(state);
 
 			if (status.equals(DebugStatus.NO_DEBUGGEE)) {
 				waiting = false;
 				return DebugStatus.NO_DEBUGGEE;
 			}
+			/*
 			if (!threads.isEmpty()) {
 				//SBTargetImpl session = getCurrentSession();
 				//SBProcessImpl process = getCurrentProcess();
 				eventThread = getCurrentThread();
-				LldbStateState LldbState = null;
+				LldbState LldbState = null;
 				if (eventThread != null) {
 					if (status.threadState.equals(ExecutionState.STOPPED)) {
 						LldbState = LldbState.STOPPED;
@@ -1064,6 +1060,7 @@ public class LldbManagerImpl implements LldbManager {
 					return DebugStatus.NO_CHANGE;
 				}
 			}
+			*/
 			if (status.equals(DebugStatus.BREAK)) {
 				waiting = false;
 				processEvent(new LldbStoppedEvent(eventThread.GetThreadID().intValue()));
@@ -1081,6 +1078,7 @@ public class LldbManagerImpl implements LldbManager {
 			waiting = false;
 			return DebugStatus.NO_CHANGE;
 		}
+		/*
 		if (flags.contains(ChangeSessionState.SESSION_BREAKPOINT_CHANGED)) {
 			long bptId = evt.getArgument();
 			//System.err.println("BPT: " + bptId + ":" + flags + ":" + argument);
@@ -1101,6 +1099,7 @@ public class LldbManagerImpl implements LldbManager {
 		if (flags.contains(ChangeEngineState.SYSTEMS)) {
 			processEvent(new LldbSystemsEvent(argument));
 		}
+		*/
 		return DebugStatus.NO_CHANGE;
 	}
 
@@ -1374,7 +1373,7 @@ public class LldbManagerImpl implements LldbManager {
 		Msg.info(this, "Interrupting");
 		// NB: don't use "execute" here - engThread is paused on waitForEvents
 		//  and execute::sequence blocks on engThread 
-		//reentrantClient.getControl().setInterrupt(DebugInterrupt.ACTIVE);
+		currentProcess.SendAsyncInterrupt();
 	}
 
 	@Override
@@ -1611,5 +1610,9 @@ public class LldbManagerImpl implements LldbManager {
 
 	public void setContinuation(CompletableFuture<String> continuation) {
 		this.continuation = continuation;
+	}
+	
+	public DebugStatus getStatus() {
+		return status;
 	}
 }

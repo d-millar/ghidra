@@ -102,9 +102,9 @@ public class LldbDebugEventCallbacksAdapter extends DebugEventCallbacksAdapter {
 	public DebugStatus unloadModule(String imageBaseName, long baseOffset) {
 		Msg.info(this,
 			"***Module Unloaded: " + imageBaseName + ", " + Long.toHexString(baseOffset));
-		DebugModuleInfo info =
-			new DebugModuleInfo(0L, baseOffset, 0, basename(imageBaseName), imageBaseName, 0, 0);
-		return checkInterrupt(manager.processEvent(new LldbModuleUnloadedEvent(info)));
+		//DebugModuleInfo info =
+		//	new DebugModuleInfo(0L, baseOffset, 0, basename(imageBaseName), imageBaseName, 0, 0);
+		return null; //checkInterrupt(manager.processEvent(new LldbModuleUnloadedEvent(info)));
 	}
 
 	private String basename(String path) {

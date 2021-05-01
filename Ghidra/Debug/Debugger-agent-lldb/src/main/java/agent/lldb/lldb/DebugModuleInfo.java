@@ -15,6 +15,14 @@
  */
 package agent.lldb.lldb;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import SWIG.SBEvent;
+import SWIG.SBFileSpec;
+import SWIG.SBModule;
+import SWIG.SBTarget;
+
 /**
  * Information about a module (program or library image).
  * 
@@ -23,42 +31,54 @@ package agent.lldb.lldb;
  * {@code CreateProcess} of {@code IDebugEventCallbacks}.
  */
 public class DebugModuleInfo {
-	public final long imageFileHandle;
-	public final long baseOffset;
-	public final int moduleSize;
-	public final int checkSum;
-	public final int timeDateStamp;
-	private String moduleName;
-	private String imageName;
+	
+	public SBEvent event;
+	private long numModules;
+	private Map<Integer, SBModule> modules = new HashMap<>();
 
-	public DebugModuleInfo(long imageFileHandle, long baseOffset, int moduleSize, String moduleName,
-			String imageName, int checkSum, int timeDateStamp) {
-		this.imageFileHandle = imageFileHandle;
-		this.baseOffset = baseOffset;
-		this.moduleSize = moduleSize;
-		this.setModuleName(moduleName);
-		this.setImageName(imageName);
-		this.checkSum = checkSum;
-		this.timeDateStamp = timeDateStamp; // TODO: Convert to DateTime?
+	public DebugModuleInfo(SBEvent event) {
+		this.event = event;
+		numModules = SBTarget.GetNumModulesFromEvent(event);
+		for (int i = 0; i < numModules; i++) {
+			SBModule module = SBTarget.GetModuleAtIndexFromEvent(i, event);
+			modules.put(i, module);
+		}
+	}
+	
+	public Long getNumberOfModules() {
+		return numModules;
 	}
 
-	public String toString() {
-		return Long.toHexString(baseOffset);
+	public SBModule getModule(int index) {
+		return modules.get(index);	
+	}
+	
+	public String toString(int index) {
+		SBModule module = modules.get(index);	
+		return module.toString();
 	}
 
-	public String getModuleName() {
-		return moduleName;
+	public String getModuleName(int index) {
+		SBModule module = modules.get(index);	
+		return module.toString();
 	}
 
-	public void setModuleName(String moduleName) {
-		this.moduleName = moduleName;
+	public void setModuleName(int index, String moduleName) {
+		SBModule module = modules.get(index);	
+		SBFileSpec filespec = module.GetFileSpec();
+		filespec.SetFilename(moduleName);
 	}
 
-	public String getImageName() {
-		return imageName;
+	public String getImageName(int index) {
+		SBModule module = modules.get(index);	
+		SBFileSpec filespec = module.GetFileSpec();
+		return filespec.GetDirectory()+":"+filespec.GetFilename();
 	}
 
-	public void setImageName(String imageName) {
-		this.imageName = imageName;
+	public void setImageName(int index, String dirName, String imageName) {
+		SBModule module = modules.get(index);	
+		SBFileSpec filespec = module.GetFileSpec();
+		filespec.SetDirectory(dirName);
+		filespec.SetFilename(imageName);
 	}
 }

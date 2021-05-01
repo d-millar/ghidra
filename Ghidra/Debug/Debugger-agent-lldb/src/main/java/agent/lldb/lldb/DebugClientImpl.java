@@ -177,23 +177,22 @@ public class DebugClientImpl implements DebugClient {
 	public SBEvent waitForEvent() {
 		boolean eventFound = getListener().WaitForEvent(-1, event);
 		if (eventFound) {
-			translateAndFireEvent(event);
 			return event;
 		}
 		return null;
 	}
 
-	private void translateAndFireEvent(SBEvent evt) {
+	public void translateAndFireEvent(SBEvent evt) {
 		long type = evt.GetType();
 		if (SBTarget.EventIsTargetEvent(evt)) {
 			if ((type & SBTarget.eBroadcastBitBreakpointChanged) != 0) {
-				fireEvent(new LldbBreakpointModifiedEvent(null));
+				processEvent(new LldbBreakpointModifiedEvent(null));
 			}
 			if ((type & SBTarget.eBroadcastBitModulesLoaded) != 0) {
-				fireEvent(new LldbModuleLoadedEvent(null));
+				processEvent(new LldbModuleLoadedEvent(new DebugModuleInfo(evt)));
 			}
 			if ((type & SBTarget.eBroadcastBitModulesUnloaded) != 0) {
-				fireEvent(new LldbModuleUnloadedEvent(null));
+				processEvent(new LldbModuleUnloadedEvent(null));
 			}
 			if ((type & SBTarget.eBroadcastBitWatchpointChanged) != 0) {
 				//fireEvent(new LldbWatchpointModifiedEvent(null));
@@ -205,16 +204,16 @@ public class DebugClientImpl implements DebugClient {
 		
 		if (SBProcess.EventIsProcessEvent(evt)) {
 			if ((type & SBProcess.eBroadcastBitStateChanged) != 0) {
-				fireEvent(new LldbStateChangedEvent(new DebugEventInfo(evt)));
+				processEvent(new LldbStateChangedEvent(new DebugEventInfo(evt)));
 			}
 			if ((type & SBProcess.eBroadcastBitInterrupt) != 0) {
 				//fireEvent(new LldbInterrupt(null));
 			}
 			if ((type & SBProcess.eBroadcastBitSTDOUT) != 0) {
-				fireEvent(new LldbConsoleOutputEvent(0, null));
+				processEvent(new LldbConsoleOutputEvent(0, null));
 			}
 			if ((type & SBProcess.eBroadcastBitSTDERR) != 0) {
-				fireEvent(new LldbConsoleOutputEvent(0, null));
+				processEvent(new LldbConsoleOutputEvent(0, null));
 			}
 			if ((type & SBProcess.eBroadcastBitProfileData) != 0) {
 				//fireEvent(new LldbProfileDataEvent(null));
@@ -238,22 +237,19 @@ public class DebugClientImpl implements DebugClient {
 				//fireEvent(new LldbSelectedFrameChangedEvent(null));
 			}
 			if ((type & SBThread.eBroadcastBitThreadSelected) != 0) {
-				fireEvent(new LldbThreadSelectedEvent(null, null, null));
+				processEvent(new LldbThreadSelectedEvent(null, null, null));
 			}
 		}
 	}
 
-	public void fireEvent(LldbEvent<?> lldbEvt) {
+	public void processEvent(LldbEvent<?> lldbEvt) {
 		manager.processEvent(lldbEvt);
 	}
 
 	@Override
 	public DebugStatus getExecutionStatus() {
-		//TODO: THIS NEEDS TO BE FIXED BEFORE ANYTHING CAN RUN
-		if  (session == null) return DebugStatus.NO_DEBUGGEE;
 		StateType state = manager.getState();
-		boolean invalid = state.equals(StateType.eStateInvalid);
-		return invalid ? DebugStatus.GO : DebugStatus.BREAK; 
+		return DebugStatus.fromArgument(state);
 	}
 
 	@Override

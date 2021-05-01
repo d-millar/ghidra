@@ -82,6 +82,6 @@ public class LldbLaunchProcessCommand extends AbstractLldbCommand<SBThread> {
 		DebugClient client = manager.getClient();
 		client.createProcess(client.getLocalServer(), StringUtils.join(newArgs, " "),
 			BitmaskSet.of(DebugCreateFlags.DEBUG_PROCESS));
-		//manager.waitForEvent();
+		manager.waitForEventEx();
 	}
 }

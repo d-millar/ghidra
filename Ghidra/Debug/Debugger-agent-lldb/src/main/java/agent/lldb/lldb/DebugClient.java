@@ -22,6 +22,7 @@ import SWIG.SBListener;
 import SWIG.SBProcess;
 import SWIG.SBTarget;
 import SWIG.SBThread;
+import SWIG.StateType;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.LldbManager;
 import ghidra.comm.util.BitmaskSet;
@@ -83,17 +84,41 @@ public interface DebugClient extends DebugClientReentrant {
 		public final ExecutionState threadState;
 		public final int precedence; // 0 is highest
 
-		public static DebugStatus fromArgument(long argument) {
-			return values()[(int) (argument & MASK)];
+		public static DebugStatus fromArgument(StateType state) {
+			switch (state.swigValue()) {
+				case 0:	// eStateInvalid
+				case 1: // eStateUnloaded
+					return DebugStatus.NO_DEBUGGEE;
+				case 2: // eStateConnected
+					return DebugStatus.GO;
+				case 3: // eStateAttaching
+				case 4: // eStateLaunching
+					return DebugStatus.GO;
+				case 5: // eStateStopped
+					return DebugStatus.BREAK;
+				case 6: // eStateRunning
+					return DebugStatus.GO;
+				case 7: // eStateStepping
+					return DebugStatus.STEP_INTO;
+				case 8:  // eStateCrashed
+				case 9:  // eStateDetached
+				case 10: // eStateExited
+				case 11: // eStateSuspended
+					return DebugStatus.GO;
+				default:
+					return DebugStatus.NO_CHANGE;
+			}
 		}
 
-		public static boolean isInsideWait(long argument) {
+		/*
+		public static boolean isInsideWait(SBEvent event) {
 			return (argument & INSIDE_WAIT) != 0;
 		}
 
-		public static boolean isWaitTimeout(long argument) {
+		public static boolean isWaitTimeout(SBEvent event) {
 			return (argument & WAIT_TIMEOUT) != 0;
 		}
+		*/
 	}
 
 	public static enum SessionStatus {
@@ -369,7 +394,7 @@ public interface DebugClient extends DebugClientReentrant {
 	
 	DebugStatus getExecutionStatus();
 
-	void fireEvent(LldbEvent<?> lldbEvt);
+	void processEvent(LldbEvent<?> lldbEvt);
 
 	boolean getInterrupt();
 
