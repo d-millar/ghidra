@@ -16,6 +16,7 @@
 package agent.lldb.manager.evt;
 
 import SWIG.SBTarget;
+import agent.lldb.lldb.DebugClient;
 
 /**
  * The event corresponding with "{@code =thread-selected}"
@@ -30,9 +31,9 @@ public class LldbSessionSelectedEvent extends AbstractLldbEvent<Integer> {
 	 * @param session dbgeng-defined session
 	 */
 	public LldbSessionSelectedEvent(SBTarget session) {
-		super((int) session.GetProcess().GetUniqueID());
+		super(DebugClient.getSessionId(session));
 		this.session = session;
-		this.id = (int) session.GetProcess().GetUniqueID();
+		this.id = DebugClient.getSessionId(session);
 	}
 
 	/**

@@ -81,7 +81,7 @@ public class LldbAttachCommand extends AbstractLldbCommand<Set<SBThread>> {
 	@Override
 	public void invoke() {
 		DebugClient dbgeng = manager.getClient();
-		dbgeng.attachProcess(dbgeng.getLocalServer(), proc.GetProcessID().intValue(), flags);
+		dbgeng.attachProcess(dbgeng.getLocalServer(), DebugClient.getProcessId(proc), flags);
 
 		manager.waitForEventEx();
 	}

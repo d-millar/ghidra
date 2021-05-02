@@ -31,7 +31,7 @@ public class DebugSessionInfo {
 
 	public DebugSessionInfo(SBTarget session) {
 		this.session = session;
-		this.id = (int) session.GetProcess().GetUniqueID();
+		this.id = DebugClient.getSessionId(session);
 	}
 
 	public String toString() {

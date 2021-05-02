@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import SWIG.SBFrame;
 import SWIG.SBThread;
 import SWIG.StateType;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.manager.cmd.LldbSetActiveThreadCommand;
@@ -62,7 +63,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 	}
 
 	protected static String indexThread(SBThread thread) {
-		return indexThread(thread.GetThreadID().intValue());
+		return indexThread(DebugClient.getThreadId(thread));
 	}
 
 	protected static String keyThread(SBThread thread) {
@@ -81,7 +82,6 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 			LldbModelTargetProcess process, SBThread thread) {
 		super(threads.getModel(), threads, keyThread(thread), "Thread");
 		this.getModel().addModelObject(thread, this);
-		this.getModel().addModelObject(thread.GetThreadID(), this);
 		this.process = process;
 		this.thread = thread;
 
@@ -105,13 +105,13 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 	@Override
 	public String getDisplay() {
 		if (getManager().isKernelMode()) {
-			return "[PR" + thread.GetThreadID() + "]";
+			return "[PR" +  DebugClient.getThreadId(thread) + "]";
 		}
-		String tidstr = Long.toString(thread.GetThreadID().longValue(), base);
+		String tidstr = Long.toString(DebugClient.getThreadId(thread), base);
 		if (base == 16) {
 			tidstr = "0x" + tidstr;
 		}
-		return "[" + thread.GetThreadID() + ":" + tidstr + "]";
+		return "[" + tidstr + "]";
 	}
 
 	@Override

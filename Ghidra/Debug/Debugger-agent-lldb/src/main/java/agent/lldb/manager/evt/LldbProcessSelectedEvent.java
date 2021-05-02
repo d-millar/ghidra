@@ -16,6 +16,7 @@ s * IP: GHIDRA
 package agent.lldb.manager.evt;
 
 import SWIG.SBProcess;
+import agent.lldb.lldb.DebugClient;
 
 /**
  * The event corresponding with "{@code =thread-selected}"
@@ -30,9 +31,9 @@ public class LldbProcessSelectedEvent extends AbstractLldbEvent<Integer> {
 	 * @param id dbgeng-defined id
 	 */
 	public LldbProcessSelectedEvent(SBProcess process) {
-		super(process.GetProcessID().intValue());
+		super(DebugClient.getProcessId(process));
 		this.process = process;
-		this.id = process.GetProcessID().intValue();
+		this.id = DebugClient.getProcessId(process);
 	}
 
 	/**

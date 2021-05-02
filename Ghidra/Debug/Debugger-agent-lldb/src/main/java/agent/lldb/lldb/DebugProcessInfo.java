@@ -31,7 +31,7 @@ public class DebugProcessInfo {
 
 	public DebugProcessInfo(SBProcess process) {
 		this.process = process;
-		this.id = process.GetProcessID().intValue();
+		this.id = DebugClient.getProcessId(process);
 	}
 
 	public String toString() {

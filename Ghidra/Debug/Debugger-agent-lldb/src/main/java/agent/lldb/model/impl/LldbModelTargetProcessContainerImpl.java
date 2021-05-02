@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import SWIG.SBProcess;
 import SWIG.SBThread;
 import SWIG.StateType;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.lldb.DebugModuleInfo;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbReason;
@@ -65,7 +66,7 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 		changeElements(List.of(), List.of(process), Map.of(), "Added");
 		process.processStarted(proc);
 		getListeners().fire.event(getProxy(), null, TargetEventType.PROCESS_CREATED,
-			"Process " + proc.GetProcessID().intValue() + " started " + process.getName(),
+			"Process " + DebugClient.getProcessId(proc) + " started " + process.getName(),
 			List.of(process));
 	}
 
