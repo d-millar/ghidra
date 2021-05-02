@@ -23,6 +23,7 @@ import java.util.Set;
 import SWIG.SBProcess;
 import SWIG.SBTarget;
 import agent.lldb.manager.LldbCause.Causes;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbManager;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import ghidra.util.Msg;
@@ -56,6 +57,6 @@ public class LldbListProcessesCommand extends AbstractLldbCommand<Map<Integer, S
 	public void invoke() {
 		SBProcess p = manager.getCurrentProcess();
 		updatedProcessIds = new ArrayList<>();
-		updatedProcessIds.add(p.GetProcessID().intValue());
+		updatedProcessIds.add(DebugClient.getProcessId(p));
 	}
 }

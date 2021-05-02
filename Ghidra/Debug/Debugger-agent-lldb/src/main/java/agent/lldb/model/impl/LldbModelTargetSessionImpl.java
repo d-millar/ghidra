@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import SWIG.SBTarget;
 import SWIG.SBThread;
 import SWIG.StateType;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface1.LldbModelSelectableObject;
@@ -61,7 +62,7 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 	}
 
 	protected static String indexSession(SBTarget session) {
-		return indexSession((int) session.GetProcess().GetUniqueID());
+		return indexSession(DebugClient.getSessionId(session));
 	}
 
 	protected static String keySession(SBTarget session) {

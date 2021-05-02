@@ -18,6 +18,7 @@ package agent.lldb.manager.evt;
 import SWIG.SBFrame;
 import SWIG.SBThread;
 import SWIG.StateType;
+import agent.lldb.lldb.DebugClient;
 
 /**
  * The event corresponding with "{@code =thread-selected}"
@@ -35,8 +36,8 @@ public class LldbThreadSelectedEvent extends AbstractLldbEvent<Integer> {
 	 * @param id dbgeng-provided id
 	 */
 	public LldbThreadSelectedEvent(StateType state, SBThread thread, SBFrame frame) {
-		super(thread.GetThreadID().intValue());
-		this.id = thread.GetThreadID().intValue();
+		super(DebugClient.getThreadId(thread));
+		this.id = DebugClient.getThreadId(thread);
 		this.state = state;
 		this.thread = thread;
 		this.frame = frame;

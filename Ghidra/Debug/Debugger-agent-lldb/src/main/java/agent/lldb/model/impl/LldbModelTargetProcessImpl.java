@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import SWIG.SBProcess;
 import SWIG.SBThread;
 import SWIG.StateType;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import agent.lldb.model.iface1.LldbModelTargetFocusScope;
@@ -63,7 +64,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 	}
 
 	protected static String indexProcess(SBProcess process) {
-		return indexProcess(process.GetProcessID().intValue());
+		return indexProcess(DebugClient.getProcessId(process));
 	}
 
 	protected static String keyProcess(SBProcess process) {
@@ -117,7 +118,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 			return "[kernel]";
 		}
 
-		String pidstr = Integer.toString(process.GetProcessID().intValue(), base);
+		String pidstr = Integer.toString(DebugClient.getProcessId(process), base);
 		if (base == 16) {
 			pidstr = "0x" + pidstr;
 		}
@@ -195,7 +196,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 	public void processStarted(SBProcess proc) {
 		if (proc != null) {
 			changeAttributes(List.of(), List.of(), Map.of( //
-				PID_ATTRIBUTE_NAME, proc.GetProcessID().longValue(), //
+				PID_ATTRIBUTE_NAME, Long.valueOf(DebugClient.getProcessId(process)), //
 				DISPLAY_ATTRIBUTE_NAME, getDisplay()//
 			), "Started");
 		}
@@ -210,7 +211,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 				EXIT_CODE_ATTRIBUTE_NAME, proc.GetExitDescription() //
 			), "Exited");
 			getListeners().fire.event(getProxy(), null, TargetEventType.PROCESS_EXITED,
-				"Process " + proc.GetProcessID().intValue() + " exited code=" + proc.GetExitDescription(),
+				"Process " + DebugClient.getProcessId(process) + " exited code=" + proc.GetExitDescription(),
 				List.of(getProxy()));
 		}
 	}

@@ -22,6 +22,7 @@ import java.util.Set;
 
 import SWIG.SBProcess;
 import SWIG.SBThread;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import ghidra.util.Msg;
 
@@ -61,7 +62,7 @@ public class LldbListThreadsCommand extends AbstractLldbCommand<Map<Integer, SBT
 		long n = process.GetNumThreads();
 		for (int i = 0; i < n; i++) {
 			SBThread thread = process.GetThreadByIndexID(i);
-			updatedThreadIds.add(thread.GetThreadID().intValue());
+			updatedThreadIds.add(DebugClient.getThreadId(thread));
 		}
 	}
 

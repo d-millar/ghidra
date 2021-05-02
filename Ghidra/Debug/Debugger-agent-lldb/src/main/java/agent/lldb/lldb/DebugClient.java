@@ -314,6 +314,18 @@ public interface DebugClient extends DebugClientReentrant {
 			return value;
 		}
 	}
+	
+	public static Integer getSessionId(SBTarget session) {
+		return (int) session.GetProcess().GetUniqueID();
+	}
+
+	public static Integer getProcessId(SBProcess process) {
+		return process.GetProcessID().intValue();
+	}
+
+	public static Integer getThreadId(SBThread thread) {
+		return thread.GetThreadID().intValue();
+	}
 
 	public SBListener getListener();
 

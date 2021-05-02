@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import SWIG.SBFrame;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.LldbModelTargetProcess;
 import agent.lldb.model.iface2.LldbModelTargetStack;
 import agent.lldb.model.iface2.LldbModelTargetStackFrame;
@@ -100,7 +101,9 @@ public class LldbModelTargetStackImpl extends LldbModelTargetObjectImpl
 	@Override
 	public void onStopped() {
 		setAccessible(true);
-		if (thread.getThread().GetThreadID().equals(getManager().getEventThread().GetThreadID())) {
+		Integer id = DebugClient.getThreadId(thread.getThread());
+		Integer eid =  DebugClient.getThreadId(getManager().getEventThread());
+		if (id == eid) {
 			update();
 		}
 	}

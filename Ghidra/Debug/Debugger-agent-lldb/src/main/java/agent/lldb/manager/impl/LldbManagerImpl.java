@@ -193,7 +193,7 @@ public class LldbManagerImpl implements LldbManager {
 
 	public void addThreadIfAbsent(SBThread thread) {
 		synchronized (threads) {
-			int id = thread.GetThreadID().intValue();
+			int id = DebugClient.getThreadId(thread);
 			if (!threads.containsKey(id)) {
 				threads.put(id, thread);
 				getClient().processEvent(new LldbThreadCreatedEvent(new DebugThreadInfo(thread)));
@@ -230,7 +230,8 @@ public class LldbManagerImpl implements LldbManager {
 			Set<Integer> toRemove = new HashSet<>();
 			for (Integer tid : threads.keySet()) {
 				SBThread thread = threads.get(tid);
-				if (thread.GetProcess().GetProcessID().equals(id)) {
+				Integer pid = DebugClient.getProcessId(thread.GetProcess());
+				if (pid == id) {
 					toRemove.add(tid);
 				}
 			}
@@ -262,7 +263,7 @@ public class LldbManagerImpl implements LldbManager {
 
 	public void addProcessIfAbsent(SBProcess process) {
 		synchronized (processes) {
-			int id = process.GetProcessID().intValue();
+			int id = DebugClient.getProcessId(process);
 			if (!processes.containsKey(id)) {
 				processes.put(id, process);
 				getClient().processEvent(new LldbProcessCreatedEvent(new DebugProcessInfo(process)));
@@ -299,7 +300,7 @@ public class LldbManagerImpl implements LldbManager {
 
 	public void addSessionIfAbsent(SBTarget session) {
 		synchronized (sessions) {
-			int id = (int) session.GetProcess().GetUniqueID();
+			int id = DebugClient.getSessionId(session);
 			if (!sessions.containsKey(id)) {
 				sessions.put(id, session);
 				getClient().processEvent(new LldbSessionCreatedEvent(new DebugSessionInfo(session)));
@@ -1063,7 +1064,7 @@ public class LldbManagerImpl implements LldbManager {
 			*/
 			if (status.equals(DebugStatus.BREAK)) {
 				waiting = false;
-				processEvent(new LldbStoppedEvent(eventThread.GetThreadID().intValue()));
+				processEvent(new LldbStoppedEvent(DebugClient.getThreadId(eventThread)));
 				SBProcess process = getCurrentProcess();
 				if (process != null) {
 					processEvent(new LldbProcessSelectedEvent(process));
@@ -1072,7 +1073,7 @@ public class LldbManagerImpl implements LldbManager {
 			}
 			if (status.equals(DebugStatus.GO)) {
 				waiting = true;
-				processEvent(new LldbRunningEvent(eventThread.GetThreadID().intValue()));
+				processEvent(new LldbRunningEvent(DebugClient.getThreadId(eventThread)));
 				return DebugStatus.GO;
 			}
 			waiting = false;

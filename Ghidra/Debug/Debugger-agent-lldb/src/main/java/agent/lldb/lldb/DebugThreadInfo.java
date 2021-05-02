@@ -31,7 +31,7 @@ public class DebugThreadInfo {
 
 	public DebugThreadInfo(SBThread thread) {
 		this.thread = thread;
-		this.id = thread.GetThreadID().intValue();
+		this.id = DebugClient.getThreadId(thread);
 	}
 
 	public String toString() {

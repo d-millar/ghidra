@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import SWIG.SBProcess;
 import SWIG.SBThread;
 import SWIG.StateType;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface1.LldbModelTargetConfigurable;
@@ -64,7 +65,7 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 		changeElements(List.of(), List.of(targetThread), Map.of(), "Created");
 		targetThread.threadStateChangedSpecific(StateType.eStateConnected, LldbReason.getReason(null));
 		getListeners().fire.event(getProxy(), targetThread, TargetEventType.THREAD_CREATED,
-			"Thread " + thread.GetThreadID().intValue() + " started", List.of(targetThread));
+			"Thread " +  DebugClient.getThreadId(thread) + " started", List.of(targetThread));
 	}
 
 	@Override
