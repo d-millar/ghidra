@@ -27,6 +27,7 @@ import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface1.LldbModelSelectableObject;
 import agent.lldb.model.iface1.LldbModelTargetInterpreter;
+import agent.lldb.model.iface2.LldbModelTargetModuleContainer;
 import agent.lldb.model.iface2.LldbModelTargetProcessContainer;
 import agent.lldb.model.iface2.LldbModelTargetSession;
 import ghidra.dbg.target.schema.TargetAttributeType;
@@ -47,6 +48,11 @@ import ghidra.dbg.util.PathUtils;
 			name = "Processes",
 			type = LldbModelTargetProcessContainerImpl.class,
 			required = true,
+			fixed = true),
+		@TargetAttributeType(
+			name = "Modules", 
+			type = LldbModelTargetModuleContainerImpl.class, 
+			required = true, 
 			fixed = true),
 		@TargetAttributeType(type = Void.class) })
 public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
@@ -69,6 +75,8 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 		return PathUtils.makeKey(indexSession(session));
 	}
 
+	protected SBTarget session;
+	protected final LldbModelTargetModuleContainer modules;
 	protected final LldbModelTargetSessionAttributesImpl attributes;
 	protected final LldbModelTargetProcessContainerImpl processes;
 	private LldbModelSelectableObject focus;
@@ -78,14 +86,17 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 	public LldbModelTargetSessionImpl(LldbModelTargetSessionContainerImpl sessions,
 			SBTarget session) {
 		super(sessions.getModel(), sessions, keySession(session), "Session");
+		this.session = session;
 		this.getModel().addModelObject(session, this);
 
 		this.attributes = new LldbModelTargetSessionAttributesImpl(this);
 		this.processes = new LldbModelTargetProcessContainerImpl(this);
+		this.modules = new LldbModelTargetModuleContainerImpl(this);
 
 		changeAttributes(List.of(), List.of( //
 			attributes, //
-			processes //
+			processes, //
+			modules //
 		), Map.of( //
 			ACCESSIBLE_ATTRIBUTE_NAME, accessible, //
 			PROMPT_ATTRIBUTE_NAME, LldbModelTargetInterpreter.LLDB_PROMPT, //
@@ -111,6 +122,11 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 	@Override
 	public LldbModelTargetProcessContainer getProcesses() {
 		return processes;
+	}
+
+	@Override
+	public LldbModelTargetModuleContainer getModules() {
+		return modules;
 	}
 
 	@Override

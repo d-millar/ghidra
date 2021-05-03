@@ -18,17 +18,15 @@ package agent.lldb.model.impl;
 import java.util.List;
 import java.util.Map;
 
-import SWIG.SBMemoryRegionInfo;
 import SWIG.SBModule;
 import SWIG.SBProcess;
+import SWIG.SBTarget;
 import agent.lldb.model.iface2.LldbModelTargetModule;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetElementType;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 import ghidra.dbg.util.PathUtils;
 import ghidra.program.model.address.Address;
-import ghidra.program.model.address.AddressRange;
-import ghidra.program.model.address.AddressRangeImpl;
 import ghidra.program.model.address.AddressSpace;
 
 @TargetObjectSchemaInfo(name = "Module", elements = {
@@ -49,7 +47,7 @@ public class LldbModelTargetModuleImpl extends LldbModelTargetObjectImpl
 		return PathUtils.makeKey(indexModule(module));
 	}
 
-	protected final SBProcess process;
+	protected final SBTarget session;
 	protected final SBModule module;
 
 	protected final LldbModelTargetSymbolContainerImpl symbols;
@@ -58,7 +56,7 @@ public class LldbModelTargetModuleImpl extends LldbModelTargetObjectImpl
 	public LldbModelTargetModuleImpl(LldbModelTargetModuleContainerImpl modules, SBModule module) {
 		super(modules.getModel(), modules, keyModule(module), "Module");
 		this.getModel().addModelObject(module, this);
-		this.process = modules.process;
+		this.session = modules.session;
 		this.module = module;
 
 		this.symbols = new LldbModelTargetSymbolContainerImpl(this);
@@ -103,8 +101,8 @@ public class LldbModelTargetModuleImpl extends LldbModelTargetObjectImpl
 		return module;
 	}
 
-	public SBProcess getProcess() {
-		return process;
+	public SBTarget getSession() {
+		return session;
 	}
 
 }

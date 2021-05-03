@@ -46,6 +46,8 @@ public interface LldbModelTargetSession extends //
 
 	LldbModelTargetProcessContainer getProcesses();
 
+	LldbModelTargetModuleContainer getModules();
+
 	@Override
 	public default void consoleOutput(String output, int mask) {
 

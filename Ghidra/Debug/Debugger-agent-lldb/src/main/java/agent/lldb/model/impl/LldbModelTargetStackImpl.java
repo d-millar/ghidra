@@ -59,27 +59,25 @@ public class LldbModelTargetStackImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
-		return null; /*thread.getThread().listStackFrames().thenAccept(f -> {
+		return getManager().listStackFrames(thread.getThread()).thenAccept(f -> {
 			List<TargetObject> frames;
 			synchronized (this) {
-				frames = f.stream().map(this::getTargetFrame).collect(Collectors.toList());
+				frames =
+					f.values().stream().map(this::getTargetFrame).collect(Collectors.toList());
 			}
-			// TODO: This might be a case where "move" is useful
 			setElements(frames, Map.of(), "Refreshed");
 		});
-		*/
 	}
 
 	@Override
 	public synchronized LldbModelTargetStackFrame getTargetFrame(SBFrame frame) {
-		return null; /*framesByLevel.compute(frame.GetFrameID(), (l, f) -> {
+		return framesByLevel.compute((int) frame.GetFrameID(), (l, f) -> {
 			if (f == null) {
 				return new LldbModelTargetStackFrameImpl(this, thread, frame);
 			}
 			f.setFrame(frame);
 			return f;
 		});
-		*/
 	}
 
 	/*

@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import SWIG.SBModule;
-import SWIG.SBProcess;
+import SWIG.SBTarget;
 import agent.lldb.lldb.DebugModuleInfo;
 import agent.lldb.model.iface2.LldbModelTargetModule;
 import agent.lldb.model.iface2.LldbModelTargetModuleContainer;
@@ -45,13 +45,13 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 		implements LldbModelTargetModuleContainer {
 	// NOTE: -file-list-shared-libraries omits the main module and system-supplied DSO.
 
-	protected final LldbModelTargetProcessImpl targetProcess;
-	protected final SBProcess process;
+	protected final LldbModelTargetSessionImpl targetSession;
+	protected final SBTarget session;
 
-	public LldbModelTargetModuleContainerImpl(LldbModelTargetProcessImpl process) {
-		super(process.getModel(), process, "Modules", "ModuleContainer");
-		this.targetProcess = process;
-		this.process = process.process;
+	public LldbModelTargetModuleContainerImpl(LldbModelTargetSessionImpl session) {
+		super(session.getModel(), session, "Modules", "ModuleContainer");
+		this.targetSession = session;
+		this.session = session.session;
 		requestElements(false);
 	}
 
@@ -103,16 +103,15 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
-		List<TargetObject> result = new ArrayList<>();
-		return null; /* process.listModules().thenAccept(byName -> {
+		return getManager().listModules(session).thenAccept(byName -> {
+			List<LldbModelTargetModule> result = new ArrayList<>();
 			synchronized (this) {
-				for (Map.Entry<String, LldbModule> ent : byName.entrySet()) {
+				for (Map.Entry<String, SBModule> ent : byName.entrySet()) {
 					result.add(getTargetModule(ent.getKey()));
 				}
 			}
 			changeElements(List.of(), result, Map.of(), "Refreshed");
-		});	
-		*/
+		});
 	}
 
 	public LldbModelTargetModule getTargetModule(String name) {
