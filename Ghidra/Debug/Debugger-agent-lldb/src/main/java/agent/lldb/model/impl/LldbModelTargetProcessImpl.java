@@ -24,6 +24,8 @@ import SWIG.SBThread;
 import SWIG.StateType;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
+import agent.lldb.manager.cmd.LldbContinueCommand;
+import agent.lldb.manager.cmd.LldbListProcessesCommand;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import agent.lldb.model.iface1.LldbModelTargetFocusScope;
 import agent.lldb.model.iface2.LldbModelTargetDebugContainer;
@@ -46,7 +48,6 @@ import ghidra.dbg.util.PathUtils;
 	@TargetElementType(type = Void.class) }, attributes = {
 		@TargetAttributeType(name = "Debug", type = LldbModelTargetDebugContainerImpl.class, required = true, fixed = true),
 		@TargetAttributeType(name = "Memory", type = LldbModelTargetMemoryContainerImpl.class, required = true, fixed = true),
-		@TargetAttributeType(name = "Modules", type = LldbModelTargetModuleContainerImpl.class, required = true, fixed = true),
 		@TargetAttributeType(name = "Threads", type = LldbModelTargetThreadContainerImpl.class, required = true, fixed = true),
 		@TargetAttributeType(name = LldbModelTargetProcessImpl.EXIT_CODE_ATTRIBUTE_NAME, type = String.class),
 		@TargetAttributeType(type = Void.class) })
@@ -75,7 +76,6 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 
 	protected final LldbModelTargetDebugContainer debug;
 	protected final LldbModelTargetMemoryContainer memory;
-	protected final LldbModelTargetModuleContainer modules;
 	protected final LldbModelTargetThreadContainer threads;
 	// Note: not sure section info is available from the Lldbeng
 	//protected final LldbModelTargetProcessSectionContainer sections;
@@ -90,14 +90,12 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 
 		this.debug = new LldbModelTargetDebugContainerImpl(this);
 		this.memory = new LldbModelTargetMemoryContainerImpl(this);
-		this.modules = new LldbModelTargetModuleContainerImpl(this);
 		//this.sections = new LldbModelTargetProcessSectionContainerImpl(this);
 		this.threads = new LldbModelTargetThreadContainerImpl(this);
 
 		changeAttributes(List.of(), List.of( //
 			debug, //
 			memory, //
-			modules, //
 			//sections, //
 			threads //
 		), Map.of( //
@@ -144,7 +142,8 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public CompletableFuture<Void> resume() {
-		return null; //model.gateFuture(process.cont());
+		return getManager().execute(new LldbContinueCommand(getManager(), process));
+		//return model.gateFuture(process.cont());
 	}
 
 	@Override
@@ -225,11 +224,6 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 	@Override
 	public LldbModelTargetThreadContainer getThreads() {
 		return threads;
-	}
-
-	@Override
-	public LldbModelTargetModuleContainer getModules() {
-		return modules;
 	}
 
 	@Override

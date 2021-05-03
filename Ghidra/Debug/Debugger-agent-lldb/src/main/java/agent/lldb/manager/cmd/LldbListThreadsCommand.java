@@ -28,7 +28,7 @@ import ghidra.util.Msg;
 
 public class LldbListThreadsCommand extends AbstractLldbCommand<Map<Integer, SBThread>> {
 	protected final SBProcess process;
-	private List<Integer> updatedThreadIds;
+	private List<Integer> updatedThreadIds = new ArrayList<>();
 
 	public LldbListThreadsCommand(LldbManagerImpl manager, SBProcess process) {
 		super(manager);
@@ -59,6 +59,7 @@ public class LldbListThreadsCommand extends AbstractLldbCommand<Map<Integer, SBT
 
 	@Override
 	public void invoke() {
+		updatedThreadIds.clear();
 		long n = process.GetNumThreads();
 		for (int i = 0; i < n; i++) {
 			SBThread thread = process.GetThreadByIndexID(i);

@@ -15,6 +15,7 @@
  */
 package agent.lldb.manager.cmd;
 
+import SWIG.SBProcess;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.evt.AbstractLldbCompletedCommandEvent;
 import agent.lldb.manager.evt.LldbCommandErrorEvent;
@@ -25,8 +26,12 @@ import agent.lldb.manager.impl.LldbManagerImpl;
  * Implementation of {@link DbgProcess#kill()}
  */
 public class LldbContinueCommand extends AbstractLldbCommand<Void> {
-	public LldbContinueCommand(LldbManagerImpl manager) {
+	
+	private SBProcess process;
+
+	public LldbContinueCommand(LldbManagerImpl manager, SBProcess process) {
 		super(manager);
+		this.process = process;
 	}
 
 	@Override
@@ -45,6 +50,7 @@ public class LldbContinueCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public void invoke() {
+		process.Continue();
 		/*
 		DebugClient dbgeng = manager.getClient();
 		dbgeng.getControl().setExecutionStatus(DebugStatus.GO);

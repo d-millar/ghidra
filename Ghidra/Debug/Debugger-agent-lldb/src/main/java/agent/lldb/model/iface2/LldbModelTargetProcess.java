@@ -58,8 +58,6 @@ public interface LldbModelTargetProcess extends //
 
 	public LldbModelTargetThreadContainer getThreads();
 
-	public LldbModelTargetModuleContainer getModules();
-
 	public void threadStateChangedSpecific(SBThread thread, StateType state);
 
 	public default SBProcess getProcess() {

@@ -15,15 +15,16 @@
  */
 package agent.lldb.manager.cmd;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import SWIG.SBFrame;
 import SWIG.SBThread;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
-public class LldbStackListFramesCommand extends AbstractLldbCommand<List<SBFrame>> {
+public class LldbStackListFramesCommand extends AbstractLldbCommand<Map<Integer, SBFrame>> {
 	protected final SBThread thread;
-	private List<SBFrame> result;
+	private Map<Integer, SBFrame> result;
 
 	public LldbStackListFramesCommand(LldbManagerImpl manager, SBThread thread) {
 		super(manager);
@@ -31,37 +32,16 @@ public class LldbStackListFramesCommand extends AbstractLldbCommand<List<SBFrame
 	}
 
 	@Override
-	public List<SBFrame> complete(LldbPendingCommand<?> pending) {
+	public Map<Integer, SBFrame> complete(LldbPendingCommand<?> pending) {
 		return result;
 	}
 
 	@Override
 	public void invoke() {
-		/*
-		result = new ArrayList<>();
-		DebugSystemObjects so = manager.getSystemObjects();
-		DebugThreadId previous = so.getCurrentThreadId();
-		so.setCurrentThreadId(thread.getId());
-		DebugStackInformation stackTrace = manager.getControl().getStackTrace(0L, 0L, 0L);
-		for (int i = 0; i < stackTrace.getNumberOfFrames(); i++) {
-			DEBUG_STACK_FRAME tf = stackTrace.getFrame(i);
-			//DbgStackFrame frame = new DbgStackFrameImpl(thread, tf.FrameNumber.intValue(),
-			//	new BigInteger(Long.toHexString(tf.InstructionOffset.longValue()), 16), null);
-			SBFrame frame = new SBFrame(thread, //
-				tf.FrameNumber.intValue(), //
-				new BigInteger(Long.toHexString(tf.InstructionOffset.longValue()), 16), //
-				tf.FuncTableEntry.longValue(), //
-				tf.FrameOffset.longValue(), //
-				tf.ReturnOffset.longValue(), //
-				tf.StackOffset.longValue(), //
-				tf.Virtual.booleanValue(), //
-				tf.Params[0].longValue(), //
-				tf.Params[1].longValue(), //
-				tf.Params[2].longValue(), //
-				tf.Params[3].longValue());
-			result.add(frame);
+		result = new HashMap<>();
+		long n = thread.GetNumFrames();
+		for (int i = 0; i < n; i++) {
+			result.put(i, thread.GetFrameAtIndex(i));
 		}
-		*/
-		//so.setCurrentThreadId(previous);
 	}
 }

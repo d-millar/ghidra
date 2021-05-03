@@ -21,6 +21,8 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import SWIG.SBFrame;
+import SWIG.SBModule;
 import SWIG.SBProcess;
 import SWIG.SBTarget;
 import SWIG.SBThread;
@@ -298,6 +300,20 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	CompletableFuture<Map<String, SBTarget>> listSessions();
 
 	/**
+	 * List dbgeng's stack frames
+	 * 
+	 * @return a future that completes with a map of session IDs to session handles
+	 */
+	CompletableFuture<Map<Integer, SBFrame>> listStackFrames(SBThread thread);
+
+	/**
+	 * List dbgeng's stack frames
+	 * 
+	 * @return a future that completes with a map of session IDs to session handles
+	 */
+	public CompletableFuture<Map<String, SBModule>> listModules(SBTarget session);
+	
+	/**
 	 * List information for all breakpoints
 	 * 
 	 * @return a future that completes with a list of information for all breakpoints
@@ -360,4 +376,5 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	//DebugEventInformation getLastEventInformation();
 
 	DebugStatus getStatus();
+
 }

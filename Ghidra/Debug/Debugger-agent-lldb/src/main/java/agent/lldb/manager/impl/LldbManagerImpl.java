@@ -35,6 +35,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.sun.jna.platform.win32.COM.COMException;
 
 import SWIG.SBEvent;
+import SWIG.SBFrame;
+import SWIG.SBModule;
 import SWIG.SBProcess;
 import SWIG.SBTarget;
 import SWIG.SBThread;
@@ -73,6 +75,7 @@ import agent.lldb.manager.cmd.LldbInsertBreakpointCommand;
 import agent.lldb.manager.cmd.LldbLaunchProcessCommand;
 import agent.lldb.manager.cmd.LldbListAvailableProcessesCommand;
 import agent.lldb.manager.cmd.LldbListBreakpointsCommand;
+import agent.lldb.manager.cmd.LldbListModulesCommand;
 import agent.lldb.manager.cmd.LldbListProcessesCommand;
 import agent.lldb.manager.cmd.LldbListThreadsCommand;
 import agent.lldb.manager.cmd.LldbOpenDumpCommand;
@@ -82,6 +85,7 @@ import agent.lldb.manager.cmd.LldbRequestFocusCommand;
 import agent.lldb.manager.cmd.LldbSetActiveProcessCommand;
 import agent.lldb.manager.cmd.LldbSetActiveSessionCommand;
 import agent.lldb.manager.cmd.LldbSetActiveThreadCommand;
+import agent.lldb.manager.cmd.LldbStackListFramesCommand;
 import agent.lldb.manager.evt.AbstractLldbEvent;
 import agent.lldb.manager.evt.LldbBreakpointCreatedEvent;
 import agent.lldb.manager.evt.LldbBreakpointDeletedEvent;
@@ -1366,6 +1370,16 @@ public class LldbManagerImpl implements LldbManager {
 	public CompletableFuture<Map<String, SBTarget>> listSessions() {
 		return CompletableFuture.completedFuture(null);
 		///return execute(new LldbListSessionsCommand(this));
+	}
+
+	@Override
+	public CompletableFuture<Map<Integer, SBFrame>> listStackFrames(SBThread thread) {
+		return execute(new LldbStackListFramesCommand(this, thread));
+	}
+
+	@Override
+	public CompletableFuture<Map<String, SBModule>> listModules(SBTarget session) {
+		return execute(new LldbListModulesCommand(this, session));
 	}
 
 	@Override

@@ -18,62 +18,36 @@ package agent.lldb.manager.cmd;
 import java.util.HashMap;
 import java.util.Map;
 
+import SWIG.SBFileSpec;
 import SWIG.SBModule;
-import SWIG.SBProcess;
+import SWIG.SBTarget;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 public class LldbListModulesCommand extends AbstractLldbCommand<Map<String, SBModule>> {
-	protected final SBProcess process;
+	protected final SBTarget session;
 	private Map<String, SBModule> updatedModules = new HashMap<>();
-	//private Map<SBModule, DebugModuleInfo> moduleInfo = new HashMap<>();
 
-	public LldbListModulesCommand(LldbManagerImpl manager, SBProcess process) {
+	public LldbListModulesCommand(LldbManagerImpl manager, SBTarget session) {
 		super(manager);
-		this.process = process;
+		this.session = session;
 	}
 
 	@Override
 	public Map<String, SBModule> complete(LldbPendingCommand<?> pending) {
-		/*
-		Map<String, SBModule> modules = process.getKnownModules();
-		Set<String> cur = modules.keySet();
-		for (String id : updatedModules.keySet()) {
-			if (cur.contains(id)) {
-				continue; // Do nothing, we're in sync
-			}
-			// Need to create the thread as if we receive =thread-created
-			Msg.warn(this, "Resync: Was missing module: " + id);
-			DebugModuleInfo info = moduleInfo.get(updatedModules.get(id));
-			SBModule module = new SBModule(manager, process, info);
-			module.add();
-		}
-		for (String id : new ArrayList<>(cur)) {
-			if (updatedModules.containsKey(id)) {
-				continue; // Do nothing, we're in sync
-			}
-			process.removeModule(id);
-		}
-		return process.getKnownModules();
-		*/
-		return null;
+		return updatedModules;
 	}
 
 	@Override
 	public void invoke() {
-		/*
-		DebugSystemObjects so = manager.getSystemObjects();
-		so.setCurrentProcessId(process.getId());
-		DebugSymbols symbols = manager.getSymbols();
-		for (SBModule module : symbols.iterateModules(0)) {
-			DebugModuleInfo info = symbols.getModuleParameters(1, module.getIndex());
-			String imageName = module.getName(DebugModuleName.IMAGE);
-			String moduleName = module.getName(DebugModuleName.MODULE);
-			info.setImageName(imageName);
-			info.setModuleName(moduleName);
-			updatedModules.put(info.toString(), module);
-			moduleInfo.put(module, info);
+		long n = session.GetNumModules();
+		for (int i = 0; i < n; i++) {
+			SBModule module = session.GetModuleAtIndex(i);
+			System.err.println(module.GetUUIDString());
+			SBFileSpec filespec = module.GetFileSpec();
+			System.err.println(filespec.GetFilename());
+			System.err.println(module.GetPlatformFileSpec().GetFilename());
+			updatedModules.put(filespec.GetFilename(), module);
 		}
-		*/
 	}
 
 }
