@@ -86,8 +86,9 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 	public LldbModelTargetSessionImpl(LldbModelTargetSessionContainerImpl sessions,
 			SBTarget session) {
 		super(sessions.getModel(), sessions, keySession(session), "Session");
-		this.session = session;
 		this.getModel().addModelObject(session, this);
+		getManager().getClient().addBroadcaster(session);
+		this.session = session;
 
 		this.attributes = new LldbModelTargetSessionAttributesImpl(this);
 		this.processes = new LldbModelTargetProcessContainerImpl(this);

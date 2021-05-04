@@ -45,6 +45,12 @@ public class DebugModuleInfo {
 		}
 	}
 	
+	public DebugModuleInfo(SBModule module) {
+		this.event = null;
+		numModules = 1;
+		modules.put(0, module);
+	}
+	
 	public Long getNumberOfModules() {
 		return numModules;
 	}
@@ -60,7 +66,7 @@ public class DebugModuleInfo {
 
 	public String getModuleName(int index) {
 		SBModule module = modules.get(index);	
-		return module.toString();
+		return module.GetUUIDString();
 	}
 
 	public void setModuleName(int index, String moduleName) {

@@ -17,6 +17,8 @@ package agent.lldb.manager.cmd;
 
 import java.util.Map;
 
+import SWIG.SBProcess;
+import SWIG.SBThread;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.LldbManager.ExecSuffix;
 import agent.lldb.manager.evt.AbstractLldbCompletedCommandEvent;
@@ -33,17 +35,13 @@ public class LldbStepCommand extends AbstractLldbCommand<Void> {
 	protected final ExecSuffix suffix;
 	private String lastCommand = "tct";
 
-	public LldbStepCommand(LldbManagerImpl manager, Integer id, ExecSuffix suffix) {
-		super(manager);
-		this.id = id;
-		this.suffix = suffix;
-	}
-
 	public LldbStepCommand(LldbManagerImpl manager, Integer id, Map<String, ?> args) {
 		super(manager);
 		this.id = id;
 		this.suffix = ExecSuffix.EXTENDED;
-		this.lastCommand = (String) args.get("Command");
+		if (args != null) {
+			this.lastCommand = (String) args.get("Command");
+		}
 	}
 
 	@Override
@@ -69,6 +67,8 @@ public class LldbStepCommand extends AbstractLldbCommand<Void> {
 	//  then the event thread.
 	@Override
 	public void invoke() {
+		SBThread currentThread = manager.getCurrentThread();
+		currentThread.StepInto();
 		/*
 		String cmd = "";
 		String prefix = id == null ? "" : "~" + id.id + " ";

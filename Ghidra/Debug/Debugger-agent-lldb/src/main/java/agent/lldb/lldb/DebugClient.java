@@ -356,6 +356,8 @@ public interface DebugClient extends DebugClientReentrant {
 		exitDispatch(this);
 	}
 
+	void setOutputCallbacks(DebugOutputCallbacks cb);
+
 	void setEventCallbacks(DebugEventCallbacks cb);
 
 	/*
@@ -411,4 +413,8 @@ public interface DebugClient extends DebugClientReentrant {
 	boolean getInterrupt();
 
 	public void setManager(LldbManager manager);
+
+	public void addBroadcaster(Object process);
+
+	public void execute(String command);
 }

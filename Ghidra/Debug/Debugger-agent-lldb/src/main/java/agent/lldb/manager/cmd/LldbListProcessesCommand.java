@@ -33,14 +33,16 @@ import ghidra.util.Msg;
  */
 public class LldbListProcessesCommand extends AbstractLldbCommand<Map<Integer, SBProcess>> {
 	private List<Integer> updatedProcessIds;
+	private SBTarget session;
 
-	public LldbListProcessesCommand(LldbManagerImpl manager) {
+	public LldbListProcessesCommand(LldbManagerImpl manager, SBTarget session) {
 		super(manager);
+		this.session = session;
 	}
 
 	@Override
 	public Map<Integer, SBProcess> complete(LldbPendingCommand<?> pending) {
-		Map<Integer, SBProcess> allProcesses = manager.getKnownProcesses();
+		Map<Integer, SBProcess> allProcesses = manager.getKnownProcesses().get(session);
 		Set<Integer> cur = allProcesses.keySet();
 		for (Integer id : new ArrayList<>(cur)) {
 			if (updatedProcessIds.contains(id)) {
@@ -48,7 +50,7 @@ public class LldbListProcessesCommand extends AbstractLldbCommand<Map<Integer, S
 			}
 			// Need to remove the inferior as if we received =thread-group-removed
 			Msg.warn(this, "Resync: Had extra group: i" + id);
-			manager.removeProcess(id, Causes.UNCLAIMED);
+			manager.removeProcess(session, id, Causes.UNCLAIMED);
 		}
 		return allProcesses;
 	}

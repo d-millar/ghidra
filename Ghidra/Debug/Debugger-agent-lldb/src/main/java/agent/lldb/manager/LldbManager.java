@@ -134,7 +134,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * @param id the dbgeng-asigned thread ID
 	 * @return a handle to the thread, if it exists
 	 */
-	SBThread getThread(Integer id);
+	SBThread getThread(SBProcess process, Integer id);
 
 	/**
 	 * Get an process by its dbgeng-assigned ID
@@ -145,7 +145,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * @param id the process ID
 	 * @return a handle to the process, if it exists
 	 */
-	SBProcess getProcess(Integer id);
+	SBProcess getProcess(SBTarget session, Integer id);
 
 	/**
 	 * Get an session by its dbgeng-assigned ID
@@ -159,6 +159,17 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	SBTarget getSession(Integer id);
 
 	/**
+	 * Get an session by its dbgeng-assigned ID
+	 * 
+	 * dbgeng numbers processes incrementally. All inferiors and created and destroyed by the user.
+	 * See {@link #addSession()}.
+	 * 
+	 * @param id the process ID
+	 * @return a handle to the process, if it exists
+	 */
+	SBModule getModule(SBTarget session, String id);
+
+	/**
 	 * Get all threads known to the manager
 	 * 
 	 * This does not ask dbgeng to lists its known threads. Rather it returns a read-only view of
@@ -166,7 +177,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a map of dbgeng-assigned thread IDs to corresponding thread handles
 	 */
-	Map<Integer, SBThread> getKnownThreads();
+	Map<SBProcess, Map<Integer, SBThread>> getKnownThreads();
 
 	/**
 	 * Get all processes known to the manager
@@ -176,7 +187,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a map of process IDs to corresponding process handles
 	 */
-	Map<Integer, SBProcess> getKnownProcesses();
+	Map<SBTarget, Map<Integer, SBProcess>> getKnownProcesses();
 
 	/**
 	 * Get all sessions known to the manager
@@ -187,6 +198,16 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * @return a map of session IDs to corresponding session handles
 	 */
 	Map<Integer, SBTarget> getKnownSessions();
+
+	/**
+	 * Get all sessions known to the manager
+	 * 
+	 * This does not ask dbgeng to list its processes. Rather it returns a read-only view of the
+	 * manager's understanding of the current inferiors based on its tracking of dbgeng events.
+	 * 
+	 * @return a map of session IDs to corresponding session handles
+	 */
+	Map<SBTarget, Map<String, SBModule>> getKnownModules();
 
 	/**
 	 * Get all breakpoints known to the manager
@@ -283,7 +304,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a future that completes with a map of process IDs to process handles
 	 */
-	CompletableFuture<Map<Integer, SBProcess>> listProcesses();
+	CompletableFuture<Map<Integer, SBProcess>> listProcesses(SBTarget session);
 
 	/**
 	 * List the available processes on target

@@ -15,13 +15,16 @@
  */
 package agent.lldb.manager.cmd;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import SWIG.SBFileSpec;
 import SWIG.SBModule;
 import SWIG.SBTarget;
 import agent.lldb.manager.impl.LldbManagerImpl;
+import ghidra.util.Msg;
 
 public class LldbListModulesCommand extends AbstractLldbCommand<Map<String, SBModule>> {
 	protected final SBTarget session;
@@ -34,7 +37,25 @@ public class LldbListModulesCommand extends AbstractLldbCommand<Map<String, SBMo
 
 	@Override
 	public Map<String, SBModule> complete(LldbPendingCommand<?> pending) {
-		return updatedModules;
+		Map<String, SBModule> modules = manager.getKnownModules().get(session);
+		Set<String> cur = modules.keySet();
+		for (String id : updatedModules.keySet()) {
+			if (cur.contains(id)) {
+				continue; // Do nothing, we're in sync
+			}
+			// Need to create the thread as if we receive =thread-created
+			Msg.warn(this, "Resync: Was missing module: " + id);
+			manager.addModuleIfAbsent(session, updatedModules.get(id));
+		}
+		for (String id : new ArrayList<>(cur)) {
+			if (updatedModules.containsKey(id)) {
+				continue; // Do nothing, we're in sync
+			}
+			// Need to remove the thread as if we received =thread-exited
+			Msg.warn(this, "Resync: Had extra module: " + id);
+			manager.removeModule(session, id);
+		}
+		return manager.getKnownModules().get(session);
 	}
 
 	@Override
@@ -46,7 +67,7 @@ public class LldbListModulesCommand extends AbstractLldbCommand<Map<String, SBMo
 			SBFileSpec filespec = module.GetFileSpec();
 			System.err.println(filespec.GetFilename());
 			System.err.println(module.GetPlatformFileSpec().GetFilename());
-			updatedModules.put(filespec.GetFilename(), module);
+			updatedModules.put(module.GetUUIDString(), module);
 		}
 	}
 

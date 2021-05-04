@@ -26,6 +26,7 @@ import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.manager.cmd.LldbSetActiveThreadCommand;
+import agent.lldb.manager.cmd.LldbStepCommand;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import agent.lldb.model.iface1.LldbModelTargetFocusScope;
 import agent.lldb.model.iface2.LldbModelTargetProcess;
@@ -143,13 +144,13 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 			case ADVANCE: // Why no exec-advance in GDB/MI?
 				return null; //thread.console("advance");
 			default:
-				return null; //model.gateFuture(thread.step(convertToLldb(kind)));
+				return getManager().execute(new LldbStepCommand(getManager(), 0, null));
 		}
 	}
 
 	@Override
 	public CompletableFuture<Void> step(Map<String, ?> args) {
-		return null; //model.gateFuture(thread.step(args));
+		return getManager().execute(new LldbStepCommand(getManager(), 0, args));
 	}
 
 	@Override

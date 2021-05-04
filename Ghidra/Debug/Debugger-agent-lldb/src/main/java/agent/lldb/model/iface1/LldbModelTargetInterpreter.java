@@ -34,18 +34,12 @@ public interface LldbModelTargetInterpreter extends LldbModelTargetObject, Targe
 
 	@Override
 	public default CompletableFuture<Void> execute(String cmd) {
-		/*
 		return getModel().gateFuture(getManager().console(cmd));
-		*/
-		return AsyncUtils.NIL;
 	}
 
 	@Override
 	public default CompletableFuture<String> executeCapture(String cmd) {
-		/*
 		return getModel().gateFuture(getManager().consoleCapture(cmd));
-		*/
-		return CompletableFuture.completedFuture(null);
 	}
 
 }

@@ -49,10 +49,11 @@ import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetProcessContainer, LldbModelTargetConfigurable {
 
-	private LldbModelTargetSession session;
+	private LldbModelTargetSessionImpl session;
 
-	public LldbModelTargetProcessContainerImpl(LldbModelTargetSession session) {
+	public LldbModelTargetProcessContainerImpl(LldbModelTargetSessionImpl session) {
 		super(session.getModel(), session, "Processes", "ProcessContainer");
+		this.session = session;
 		this.changeAttributes(List.of(), Map.of(BASE_ATTRIBUTE_NAME, 16), "Initialized");
 
 		getManager().addEventsListener(this);
@@ -119,7 +120,7 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
-		return getManager().listProcesses().thenAccept(byIID -> {
+		return getManager().listProcesses(session.session).thenAccept(byIID -> {
 			List<TargetObject> processes;
 			synchronized (this) {
 				processes = byIID.values()
@@ -138,7 +139,7 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 		if (modelObject != null) {
 			return (LldbModelTargetProcess) modelObject;
 		}
-		return new LldbModelTargetProcessImpl(this, getManager().getKnownProcesses().get(id));
+		return new LldbModelTargetProcessImpl(this, getManager().getKnownProcesses().get(session).get(id));
 	}
 
 	@Override

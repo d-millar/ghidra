@@ -85,7 +85,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 	public LldbModelTargetProcessImpl(LldbModelTargetProcessContainer processes, SBProcess process) {
 		super(processes.getModel(), processes, keyProcess(process), "Process");
 		this.getModel().addModelObject(process, this);
-		//this.getModel().addModelObject(process.getId(), this);
+		getManager().getClient().addBroadcaster(process);
 		this.process = process;
 
 		this.debug = new LldbModelTargetDebugContainerImpl(this);
