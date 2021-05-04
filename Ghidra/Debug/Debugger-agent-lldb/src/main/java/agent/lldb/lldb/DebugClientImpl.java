@@ -2,6 +2,8 @@ package agent.lldb.lldb;
 
 import static org.junit.Assume.assumeTrue;
 
+import SWIG.SBCommandInterpreter;
+import SWIG.SBCommandReturnObject;
 import SWIG.SBDebugger;
 import SWIG.SBEvent;
 import SWIG.SBListener;
@@ -25,7 +27,9 @@ public class DebugClientImpl implements DebugClient {
 	private SBDebugger sbd;
 	private SBTarget session;
 	private SBEvent event;
-	private DebugEventCallbacks cb;
+	private DebugOutputCallbacks ocb;
+	private DebugEventCallbacks ecb;
+	private SBCommandInterpreter cmd;
 
 	public DebugClientImpl() {
 	}
@@ -41,6 +45,7 @@ public class DebugClientImpl implements DebugClient {
 		SBDebugger.InitializeWithErrorHandling();
 		event = new SBEvent();
 		sbd = SBDebugger.Create();
+		cmd = sbd.GetCommandInterpreter();
 		return this;
 	}
 	
@@ -253,8 +258,13 @@ public class DebugClientImpl implements DebugClient {
 	}
 
 	@Override
+	public void setOutputCallbacks(DebugOutputCallbacks cb) {
+		this.ocb = cb;
+	}
+
+	@Override
 	public void setEventCallbacks(DebugEventCallbacks cb) {
-		this.cb = cb;
+		this.ecb = cb;
 	}
 
 	@Override
@@ -265,6 +275,34 @@ public class DebugClientImpl implements DebugClient {
 	@Override
 	public void setManager(LldbManager manager) {
 		this.manager = manager;
+	}
+
+	@Override
+	public void addBroadcaster(Object object) {
+		if (object instanceof SBCommandInterpreter) {
+			SBCommandInterpreter interpreter = (SBCommandInterpreter) object;
+			interpreter.GetBroadcaster().AddListener(getListener(), ChangeSessionState.SESSION_ALL.getMask());
+		}
+		if (object instanceof SBTarget) {
+			SBTarget session = (SBTarget) object;
+			session.GetBroadcaster().AddListener(getListener(), ChangeSessionState.SESSION_ALL.getMask());
+		}
+		if (object instanceof SBProcess) {
+			SBProcess process = (SBProcess) object;
+			process.GetBroadcaster().AddListener(getListener(), ChangeProcessState.PROCESS_ALL.getMask());
+		}
+	}
+
+	@Override
+	public void execute(String command) {
+		SBCommandReturnObject res = new SBCommandReturnObject();
+		cmd.HandleCommand(command, res);
+		if (res.GetErrorSize() > 0) {
+			ocb.output(DebugOutputFlags.DEBUG_OUTPUT_ERROR.ordinal(), res.GetError());
+		}
+		if (res.GetOutputSize() > 0) {
+			ocb.output(DebugOutputFlags.DEBUG_OUTPUT_NORMAL.ordinal(), res.GetOutput());
+		}
 	}
 
 }

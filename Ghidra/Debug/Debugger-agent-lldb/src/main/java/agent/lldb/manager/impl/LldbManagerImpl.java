@@ -147,13 +147,17 @@ public class LldbManagerImpl implements LldbManager {
 	private final Map<Integer, SBTarget> unmodifiableSessions =
 		Collections.unmodifiableMap(sessions);
 
-	protected final Map<Integer, SBProcess> processes = new LinkedHashMap<>();
-	private final Map<Integer, SBProcess> unmodifiableProcesses =
+	protected final Map<SBTarget, Map<Integer, SBProcess>> processes = new LinkedHashMap<>();
+	private final Map<SBTarget, Map<Integer, SBProcess>> unmodifiableProcesses =
 		Collections.unmodifiableMap(processes);
 
-	protected final Map<Integer, SBThread> threads = new LinkedHashMap<>();
-	private final Map<Integer, SBThread> unmodifiableThreads =
+	protected final Map<SBProcess, Map<Integer, SBThread>> threads = new LinkedHashMap<>();
+	private final Map<SBProcess, Map<Integer, SBThread>> unmodifiableThreads =
 		Collections.unmodifiableMap(threads);
+
+	protected final Map<SBTarget, Map<String, SBModule>> modules = new LinkedHashMap<>();
+	private final Map<SBTarget, Map<String, SBModule>> unmodifiableModules =
+		Collections.unmodifiableMap(modules);
 
 	private final Map<Long, LldbBreakpointInfo> breakpoints = new LinkedHashMap<>();
 	private final Map<Long, LldbBreakpointInfo> unmodifiableBreakpoints =
@@ -188,32 +192,32 @@ public class LldbManagerImpl implements LldbManager {
 		defaultHandlers();
 	}
 
-	@Override
-	public SBThread getThread(Integer tid) {
-		synchronized (threads) {
-			return threads.get(tid);
-		}
-	}
-
-	public void addThreadIfAbsent(SBThread thread) {
-		synchronized (threads) {
-			int id = DebugClient.getThreadId(thread);
-			if (!threads.containsKey(id)) {
-				threads.put(id, thread);
-				getClient().processEvent(new LldbThreadCreatedEvent(new DebugThreadInfo(thread)));
-			}
-		}
-	}
-
 	/**
 	 * Use {@link SBThreadImpl#remove()} instead
 	 * 
 	 * @param id the thread ID to remove
 	 */
-	public void removeThread(Integer id) {
+	public void removeThread(SBProcess process, Integer id) {
 		synchronized (threads) {
-			if (threads.remove(id) == null) {
+			if (threads.get(process).remove(id) == null) {
 				throw new IllegalArgumentException("There is no thread with id " + id);
+			}
+		}
+	}
+
+	@Override
+	public SBThread getThread(SBProcess process, Integer tid) {
+		synchronized (threads) {
+			return threads.get(process).get(tid);
+		}
+	}
+
+	public void addThreadIfAbsent(SBProcess process, SBThread thread) {
+		synchronized (threads) {
+			int id = DebugClient.getThreadId(thread);
+			if (!threads.containsKey(id)) {
+				threads.get(process).put(id, thread);
+				getClient().processEvent(new LldbThreadCreatedEvent(new DebugThreadInfo(thread)));
 			}
 		}
 	}
@@ -225,22 +229,22 @@ public class LldbManagerImpl implements LldbManager {
 	 * @param cause the cause of removal
 	 */
 	@Internal
-	public void removeProcess(Integer id, LldbCause cause) {
+	public void removeProcess(SBTarget session, Integer id, LldbCause cause) {
 		synchronized (processes) {
-			SBProcess proc = processes.remove(id);
+			SBProcess proc = processes.get(session).remove(id);
 			if (proc == null) {
 				throw new IllegalArgumentException("There is no process with id " + id);
 			}
 			Set<Integer> toRemove = new HashSet<>();
-			for (Integer tid : threads.keySet()) {
-				SBThread thread = threads.get(tid);
+			for (Integer tid : threads.get(proc).keySet()) {
+				SBThread thread = threads.get(proc).get(tid);
 				Integer pid = DebugClient.getProcessId(thread.GetProcess());
 				if (pid == id) {
 					toRemove.add(tid);
 				}
 			}
 			for (Integer tid : toRemove) {
-				removeThread(tid);
+				removeThread(proc, tid);
 			}
 			getEventListeners().fire.processRemoved(id, cause);
 		}
@@ -255,9 +259,9 @@ public class LldbManagerImpl implements LldbManager {
 	 * @return success status
 	 */
 	@Override
-	public SBProcess getProcess(Integer id) {
+	public SBProcess getProcess(SBTarget session, Integer id) {
 		synchronized (processes) {
-			SBProcess result = processes.get(id);
+			SBProcess result = processes.get(session).get(id);
 			if (result == null) {
 				throw new IllegalArgumentException("There is no process with id " + id);
 			}
@@ -265,11 +269,11 @@ public class LldbManagerImpl implements LldbManager {
 		}
 	}
 
-	public void addProcessIfAbsent(SBProcess process) {
+	public void addProcessIfAbsent(SBTarget session, SBProcess process) {
 		synchronized (processes) {
 			int id = DebugClient.getProcessId(process);
 			if (!processes.containsKey(id)) {
-				processes.put(id, process);
+				processes.get(session).put(id, process);
 				getClient().processEvent(new LldbProcessCreatedEvent(new DebugProcessInfo(process)));
 			}
 		}
@@ -305,26 +309,62 @@ public class LldbManagerImpl implements LldbManager {
 	public void addSessionIfAbsent(SBTarget session) {
 		synchronized (sessions) {
 			int id = DebugClient.getSessionId(session);
-			if (!sessions.containsKey(id)) {
+			if (!sessions.containsKey(id) || !session.equals(sessions.get(id))) {
 				sessions.put(id, session);
 				getClient().processEvent(new LldbSessionCreatedEvent(new DebugSessionInfo(session)));
 			}
 		}
 	}
 
+	/**
+	 * Use {@link SBModule#remove()} instead
+	 * 
+	 * @param id the module name to remove
+	 */
+	public void removeModule(SBTarget session, String id) {
+		synchronized (modules) {
+			if (modules.get(session).remove(id) == null) {
+				throw new IllegalArgumentException("There is no module with id " + id);
+			}
+		}
+	}
+	
 	@Override
-	public Map<Integer, SBThread> getKnownThreads() {
+	public SBModule getModule(SBTarget session, String id) {
+		synchronized (modules) {
+			return modules.get(session).get(id);
+		}
+	}
+
+	public void addModuleIfAbsent(SBTarget session, SBModule module) {
+		synchronized (modules) {
+			String id = module.GetUUIDString();
+			if (!modules.containsKey(id)) {
+				modules.get(session).put(id, module);
+				getClient().processEvent(new LldbModuleLoadedEvent(new DebugModuleInfo(module)));
+			}
+		}
+	}
+
+	
+	@Override
+	public Map<SBProcess, Map<Integer, SBThread>> getKnownThreads() {
 		return unmodifiableThreads;
 	}
 
 	@Override
-	public Map<Integer, SBProcess> getKnownProcesses() {
+	public Map<SBTarget, Map<Integer, SBProcess>> getKnownProcesses() {
 		return unmodifiableProcesses;
 	}
 
 	@Override
 	public Map<Integer, SBTarget> getKnownSessions() {
 		return unmodifiableSessions;
+	}
+
+	@Override
+	public Map<SBTarget, Map<String, SBModule>> getKnownModules() {
+		return unmodifiableModules;
 	}
 
 	@Override
@@ -437,9 +477,9 @@ public class LldbManagerImpl implements LldbManager {
 		}
 
 		status = client.getControl().getExecutionStatus();
-		client.setOutputCallbacks(new LldbDebugOutputCallbacks(this));
 		client.setInputCallbacks(new LldbDebugInputCallbacks(this));
 		*/
+		client.setOutputCallbacks(new LldbDebugOutputCallbacks(this));
 		client.setEventCallbacks(new LldbDebugEventCallbacksAdapter(this));
 		client.flushCallbacks();
 
@@ -626,12 +666,30 @@ public class LldbManagerImpl implements LldbManager {
 
 	private Integer updateState(SBEvent event) {
 		DebugClientImpl client = (DebugClientImpl) engThread.getClient();
-		currentSession = eventSession = SBTarget.GetTargetFromEvent(event);
 		currentProcess = eventProcess = SBProcess.GetProcessFromEvent(event);
-		currentThread = eventThread = SBThread.GetThreadFromEvent(event);
+		SBTarget candidateSession = SBTarget.GetTargetFromEvent(event);
+		if (candidateSession.IsValid()) {
+			currentSession = eventSession = candidateSession;
+			System.err.println("session from event was valid!");
+		} else {
+			candidateSession = currentProcess.GetTarget();
+			if (candidateSession.IsValid()) {
+				currentSession = eventSession = candidateSession;
+			} 
+		}
+		SBThread candidateThread = SBThread.GetThreadFromEvent(event);
+		if (candidateThread.IsValid()) {
+			currentThread = eventThread = candidateThread;
+			System.err.println("thread from event was valid!");
+		} else {
+			candidateThread = currentProcess.GetSelectedThread();
+			if (candidateThread.IsValid()) {
+				currentThread = eventThread = candidateThread;
+			} 
+		}
 		addSessionIfAbsent(eventSession);
-		addProcessIfAbsent(eventProcess);
-		addThreadIfAbsent(eventThread);
+		addProcessIfAbsent(eventSession, eventProcess);
+		addThreadIfAbsent(eventProcess, eventThread);
 		client.translateAndFireEvent(event);
 		/*
 		Integer etid = so.getEventThread();
@@ -1357,8 +1415,8 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	@Override
-	public CompletableFuture<Map<Integer, SBProcess>> listProcesses() {
-		return execute(new LldbListProcessesCommand(this));
+	public CompletableFuture<Map<Integer, SBProcess>> listProcesses(SBTarget session) {
+		return execute(new LldbListProcessesCommand(this, session));
 	}
 
 	@Override

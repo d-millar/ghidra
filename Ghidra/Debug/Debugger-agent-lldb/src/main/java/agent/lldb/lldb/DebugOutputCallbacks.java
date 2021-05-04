@@ -13,26 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package agent.lldb.manager.cmd;
+package agent.lldb.lldb;
 
-import SWIG.SBTarget;
-import agent.lldb.manager.impl.LldbManagerImpl;
 
 /**
- * Implementation of {@link DbgManager#addProcess()}
+ * The interface for receiving output callbacks via {@code IDebugOutputCallbacks} or a newer
+ * variant.
+ * 
+ * Note: The wrapper implementation will select the apprirate native interface version.
+ * 
+ * TODO: Change {@link #output(int, String)} {@code mask} parameter to use {@link DebugOutputLevel}
+ * flags.
  */
-public class LldbRemoveProcessCommand extends AbstractLldbCommand<Void> {
-	private SBTarget session;
-	private Integer id;
-
-	public LldbRemoveProcessCommand(LldbManagerImpl manager, SBTarget session, Integer id) {
-		super(manager);
-		this.session = session;
-		this.id = id;
-	}
-
-	@Override
-	public void invoke() {
-		manager.removeProcess(manager.getProcess(session, id));
-	}
+@FunctionalInterface
+public interface DebugOutputCallbacks {
+	void output(int mask, String text);
 }

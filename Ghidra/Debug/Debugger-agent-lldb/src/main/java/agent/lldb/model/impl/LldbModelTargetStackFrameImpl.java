@@ -44,9 +44,6 @@ import ghidra.program.model.address.Address;
 			name = LldbModelTargetStackFrame.FUNC_ATTRIBUTE_NAME,
 			type = String.class),
 		@TargetAttributeType(
-			name = LldbModelTargetStackFrame.FUNC_TABLE_ENTRY_ATTRIBUTE_NAME,
-			type = String.class),
-		@TargetAttributeType(
 			name = LldbModelTargetStackFrame.INST_OFFSET_ATTRIBUTE_NAME,
 			type = String.class),
 		@TargetAttributeType(
@@ -57,21 +54,6 @@ import ghidra.program.model.address.Address;
 			type = String.class),
 		@TargetAttributeType(
 			name = LldbModelTargetStackFrame.STACK_OFFSET_ATTRIBUTE_NAME,
-			type = String.class),
-		@TargetAttributeType(
-			name = LldbModelTargetStackFrame.VIRTUAL_ATTRIBUTE_NAME,
-			type = Boolean.class),
-		@TargetAttributeType(
-			name = LldbModelTargetStackFrame.PARAM0_ATTRIBUTE_NAME,
-			type = String.class),
-		@TargetAttributeType(
-			name = LldbModelTargetStackFrame.PARAM1_ATTRIBUTE_NAME,
-			type = String.class),
-		@TargetAttributeType(
-			name = LldbModelTargetStackFrame.PARAM2_ATTRIBUTE_NAME,
-			type = String.class),
-		@TargetAttributeType(
-			name = LldbModelTargetStackFrame.PARAM3_ATTRIBUTE_NAME,
 			type = String.class),
 		@TargetAttributeType(type = Void.class) })
 public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
@@ -92,12 +74,9 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 	protected String func;
 	protected String display;
 
-	private Long funcTableEntry = -1L;
 	private Long frameOffset = -1L;
-	private Long returnOffset = -1L;
+	//private Long returnOffset = -1L;
 	private Long stackOffset = -1L;
-	private Boolean virtual = false;
-	private long[] params = new long[4];
 
 	public LldbModelTargetStackFrameImpl(LldbModelTargetStack stack, LldbModelTargetThread thread,
 			SBFrame frame) {
@@ -116,14 +95,11 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 	}
 
 	protected static String computeDisplay(SBFrame frame) {
-		/*
-		if (frame.getFunction() == null) {
-			return String.format("#%d 0x%s", frame.getLevel(), frame.getAddress().toString(16));
+		if (frame.GetFunction() == null) {
+			return String.format("#%d 0x%s", frame.GetFrameID(), frame.GetPC().toString(16));
 		}
-		return String.format("#%d 0x%s in %s ()", frame.getLevel(), frame.getAddress().toString(16),
-			frame.getFunction());
-		*/
-		return null;
+		return String.format("#%d 0x%s in %s ()", frame.GetFrameID(), frame.GetPC().toString(16),
+			frame.GetDisplayFunctionName());
 	}
 
 	@Override
@@ -137,38 +113,22 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 	public void setFrame(SBFrame frame) {
 		BigInteger address = frame.GetPC();
 		long lval = address == null ? -1 : address.longValue();
-		/*
 		this.pc = getModel().getAddressSpace("ram").getAddress(lval);
-		this.func = frame.getFunction();
+		this.func = frame.GetFunctionName();
 		if (func == null) {
 			func = "UNKNOWN";
 		}
-		this.funcTableEntry = frame.getFuncTableEntry();
-		this.frameOffset = frame.getFrameOffset();
-		this.returnOffset = frame.getReturnOffset();
-		this.stackOffset = frame.getStackOffset();
-		this.virtual = frame.getVirtual();
-		this.params = frame.getParams();
-		*/
-		// TODO: module? "from"
+		this.frameOffset = frame.GetFP().longValue();
+		this.stackOffset = frame.GetSP().longValue();
 		this.frame = frame;
 
 		changeAttributes(List.of(), List.of(), Map.of( //
 			PC_ATTRIBUTE_NAME, pc, //
 			DISPLAY_ATTRIBUTE_NAME, display = computeDisplay(frame), //
 			FUNC_ATTRIBUTE_NAME, func, //
-			FUNC_TABLE_ENTRY_ATTRIBUTE_NAME, Long.toHexString(funcTableEntry), //
 			INST_OFFSET_ATTRIBUTE_NAME, Long.toHexString(lval), //
 			FRAME_OFFSET_ATTRIBUTE_NAME, Long.toHexString(frameOffset), //
-			RETURN_OFFSET_ATTRIBUTE_NAME, Long.toHexString(returnOffset), //
-			STACK_OFFSET_ATTRIBUTE_NAME, Long.toHexString(stackOffset), //
-			VIRTUAL_ATTRIBUTE_NAME, virtual //
-		), "Refreshed");
-		changeAttributes(List.of(), List.of(), Map.of( //
-			PARAM0_ATTRIBUTE_NAME, Long.toHexString(params[0]), //
-			PARAM1_ATTRIBUTE_NAME, Long.toHexString(params[1]), //
-			PARAM2_ATTRIBUTE_NAME, Long.toHexString(params[2]), //
-			PARAM3_ATTRIBUTE_NAME, Long.toHexString(params[3]) //
+			STACK_OFFSET_ATTRIBUTE_NAME, Long.toHexString(stackOffset) //
 		), "Refreshed");
 	}
 

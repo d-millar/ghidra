@@ -62,6 +62,6 @@ public class LldbConsoleExecCommand extends AbstractLldbCommand<String> {
 
 	@Override
 	public void invoke() {
-		//manager.getControl().execute(command);
+		manager.getClient().execute(command);
 	}
 }

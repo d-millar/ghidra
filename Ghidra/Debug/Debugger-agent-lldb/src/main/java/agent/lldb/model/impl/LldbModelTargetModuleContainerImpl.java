@@ -69,6 +69,10 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 			//modulesByName.remove(name);
 			module = getTargetModule(name);
 		}
+		if (module == null) {
+			System.err.println("Module "+name+" not found!");
+			return;
+		}
 		TargetThread eventThread =
 			(TargetThread) getModel().getModelObject(getManager().getEventThread());
 		changeElements(List.of(), List.of(module), Map.of(), "Loaded");
@@ -116,7 +120,7 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 
 	public LldbModelTargetModule getTargetModule(String name) {
 		// Only get here from libraryLoaded or getElements. The known list should be fresh.
-		SBModule module = null; //process.getKnownModules().get(name);
+		SBModule module = getManager().getKnownModules().get(session).get(name);
 		if (module == null) {
 			return null;
 		}

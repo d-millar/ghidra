@@ -16,7 +16,7 @@
 package agent.lldb.manager.cmd;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,7 +28,7 @@ import ghidra.util.Msg;
 
 public class LldbListThreadsCommand extends AbstractLldbCommand<Map<Integer, SBThread>> {
 	protected final SBProcess process;
-	private List<Integer> updatedThreadIds = new ArrayList<>();
+	private Map<Integer, SBThread> updatedThreadIds = new HashMap<>();
 
 	public LldbListThreadsCommand(LldbManagerImpl manager, SBProcess process) {
 		super(manager);
@@ -37,24 +37,25 @@ public class LldbListThreadsCommand extends AbstractLldbCommand<Map<Integer, SBT
 
 	@Override
 	public Map<Integer, SBThread> complete(LldbPendingCommand<?> pending) {
-		Map<Integer, SBThread> threads = manager.getKnownThreads();
+		Map<Integer, SBThread> threads = manager.getKnownThreads().get(process);
 		Set<Integer> cur = threads.keySet();
-		for (Integer id : updatedThreadIds) {
+		for (Integer id : updatedThreadIds.keySet()) {
 			if (cur.contains(id)) {
 				continue; // Do nothing, we're in sync
 			}
 			// Need to create the thread as if we receive =thread-created
 			Msg.warn(this, "Resync: Was missing thread: " + id);
+			manager.addThreadIfAbsent(process, updatedThreadIds.get(id));
 		}
 		for (Integer id : new ArrayList<>(cur)) {
-			if (updatedThreadIds.contains(id)) {
+			if (updatedThreadIds.containsKey(id)) {
 				continue; // Do nothing, we're in sync
 			}
 			// Need to remove the thread as if we received =thread-exited
 			Msg.warn(this, "Resync: Had extra thread: " + id);
-			manager.removeThread(id);
+			manager.removeThread(process, id);
 		}
-		return manager.getKnownThreads();
+		return manager.getKnownThreads().get(process);
 	}
 
 	@Override
@@ -62,8 +63,8 @@ public class LldbListThreadsCommand extends AbstractLldbCommand<Map<Integer, SBT
 		updatedThreadIds.clear();
 		long n = process.GetNumThreads();
 		for (int i = 0; i < n; i++) {
-			SBThread thread = process.GetThreadByIndexID(i);
-			updatedThreadIds.add(DebugClient.getThreadId(thread));
+			SBThread thread = process.GetThreadAtIndex(i);
+			updatedThreadIds.put(DebugClient.getThreadId(thread), thread);
 		}
 	}
 
