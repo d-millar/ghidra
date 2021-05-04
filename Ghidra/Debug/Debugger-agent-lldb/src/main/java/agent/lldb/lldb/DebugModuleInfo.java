@@ -21,6 +21,7 @@ import java.util.Map;
 import SWIG.SBEvent;
 import SWIG.SBFileSpec;
 import SWIG.SBModule;
+import SWIG.SBProcess;
 import SWIG.SBTarget;
 
 /**
@@ -33,6 +34,7 @@ import SWIG.SBTarget;
 public class DebugModuleInfo {
 	
 	public SBEvent event;
+	private SBProcess process;
 	private long numModules;
 	private Map<Integer, SBModule> modules = new HashMap<>();
 
@@ -45,7 +47,8 @@ public class DebugModuleInfo {
 		}
 	}
 	
-	public DebugModuleInfo(SBModule module) {
+	public DebugModuleInfo(SBProcess process, SBModule module) {
+		this.process = process;
 		this.event = null;
 		numModules = 1;
 		modules.put(0, module);
@@ -66,7 +69,7 @@ public class DebugModuleInfo {
 
 	public String getModuleName(int index) {
 		SBModule module = modules.get(index);	
-		return module.GetUUIDString();
+		return DebugClient.getModuleId(module);
 	}
 
 	public void setModuleName(int index, String moduleName) {
@@ -86,5 +89,9 @@ public class DebugModuleInfo {
 		SBFileSpec filespec = module.GetFileSpec();
 		filespec.SetDirectory(dirName);
 		filespec.SetFilename(imageName);
+	}
+	
+	public SBProcess getProcess() {
+		return event != null ? SBProcess.GetProcessFromEvent(event) : process;
 	}
 }

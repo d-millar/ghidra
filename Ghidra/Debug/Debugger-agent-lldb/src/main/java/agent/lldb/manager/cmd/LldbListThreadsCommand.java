@@ -37,7 +37,7 @@ public class LldbListThreadsCommand extends AbstractLldbCommand<Map<Integer, SBT
 
 	@Override
 	public Map<Integer, SBThread> complete(LldbPendingCommand<?> pending) {
-		Map<Integer, SBThread> threads = manager.getKnownThreads().get(process);
+		Map<Integer, SBThread> threads = manager.getKnownThreads(process);
 		Set<Integer> cur = threads.keySet();
 		for (Integer id : updatedThreadIds.keySet()) {
 			if (cur.contains(id)) {
@@ -55,7 +55,7 @@ public class LldbListThreadsCommand extends AbstractLldbCommand<Map<Integer, SBT
 			Msg.warn(this, "Resync: Had extra thread: " + id);
 			manager.removeThread(process, id);
 		}
-		return manager.getKnownThreads().get(process);
+		return manager.getKnownThreads(process);
 	}
 
 	@Override

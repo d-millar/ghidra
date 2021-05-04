@@ -18,6 +18,7 @@ package agent.lldb.model.impl;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import SWIG.SBTarget;
 import agent.lldb.manager.LldbCause;
@@ -43,6 +44,7 @@ public class LldbModelTargetSessionContainerImpl extends LldbModelTargetObjectIm
 
 	@Override
 	public void sessionAdded(SBTarget sess, LldbCause cause) {
+		System.err.println(sess+" added");
 		LldbModelTargetSession session = getTargetSession(sess);
 		changeElements(List.of(), List.of(session), Map.of(), "Added");
 	}
@@ -52,6 +54,7 @@ public class LldbModelTargetSessionContainerImpl extends LldbModelTargetObjectIm
 		//synchronized (this) {
 		//	sessionsById.remove(sessionId);
 		//}
+		System.err.println(sessionId+" removed");
 		changeElements(List.of( //
 			LldbModelTargetSessionImpl.indexSession(sessionId) //
 		), List.of(), Map.of(), "Removed");
@@ -69,24 +72,16 @@ public class LldbModelTargetSessionContainerImpl extends LldbModelTargetObjectIm
 
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
-		return CompletableFuture.completedFuture(null);
-		/*
-		LldbManagerImpl manager = getManager();
-		if (manager.checkAccessProhibited()) {
-			return CompletableFuture.completedFuture(this.elementsView);
-		}
-		return manager.listSessions().thenApply(byIID -> {
+		return getManager().listSessions().thenAccept(byIID -> {
 			List<TargetObject> sessions;
 			synchronized (this) {
 				sessions = byIID.values()
 						.stream()
-					.map(this::getTargetSession)
+						.map(this::getTargetSession)
 						.collect(Collectors.toList());
 			}
 			setElements(sessions, "Refreshed");
-			return this.elementsView;
 		});
-		*/
 	}
 
 }

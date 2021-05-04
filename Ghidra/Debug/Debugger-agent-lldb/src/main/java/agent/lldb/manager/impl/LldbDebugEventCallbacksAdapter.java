@@ -89,7 +89,7 @@ public class LldbDebugEventCallbacksAdapter extends DebugEventCallbacksAdapter {
 	@Override
 	public DebugStatus exitSession(int exitCode) {
 		Msg.info(this, "***Session exited: " + exitCode);
-		return checkInterrupt(manager.processEvent(new LldbSessionExitedEvent(exitCode)));
+		return null; //checkInterrupt(manager.processEvent(new LldbSessionExitedEvent(exitCode)));
 	}
 
 	@Override

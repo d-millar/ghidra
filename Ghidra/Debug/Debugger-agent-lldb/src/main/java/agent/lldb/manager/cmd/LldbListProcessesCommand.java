@@ -16,6 +16,7 @@
 package agent.lldb.manager.cmd;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,7 +33,7 @@ import ghidra.util.Msg;
  * Implementation of {@link LldbManager#listProcesses()}
  */
 public class LldbListProcessesCommand extends AbstractLldbCommand<Map<Integer, SBProcess>> {
-	private List<Integer> updatedProcessIds;
+	private Map<Integer, SBProcess> updatedProcesses;
 	private SBTarget session;
 
 	public LldbListProcessesCommand(LldbManagerImpl manager, SBTarget session) {
@@ -42,23 +43,31 @@ public class LldbListProcessesCommand extends AbstractLldbCommand<Map<Integer, S
 
 	@Override
 	public Map<Integer, SBProcess> complete(LldbPendingCommand<?> pending) {
-		Map<Integer, SBProcess> allProcesses = manager.getKnownProcesses().get(session);
+		Map<Integer, SBProcess> allProcesses = manager.getKnownProcesses(session);
 		Set<Integer> cur = allProcesses.keySet();
+		for (Integer id : updatedProcesses.keySet()) {
+			if (cur.contains(id)) {
+				continue; // Do nothing, we're in sync
+			}
+			// Need to create the thread as if we receive =thread-created
+			Msg.warn(this, "Resync: Was missing rocess: " + id);
+			manager.addProcessIfAbsent(session, updatedProcesses.get(id));
+		}
 		for (Integer id : new ArrayList<>(cur)) {
-			if (updatedProcessIds.contains(id)) {
+			if (updatedProcesses.containsKey(id)) {
 				continue; // Do nothing, we're in sync
 			}
 			// Need to remove the inferior as if we received =thread-group-removed
-			Msg.warn(this, "Resync: Had extra group: i" + id);
+			Msg.warn(this, "Resync: Had extra process: " + id);
 			manager.removeProcess(session, id, Causes.UNCLAIMED);
 		}
 		return allProcesses;
 	}
 
 	@Override
-	public void invoke() {
-		SBProcess p = manager.getCurrentProcess();
-		updatedProcessIds = new ArrayList<>();
-		updatedProcessIds.add(DebugClient.getProcessId(p));
+	public void invoke() {	
+		SBProcess p = session.GetProcess();
+		updatedProcesses = new HashMap<>();
+		updatedProcesses.put(DebugClient.getProcessId(p), p);
 	}
 }

@@ -23,6 +23,7 @@ import java.util.Set;
 import SWIG.SBFileSpec;
 import SWIG.SBModule;
 import SWIG.SBTarget;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import ghidra.util.Msg;
 
@@ -37,7 +38,7 @@ public class LldbListModulesCommand extends AbstractLldbCommand<Map<String, SBMo
 
 	@Override
 	public Map<String, SBModule> complete(LldbPendingCommand<?> pending) {
-		Map<String, SBModule> modules = manager.getKnownModules().get(session);
+		Map<String, SBModule> modules = manager.getKnownModules(session);
 		Set<String> cur = modules.keySet();
 		for (String id : updatedModules.keySet()) {
 			if (cur.contains(id)) {
@@ -55,7 +56,7 @@ public class LldbListModulesCommand extends AbstractLldbCommand<Map<String, SBMo
 			Msg.warn(this, "Resync: Had extra module: " + id);
 			manager.removeModule(session, id);
 		}
-		return manager.getKnownModules().get(session);
+		return manager.getKnownModules(session);
 	}
 
 	@Override
@@ -63,11 +64,7 @@ public class LldbListModulesCommand extends AbstractLldbCommand<Map<String, SBMo
 		long n = session.GetNumModules();
 		for (int i = 0; i < n; i++) {
 			SBModule module = session.GetModuleAtIndex(i);
-			System.err.println(module.GetUUIDString());
-			SBFileSpec filespec = module.GetFileSpec();
-			System.err.println(filespec.GetFilename());
-			System.err.println(module.GetPlatformFileSpec().GetFilename());
-			updatedModules.put(module.GetUUIDString(), module);
+			updatedModules.put(DebugClient.getModuleId(module), module);
 		}
 	}
 

@@ -20,6 +20,7 @@ import static ghidra.async.AsyncUtils.sequence;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -77,6 +78,7 @@ import agent.lldb.manager.cmd.LldbListAvailableProcessesCommand;
 import agent.lldb.manager.cmd.LldbListBreakpointsCommand;
 import agent.lldb.manager.cmd.LldbListModulesCommand;
 import agent.lldb.manager.cmd.LldbListProcessesCommand;
+import agent.lldb.manager.cmd.LldbListSessionsCommand;
 import agent.lldb.manager.cmd.LldbListThreadsCommand;
 import agent.lldb.manager.cmd.LldbOpenDumpCommand;
 import agent.lldb.manager.cmd.LldbPendingCommand;
@@ -214,9 +216,15 @@ public class LldbManagerImpl implements LldbManager {
 
 	public void addThreadIfAbsent(SBProcess process, SBThread thread) {
 		synchronized (threads) {
+			if (!process.IsValid()) return;
+			Map<Integer, SBThread> map = threads.get(process);
+			if (map == null) {
+				map = new HashMap<>();
+				threads.put(process, map);
+			}
 			int id = DebugClient.getThreadId(thread);
-			if (!threads.containsKey(id)) {
-				threads.get(process).put(id, thread);
+			if (!map.containsKey(id)) {
+				map.put(id, thread);
 				getClient().processEvent(new LldbThreadCreatedEvent(new DebugThreadInfo(thread)));
 			}
 		}
@@ -271,9 +279,15 @@ public class LldbManagerImpl implements LldbManager {
 
 	public void addProcessIfAbsent(SBTarget session, SBProcess process) {
 		synchronized (processes) {
+			if (!session.IsValid()) return;
+			Map<Integer, SBProcess> map = processes.get(session);
+			if (map == null) {
+				map = new HashMap<>();
+				processes.put(session, map);
+			}
 			int id = DebugClient.getProcessId(process);
-			if (!processes.containsKey(id)) {
-				processes.get(session).put(id, process);
+			if (!map.containsKey(id)) {
+				map.put(id, process);
 				getClient().processEvent(new LldbProcessCreatedEvent(new DebugProcessInfo(process)));
 			}
 		}
@@ -310,6 +324,10 @@ public class LldbManagerImpl implements LldbManager {
 		synchronized (sessions) {
 			int id = DebugClient.getSessionId(session);
 			if (!sessions.containsKey(id) || !session.equals(sessions.get(id))) {
+				if (sessions.containsKey(id)) {
+					removeSession(sessions.get(id));
+					getClient().processEvent(new LldbSessionExitedEvent(id, 0));
+				}
 				sessions.put(id, session);
 				getClient().processEvent(new LldbSessionCreatedEvent(new DebugSessionInfo(session)));
 			}
@@ -338,23 +356,39 @@ public class LldbManagerImpl implements LldbManager {
 
 	public void addModuleIfAbsent(SBTarget session, SBModule module) {
 		synchronized (modules) {
-			String id = module.GetUUIDString();
-			if (!modules.containsKey(id)) {
-				modules.get(session).put(id, module);
-				getClient().processEvent(new LldbModuleLoadedEvent(new DebugModuleInfo(module)));
+			if (!session.IsValid()) return;
+			Map<String, SBModule> map = modules.get(session);
+			if (map == null) {
+				map = new HashMap<>();
+				modules.put(session, map);
+			}
+			String id = DebugClient.getModuleId(module);
+			if (!map.containsKey(id)) {
+				map.put(id, module);
+				getClient().processEvent(new LldbModuleLoadedEvent(new DebugModuleInfo(eventProcess, module)));
 			}
 		}
 	}
 
 	
 	@Override
-	public Map<SBProcess, Map<Integer, SBThread>> getKnownThreads() {
-		return unmodifiableThreads;
+	public Map<Integer, SBThread> getKnownThreads(SBProcess process) {
+		Map<Integer, SBThread> map = threads.get(process);
+		if (map == null) {
+			map = new HashMap<>();
+			threads.put(process, map);
+		}
+		return map;
 	}
 
 	@Override
-	public Map<SBTarget, Map<Integer, SBProcess>> getKnownProcesses() {
-		return unmodifiableProcesses;
+	public Map<Integer, SBProcess> getKnownProcesses(SBTarget session) {
+		Map<Integer, SBProcess> map = processes.get(session);
+		if (map == null) {
+			map = new HashMap<>();
+			processes.put(session, map);
+		}
+		return map;
 	}
 
 	@Override
@@ -363,8 +397,13 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	@Override
-	public Map<SBTarget, Map<String, SBModule>> getKnownModules() {
-		return unmodifiableModules;
+	public Map<String, SBModule> getKnownModules(SBTarget session) {
+		Map<String, SBModule> map = modules.get(session);
+		if (map == null) {
+			map = new HashMap<>();
+			modules.put(session, map);
+		}
+		return map;
 	}
 
 	@Override
@@ -1008,6 +1047,8 @@ public class LldbManagerImpl implements LldbManager {
 	 * @return retval handling/break status
 	 */
 	protected DebugStatus processSessionExited(LldbSessionExitedEvent evt, Void v) {
+		removeSession(evt.sessionId, LldbCause.Causes.UNCLAIMED);
+		getEventListeners().fire.sessionRemoved(evt.sessionId, evt.getCause());
 		/*
 		Integer eventId = updateState();
 		SBThread thread = getCurrentThread();
@@ -1044,7 +1085,7 @@ public class LldbManagerImpl implements LldbManager {
 	protected DebugStatus processModuleLoaded(LldbModuleLoadedEvent evt, Void v) {
 		DebugModuleInfo info = evt.getInfo();
 		long n = info.getNumberOfModules();
-		SBProcess process = SBProcess.GetProcessFromEvent(info.event);
+		SBProcess process = info.getProcess();
 		for (int i = 0; i < n; i++) {
 			getEventListeners().fire.moduleLoaded(process, info, i, evt.getCause());
 		}
@@ -1211,7 +1252,9 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	protected void processConsoleOutput(LldbConsoleOutputEvent evt, Void v) {
-		getEventListeners().fire.consoleOutput(evt.getInfo(), evt.getMask());
+		if (evt.getInfo() != null) {
+			getEventListeners().fire.consoleOutput(evt.getInfo(), evt.getMask());
+		}
 	}
 
 	/**
@@ -1425,9 +1468,8 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	@Override
-	public CompletableFuture<Map<String, SBTarget>> listSessions() {
-		return CompletableFuture.completedFuture(null);
-		///return execute(new LldbListSessionsCommand(this));
+	public CompletableFuture<Map<Integer, SBTarget>> listSessions() {
+		return execute(new LldbListSessionsCommand(this));
 	}
 
 	@Override
