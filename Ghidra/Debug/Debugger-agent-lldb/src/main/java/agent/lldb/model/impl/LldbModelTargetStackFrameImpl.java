@@ -26,6 +26,7 @@ import agent.lldb.model.iface1.LldbModelTargetFocusScope;
 import agent.lldb.model.iface2.LldbModelTargetProcess;
 import agent.lldb.model.iface2.LldbModelTargetStack;
 import agent.lldb.model.iface2.LldbModelTargetStackFrame;
+import agent.lldb.model.iface2.LldbModelTargetStackFrameRegisterContainer;
 import agent.lldb.model.iface2.LldbModelTargetThread;
 import ghidra.dbg.target.TargetFocusScope;
 import ghidra.dbg.target.TargetObject;
@@ -74,6 +75,8 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 	protected String func;
 	protected String display;
 
+	private final LldbModelTargetStackFrameRegisterContainer registers;
+
 	private Long frameOffset = -1L;
 	//private Long returnOffset = -1L;
 	private Long stackOffset = -1L;
@@ -84,6 +87,8 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 		this.getModel().addModelObject(frame, this);
 		this.thread = thread;
 		this.pc = getModel().getAddressSpace("ram").getAddress(-1);
+
+		this.registers = new LldbModelTargetStackFrameRegisterContainerImpl(this);
 
 		changeAttributes(List.of(), List.of(), Map.of( //
 			DISPLAY_ATTRIBUTE_NAME, display = computeDisplay(frame), //
@@ -107,6 +112,14 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 		if (eventFrame != null && eventFrame.equals(frame)) {
 			((LldbModelTargetFocusScope) searchForSuitable(TargetFocusScope.class)).setFocus(this);
 		}
+	}
+
+	@TargetAttributeType(
+		name = LldbModelTargetStackFrameRegisterContainerImpl.NAME,
+		required = true,
+		fixed = true)
+	public LldbModelTargetStackFrameRegisterContainer getRegisters() {
+		return registers;
 	}
 
 	@Override
