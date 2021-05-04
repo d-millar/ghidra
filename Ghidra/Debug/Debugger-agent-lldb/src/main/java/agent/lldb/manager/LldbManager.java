@@ -177,7 +177,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a map of dbgeng-assigned thread IDs to corresponding thread handles
 	 */
-	Map<SBProcess, Map<Integer, SBThread>> getKnownThreads();
+	Map<Integer, SBThread> getKnownThreads(SBProcess process);
 
 	/**
 	 * Get all processes known to the manager
@@ -187,7 +187,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a map of process IDs to corresponding process handles
 	 */
-	Map<SBTarget, Map<Integer, SBProcess>> getKnownProcesses();
+	Map<Integer, SBProcess> getKnownProcesses(SBTarget session);
 
 	/**
 	 * Get all sessions known to the manager
@@ -207,7 +207,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a map of session IDs to corresponding session handles
 	 */
-	Map<SBTarget, Map<String, SBModule>> getKnownModules();
+	Map<String, SBModule> getKnownModules(SBTarget session);
 
 	/**
 	 * Get all breakpoints known to the manager
@@ -318,7 +318,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
-	CompletableFuture<Map<String, SBTarget>> listSessions();
+	CompletableFuture<Map<Integer, SBTarget>> listSessions();
 
 	/**
 	 * List dbgeng's stack frames

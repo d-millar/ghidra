@@ -21,6 +21,7 @@ import java.util.Map;
 import SWIG.SBModule;
 import SWIG.SBProcess;
 import SWIG.SBTarget;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.LldbModelTargetModule;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetElementType;
@@ -39,8 +40,9 @@ import ghidra.program.model.address.AddressSpace;
 		@TargetAttributeType(type = Void.class) })
 public class LldbModelTargetModuleImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetModule {
+	
 	protected static String indexModule(SBModule module) {
-		return null; //module.getName();
+		return DebugClient.getModuleId(module);
 	}
 
 	protected static String keyModule(SBModule module) {

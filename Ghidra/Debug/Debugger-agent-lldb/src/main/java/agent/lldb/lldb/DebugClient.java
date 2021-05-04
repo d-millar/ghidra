@@ -19,6 +19,7 @@ import com.sun.jna.platform.win32.WinBase;
 
 import SWIG.SBEvent;
 import SWIG.SBListener;
+import SWIG.SBModule;
 import SWIG.SBProcess;
 import SWIG.SBTarget;
 import SWIG.SBThread;
@@ -325,6 +326,10 @@ public interface DebugClient extends DebugClientReentrant {
 
 	public static Integer getThreadId(SBThread thread) {
 		return thread.GetThreadID().intValue();
+	}
+
+	public static String getModuleId(SBModule module) {
+		return module.GetFileSpec().GetFilename();
 	}
 
 	public SBListener getListener();

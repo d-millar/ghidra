@@ -19,8 +19,11 @@ import SWIG.StateType;
 
 public class LldbSessionExitedEvent extends AbstractLldbEvent<Integer> {
 
-	public LldbSessionExitedEvent(Integer exitCode) {
+	public Integer sessionId;
+
+	public LldbSessionExitedEvent(Integer sessionId, Integer exitCode) {
 		super(exitCode);
+		this.sessionId = sessionId;
 	}
 
 	@Override

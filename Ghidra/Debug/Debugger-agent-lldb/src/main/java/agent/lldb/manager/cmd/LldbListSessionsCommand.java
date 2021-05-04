@@ -37,7 +37,8 @@ public class LldbListSessionsCommand extends AbstractLldbCommand<Map<Integer, SB
 
 	@Override
 	public Map<Integer, SBTarget> complete(LldbPendingCommand<?> pending) {
-		Map<Integer, SBTarget> allSessions = manager.getKnownSessions();
+		return manager.getKnownSessions();
+		/*
 		Set<Integer> cur = allSessions.keySet();
 		for (Integer id : updatedSessionIds) {
 			if (cur.contains(id)) {
@@ -55,6 +56,7 @@ public class LldbListSessionsCommand extends AbstractLldbCommand<Map<Integer, SB
 			manager.removeSession(id, Causes.UNCLAIMED);
 		}
 		return allSessions;
+		*/
 	}
 
 	@Override

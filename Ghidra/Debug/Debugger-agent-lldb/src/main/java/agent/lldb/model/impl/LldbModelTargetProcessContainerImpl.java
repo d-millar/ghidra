@@ -139,7 +139,7 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 		if (modelObject != null) {
 			return (LldbModelTargetProcess) modelObject;
 		}
-		return new LldbModelTargetProcessImpl(this, getManager().getKnownProcesses().get(session).get(id));
+		return new LldbModelTargetProcessImpl(this, getManager().getKnownProcesses(session.session).get(id));
 	}
 
 	@Override

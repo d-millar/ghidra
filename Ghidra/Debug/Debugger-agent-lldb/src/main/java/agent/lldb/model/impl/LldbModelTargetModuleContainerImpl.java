@@ -102,7 +102,7 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 
 	@Override
 	public CompletableFuture<? extends TargetModule> addSyntheticModule(String name) {
-		throw new UnsupportedOperationException("Lldbeng Does not support synthetic modules");
+		throw new UnsupportedOperationException("lldb does not support synthetic modules");
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 
 	public LldbModelTargetModule getTargetModule(String name) {
 		// Only get here from libraryLoaded or getElements. The known list should be fresh.
-		SBModule module = getManager().getKnownModules().get(session).get(name);
+		SBModule module = getManager().getKnownModules(session).get(name);
 		if (module == null) {
 			return null;
 		}
