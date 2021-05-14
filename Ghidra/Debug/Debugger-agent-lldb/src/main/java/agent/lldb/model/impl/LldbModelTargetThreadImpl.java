@@ -42,7 +42,6 @@ import ghidra.dbg.util.PathUtils;
 
 @TargetObjectSchemaInfo(name = "Thread", elements = {
 	@TargetElementType(type = Void.class) }, attributes = {
-		@TargetAttributeType(name = "Registers", type = LldbModelTargetRegisterContainerImpl.class, required = true, fixed = true),
 		@TargetAttributeType(name = "Stack", type = LldbModelTargetStackImpl.class, required = true, fixed = true),
 		@TargetAttributeType(name = TargetEnvironment.ARCH_ATTRIBUTE_NAME, type = String.class),
 		@TargetAttributeType(type = Void.class) })

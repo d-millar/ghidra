@@ -15,6 +15,7 @@
  */
 package agent.lldb.model.impl;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +24,7 @@ import agent.lldb.model.iface2.LldbModelTargetStackFrameRegister;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetElementType;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.util.ConversionUtils;
 import ghidra.dbg.util.PathUtils;
 
 @TargetObjectSchemaInfo(
@@ -74,6 +76,12 @@ public class LldbModelTargetStackFrameRegisterImpl
 	@Override
 	public SBValue getRegister() {
 		return register;
+	}
+	
+	public byte [] getBytes() {
+		BigInteger val = new BigInteger(value);
+		byte[] bytes = ConversionUtils.bigIntegerToBytes((int) register.GetByteSize(), val);
+		return bytes;
 	}
 
 }

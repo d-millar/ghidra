@@ -31,8 +31,9 @@ import SWIG.StateType;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.manager.LldbRegister;
 import agent.lldb.model.iface2.LldbModelTargetRegister;
-import agent.lldb.model.iface2.LldbModelTargetRegisterBank;
 import agent.lldb.model.iface2.LldbModelTargetStackFrameRegisterBank;
+import ghidra.async.AsyncUtils;
+import ghidra.dbg.error.DebuggerRegisterAccessException;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
@@ -60,12 +61,6 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 
 	private Map<String, byte[]> regValues = new HashMap<>();
 
-	protected final Map<String, LldbModelTargetRegister> registersByName = new HashMap<>();
-
-	protected final Map<Integer, LldbModelTargetStackFrameRegisterImpl> registersByNumber =
-		new WeakValueHashMap<>();
-	protected final Set<LldbRegister> allRegisters = new LinkedHashSet<>();
-
 	public LldbModelTargetStackFrameRegisterBankImpl(LldbModelTargetStackFrameRegisterContainerImpl container, SBValue val) {
 		super(container.getModel(), container, keyValue(val), "StackFrameRegisterBank");
 		this.container = container;
@@ -85,22 +80,11 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
 		return getManager().listStackFrameRegisters(value).thenAccept(regs -> {
-			if (regs.size() != registersByName.size()) {
-				LldbModelImpl impl = (LldbModelImpl) model;
-				for (SBValue reg : regs.values()) {
-					impl.deleteModelObject(reg);
-				}
-				registersByName.clear();
-		
-			}
 			List<TargetObject> registers;
 			synchronized (this) {
 				registers = regs.values().stream().map(this::getTargetRegister).collect(Collectors.toList());
 			}
 			setElements(registers, Map.of(), "Refreshed");
-			if (!getCachedElements().isEmpty()) {
-				readRegistersNamed(getCachedElements().keySet());
-			}
 		}); 
 	}
 
@@ -124,38 +108,35 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 	@Override
 	public CompletableFuture<? extends Map<String, byte[]>> readRegistersNamed(
 			Collection<String> names) {
-		return null; /*model.gateFuture(ensureRegisterDescriptions().thenCompose(regs -> {
-			Set<GdbRegister> toRead = new LinkedHashSet<>();
+		return requestElements(false).thenCompose(__ -> {
+			Map<String, byte []> result = new HashMap<>();
+			Map<String, TargetObject> elements = getCachedElements();
 			for (String regname : names) {
-				LldbModelTargetStackFrameRegisterImpl reg = regs.get(regname);
-				if (reg == null) {
+				if (!elements.containsKey(regname)) {
 					throw new DebuggerRegisterAccessException("No such register: " + regname);
 				}
-				toRead.add(reg.register);
+				LldbModelTargetStackFrameRegisterImpl register = (LldbModelTargetStackFrameRegisterImpl) elements.get(regname);
+				result.put(regname, register.getBytes());
 			}
-			return updateRegisterValues(toRead);
-		}));
-		*/
+			return CompletableFuture.completedFuture(result);
+		});
 	}
 	
 	@Override
 	public CompletableFuture<Void> writeRegistersNamed(Map<String, byte[]> values) {
-		Map<LldbRegister, BigInteger> toWrite = new LinkedHashMap<>();
-		return null; /*model.gateFuture(ensureRegisterDescriptions().thenCompose(regs -> {
+		return requestElements(false).thenCompose(__ -> {
+			Map<String, TargetObject> elements = getCachedElements();
 			for (Map.Entry<String, byte[]> ent : values.entrySet()) {
 				String regname = ent.getKey();
-				LldbModelTargetStackFrameRegisterImpl reg = regs.get(regname);
+				LldbModelTargetStackFrameRegisterImpl reg = (LldbModelTargetStackFrameRegisterImpl) elements.get(regname);
 				if (reg == null) {
 					throw new DebuggerRegisterAccessException("No such register: " + regname);
 				}
 				BigInteger val = new BigInteger(1, ent.getValue());
-				toWrite.put(reg.register, val);
+				reg.register.SetValueFromCString(val.toString());
 			}
-			return frame.frame.writeRegisters(toWrite);
-		}).thenCompose(__ -> {
-			return updateRegisterValues(toWrite.keySet());
-		})).thenApply(__ -> null);
-		*/
+			return AsyncUtils.NIL;
+		});
 	}
 	
 	@Override
