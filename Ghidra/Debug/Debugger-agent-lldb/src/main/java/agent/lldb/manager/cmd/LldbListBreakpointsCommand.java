@@ -15,38 +15,55 @@
  */
 package agent.lldb.manager.cmd;
 
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
-import agent.lldb.lldb.DebugBreakpoint;
-import agent.lldb.manager.breakpoint.LldbBreakpointInfo;
+import SWIG.SBBreakpoint;
+import SWIG.SBTarget;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 
 /**
  * Implementation of {@link LldbProcess#listBreakpoints()}
  */
-public class LldbListBreakpointsCommand extends AbstractLldbCommand<Map<Long, LldbBreakpointInfo>> {
+public class LldbListBreakpointsCommand extends AbstractLldbCommand<Map<Integer, SBBreakpoint>> {
 
-	private List<DebugBreakpoint> breakpoints;
+	protected final SBTarget session;
+	private Map<Integer, SBBreakpoint> updatedBreakpoints = new HashMap<>();
 
-	public LldbListBreakpointsCommand(LldbManagerImpl manager) {
+	public LldbListBreakpointsCommand(LldbManagerImpl manager, SBTarget session) {
 		super(manager);
+		this.session = session;
 	}
 
 	@Override
-	public Map<Long, LldbBreakpointInfo> complete(LldbPendingCommand<?> pending) {
-		Map<Long, LldbBreakpointInfo> list = new LinkedHashMap<>();
-		for (DebugBreakpoint bpt : breakpoints) {
-			LldbBreakpointInfo info = new LldbBreakpointInfo(bpt, manager.getCurrentProcess());
-			list.put((long) bpt.getId(), info);
+	public Map<Integer, SBBreakpoint> complete(LldbPendingCommand<?> pending) {
+		Map<Integer, SBBreakpoint> breakpoints = manager.getKnownBreakpoints(session);
+		Set<Integer> cur = breakpoints.keySet();
+		for (Integer id : updatedBreakpoints.keySet()) {
+			if (cur.contains(id)) {
+				continue; // Do nothing, we're in sync
+			}
+			manager.addBreakpointIfAbsent(session, updatedBreakpoints.get(id));
 		}
-		return list;
+		for (Integer id : new ArrayList<>(cur)) {
+			if (updatedBreakpoints.containsKey(id)) {
+				continue; // Do nothing, we're in sync
+			}
+			manager.removeBreakpoint(session, id);
+		}
+		return manager.getKnownBreakpoints(session);
 	}
 
 	@Override
 	public void invoke() {
-		//breakpoints = manager.getControl().getBreakpoints();
+		updatedBreakpoints.clear();
+		long n = session.GetNumBreakpoints();
+		for (int i = 0; i < n; i++) {
+			SBBreakpoint bpt = session.GetBreakpointAtIndex(i);
+			updatedBreakpoints.put(bpt.GetID(), bpt);
+		}
 	}
 }

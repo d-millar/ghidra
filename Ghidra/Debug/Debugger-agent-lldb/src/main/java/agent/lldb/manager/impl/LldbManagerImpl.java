@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +34,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.sun.jna.platform.win32.COM.COMException;
 
+import SWIG.SBBreakpoint;
 import SWIG.SBEvent;
 import SWIG.SBFrame;
 import SWIG.SBMemoryRegionInfo;
@@ -48,6 +48,7 @@ import SWIG.SBValue;
 import SWIG.StateType;
 import agent.lldb.gadp.impl.AbstractClientThreadExecutor;
 import agent.lldb.gadp.impl.LldbClientThreadExecutor;
+import agent.lldb.lldb.DebugBreakpointInfo;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.lldb.DebugClient.ChangeProcessState;
 import agent.lldb.lldb.DebugClient.DebugEndSessionFlags;
@@ -170,8 +171,8 @@ public class LldbManagerImpl implements LldbManager {
 	private final Map<SBTarget, Map<String, SBModule>> unmodifiableModules =
 		Collections.unmodifiableMap(modules);
 
-	private final Map<Long, LldbBreakpointInfo> breakpoints = new LinkedHashMap<>();
-	private final Map<Long, LldbBreakpointInfo> unmodifiableBreakpoints =
+	private final Map<SBTarget, Map<Integer, SBBreakpoint>> breakpoints = new LinkedHashMap<>();
+	private final Map<SBTarget, Map<Integer, SBBreakpoint>> unmodifiableBreakpoints =
 		Collections.unmodifiableMap(breakpoints);
 
 	protected final AsyncReference<StateType, LldbCause> state =
@@ -379,6 +380,40 @@ public class LldbManagerImpl implements LldbManager {
 		}
 	}
 
+	/**
+	 * Use {@link SBModule#remove()} instead
+	 * 
+	 * @param id the module name to remove
+	 */
+	public void removeBreakpoint(SBTarget session, Integer id) {
+		synchronized (breakpoints) {
+			if (breakpoints.get(session).remove(id) == null) {
+				throw new IllegalArgumentException("There is no module with id " + id);
+			}
+		}
+	}
+	
+	public SBBreakpoint getBreakpoint(SBTarget session, Integer id) {
+		synchronized (breakpoints) {
+			return breakpoints.get(session).get(id);
+		}
+	}
+
+	public void addBreakpointIfAbsent(SBTarget session, SBBreakpoint bpt) {
+		synchronized (breakpoints) {
+			if (!session.IsValid()) return;
+			Map<Integer, SBBreakpoint> map = breakpoints.get(session);
+			if (map == null) {
+				map = new HashMap<>();
+				breakpoints.put(session, map);
+			}
+			Integer id = bpt.GetID();
+			if (!map.containsKey(id)) {
+				map.put(id, bpt);
+				getClient().processEvent(new LldbBreakpointCreatedEvent(new DebugBreakpointInfo(bpt)));
+			}
+		}
+	}
 	
 	@Override
 	public Map<Integer, SBThread> getKnownThreads(SBProcess process) {
@@ -416,31 +451,36 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	@Override
-	public Map<Long, LldbBreakpointInfo> getKnownBreakpoints() {
-		return unmodifiableBreakpoints;
+	public Map<Integer, SBBreakpoint> getKnownBreakpoints(SBTarget session) {
+		Map<Integer, SBBreakpoint> map = breakpoints.get(session);
+		if (map == null) {
+			map = new HashMap<>();
+			breakpoints.put(session, map);
+		}
+		return map;
 	}
 
-	private LldbBreakpointInfo addKnownBreakpoint(LldbBreakpointInfo bkpt, boolean expectExisting) {
-		LldbBreakpointInfo old = breakpoints.put(bkpt.getNumber(), bkpt);
+	private SBBreakpoint addKnownBreakpoint(SBTarget session, SBBreakpoint bkpt, boolean expectExisting) {
+		SBBreakpoint old = breakpoints.get(session).put(bkpt.GetID(), bkpt);
 		if (expectExisting && old == null) {
-			Msg.warn(this, "Breakpoint " + bkpt.getNumber() + " is not known");
+			Msg.warn(this, "Breakpoint " + bkpt.GetID() + " is not known");
 		}
 		else if (!expectExisting && old != null) {
-			Msg.warn(this, "Breakpoint " + bkpt.getNumber() + " is already known");
+			Msg.warn(this, "Breakpoint " + bkpt.GetID() + " is already known");
 		}
 		return old;
 	}
 
-	private LldbBreakpointInfo getKnownBreakpoint(long number) {
-		LldbBreakpointInfo info = breakpoints.get(number);
+	private SBBreakpoint getKnownBreakpoint(SBTarget session, int number) {
+		SBBreakpoint info = breakpoints.get(session).get(number);
 		if (info == null) {
 			Msg.warn(this, "Breakpoint " + number + " is not known");
 		}
 		return info;
 	}
 
-	private LldbBreakpointInfo removeKnownBreakpoint(long number) {
-		LldbBreakpointInfo del = breakpoints.remove(number);
+	private SBBreakpoint removeKnownBreakpoint(SBTarget session, int number) {
+		SBBreakpoint del = breakpoints.get(session).remove(number);
 		if (del == null) {
 			Msg.warn(this, "Breakpoint " + number + " is not known");
 		}
@@ -475,8 +515,8 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	@Override
-	public CompletableFuture<Map<Long, LldbBreakpointInfo>> listBreakpoints() {
-		return execute(new LldbListBreakpointsCommand(this));
+	public CompletableFuture<Map<Integer, SBBreakpoint>> listBreakpoints(SBTarget session) {
+		return execute(new LldbListBreakpointsCommand(this, session));
 	}
 
 	private void checkStarted() {
@@ -1267,7 +1307,7 @@ public class LldbManagerImpl implements LldbManager {
 	 * @param v nothing
 	 */
 	protected void processBreakpointCreated(LldbBreakpointCreatedEvent evt, Void v) {
-		doBreakpointCreated(evt.getBreakpointInfo(), evt.getCause());
+		//doBreakpointCreated(evt.getBreakpointInfo(), evt.getCause());
 	}
 
 	/**
@@ -1312,7 +1352,7 @@ public class LldbManagerImpl implements LldbManager {
 	 * @param v nothing
 	 */
 	protected void processBreakpointDeleted(LldbBreakpointDeletedEvent evt, Void v) {
-		doBreakpointDeleted(evt.getNumber(), evt.getCause());
+		//doBreakpointDeleted(evt.getNumber(), evt.getCause());
 	}
 
 	/**
@@ -1322,8 +1362,8 @@ public class LldbManagerImpl implements LldbManager {
 	 * @param cause the cause of the creation
 	 */
 	@Internal
-	public void doBreakpointCreated(LldbBreakpointInfo newInfo, LldbCause cause) {
-		addKnownBreakpoint(newInfo, false);
+	public void doBreakpointCreated(SBTarget session, SBBreakpoint newInfo, LldbCause cause) {
+		addKnownBreakpoint(session, newInfo, false);
 		getEventListeners().fire.breakpointCreated(newInfo, cause);
 	}
 
@@ -1334,9 +1374,8 @@ public class LldbManagerImpl implements LldbManager {
 	 * @param cause the cause of the modification
 	 */
 	@Internal
-	public void doBreakpointModified(LldbBreakpointInfo newInfo, LldbCause cause) {
-		LldbBreakpointInfo oldInfo = addKnownBreakpoint(newInfo, true);
-		getEventListeners().fire.breakpointModified(newInfo, oldInfo, cause);
+	public void doBreakpointModified(SBBreakpoint info, LldbCause cause) {
+		getEventListeners().fire.breakpointModified(info, cause);
 	}
 
 	/**
@@ -1346,40 +1385,36 @@ public class LldbManagerImpl implements LldbManager {
 	 * @param cause the cause of the deletion
 	 */
 	@Internal
-	public void doBreakpointDeleted(long number, LldbCause cause) {
-		LldbBreakpointInfo oldInfo = removeKnownBreakpoint(number);
+	public void doBreakpointDeleted(SBTarget session, int number, LldbCause cause) {
+		SBBreakpoint oldInfo = removeKnownBreakpoint(session, number);
 		if (oldInfo == null) {
 			return;
 		}
 		getEventListeners().fire.breakpointDeleted(oldInfo, cause);
 	}
 
-	protected void doBreakpointModifiedSameLocations(LldbBreakpointInfo newInfo,
-			LldbBreakpointInfo oldInfo, LldbCause cause) {
-		if (Objects.equals(newInfo, oldInfo)) {
-			return;
-		}
-		getEventListeners().fire.breakpointModified(newInfo, oldInfo, cause);
+	protected void doBreakpointModifiedSameLocations(SBBreakpoint info, LldbCause cause) {
+		getEventListeners().fire.breakpointModified(info, cause);
 	}
 
 	@Internal
-	public void doBreakpointDisabled(long number, LldbCause cause) {
-		LldbBreakpointInfo oldInfo = getKnownBreakpoint(number);
-		if (oldInfo == null) {
+	public void doBreakpointDisabled(SBTarget session, int number, LldbCause cause) {
+		SBBreakpoint info = getKnownBreakpoint(session, number);
+		if (info == null) {
 			return;
 		}
-		LldbBreakpointInfo newInfo = oldInfo.withEnabled(false);
-		doBreakpointModifiedSameLocations(newInfo, oldInfo, cause);
+		info.SetEnabled(false);
+		doBreakpointModifiedSameLocations(info, cause);
 	}
 
 	@Internal
-	public void doBreakpointEnabled(long number, LldbCause cause) {
-		LldbBreakpointInfo oldInfo = getKnownBreakpoint(number);
-		if (oldInfo == null) {
+	public void doBreakpointEnabled(SBTarget session, int number, LldbCause cause) {
+		SBBreakpoint info = getKnownBreakpoint(session, number);
+		if (info == null) {
 			return;
 		}
-		LldbBreakpointInfo newInfo = oldInfo.withEnabled(true);
-		doBreakpointModifiedSameLocations(newInfo, oldInfo, cause);
+		info.SetEnabled(true);
+		doBreakpointModifiedSameLocations(info, cause);
 	}
 
 	private long orZero(Long l) {

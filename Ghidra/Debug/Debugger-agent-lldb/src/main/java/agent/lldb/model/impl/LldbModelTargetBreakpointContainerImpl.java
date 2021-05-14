@@ -20,9 +20,11 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import SWIG.SBBreakpoint;
+import SWIG.SBTarget;
+import agent.lldb.lldb.DebugBreakpointInfo;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.breakpoint.LldbBreakpointInfo;
-import agent.lldb.manager.impl.LldbManagerImpl;
 import agent.lldb.model.iface2.LldbModelTargetBreakpointContainer;
 import agent.lldb.model.iface2.LldbModelTargetBreakpointSpec;
 import agent.lldb.model.iface2.LldbModelTargetDebugContainer;
@@ -43,9 +45,12 @@ public class LldbModelTargetBreakpointContainerImpl extends LldbModelTargetObjec
 
 	protected static final TargetBreakpointKindSet SUPPORTED_KINDS =
 		TargetBreakpointKindSet.of(TargetBreakpointKind.values());
+	
+	private final SBTarget session;
 
-	public LldbModelTargetBreakpointContainerImpl(LldbModelTargetDebugContainer debug) {
+	public LldbModelTargetBreakpointContainerImpl(LldbModelTargetDebugContainer debug, SBTarget session) {
 		super(debug.getModel(), debug, "Breakpoints", "BreakpointContainer");
+		this.session = session;
 
 		getManager().addEventsListener(this);
 
@@ -56,47 +61,45 @@ public class LldbModelTargetBreakpointContainerImpl extends LldbModelTargetObjec
 	}
 
 	@Override
-	public void breakpointCreated(LldbBreakpointInfo info, LldbCause cause) {
+	public void breakpointCreated(SBBreakpoint info, LldbCause cause) {
 		changeElements(List.of(), List.of(getTargetBreakpointSpec(info)), Map.of(), "Created");
 	}
 
 	@Override
-	public void breakpointModified(LldbBreakpointInfo newInfo, LldbBreakpointInfo oldInfo,
-			LldbCause cause) {
-		getTargetBreakpointSpec(oldInfo).updateInfo(oldInfo, newInfo, "Modified");
+	public void breakpointModified(SBBreakpoint info, LldbCause cause) {
+		getTargetBreakpointSpec(info).updateInfo(info, "Modified");
 	}
 
 	@Override
-	public void breakpointDeleted(LldbBreakpointInfo info, LldbCause cause) {
+	public void breakpointDeleted(SBBreakpoint info, LldbCause cause) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		impl.deleteModelObject(info.getDebugBreakpoint());
+		impl.deleteModelObject(info);
 		changeElements(List.of( //
-			LldbModelTargetBreakpointSpecImpl.indexBreakpoint(info) //
+			Integer.toHexString(info.GetID()) //
 		), List.of(), Map.of(), "Deleted");
 	}
 
 	@Override
-	public void breakpointHit(LldbBreakpointInfo info, LldbCause cause) {
+	public void breakpointHit(SBBreakpoint bpt, LldbCause cause) {
 		LldbModelTargetThread targetThread =
 			getParentProcess().getThreads().getTargetThread(getManager().getEventThread());
-		LldbModelTargetBreakpointSpec spec = getTargetBreakpointSpec(info);
+		LldbModelTargetBreakpointSpec spec = getTargetBreakpointSpec(bpt);
 		listeners.fire.breakpointHit(getProxy(), targetThread, null, spec, spec);
 		spec.breakpointHit();
 	}
 
-	public LldbModelTargetBreakpointSpec getTargetBreakpointSpec(LldbBreakpointInfo info) {
+	public LldbModelTargetBreakpointSpec getTargetBreakpointSpec(SBBreakpoint bpt) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(info.getDebugBreakpoint());
+		TargetObject modelObject = impl.getModelObject(bpt);
 		if (modelObject != null) {
 			return (LldbModelTargetBreakpointSpec) modelObject;
 		}
-		return new LldbModelTargetBreakpointSpecImpl(this, info);
+		return new LldbModelTargetBreakpointSpecImpl(this, bpt);
 	}
 
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
-		LldbManagerImpl manager = getManager();
-		return manager.listBreakpoints().thenAccept(byNumber -> {
+		return getManager().listBreakpoints(getSession()).thenAccept(byNumber -> {
 			List<TargetObject> specs;
 			synchronized (this) {
 				specs = byNumber.values()
@@ -106,5 +109,9 @@ public class LldbModelTargetBreakpointContainerImpl extends LldbModelTargetObjec
 			}
 			setElements(specs, Map.of(), "Refreshed");
 		});
+	}
+
+	public SBTarget getSession() {
+		return session;
 	}
 }

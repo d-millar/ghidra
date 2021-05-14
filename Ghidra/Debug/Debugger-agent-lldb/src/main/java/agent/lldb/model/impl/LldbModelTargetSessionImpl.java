@@ -27,6 +27,7 @@ import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface1.LldbModelSelectableObject;
 import agent.lldb.model.iface1.LldbModelTargetInterpreter;
+import agent.lldb.model.iface2.LldbModelTargetDebugContainer;
 import agent.lldb.model.iface2.LldbModelTargetModuleContainer;
 import agent.lldb.model.iface2.LldbModelTargetProcessContainer;
 import agent.lldb.model.iface2.LldbModelTargetSession;
@@ -76,6 +77,7 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 	}
 
 	protected SBTarget session;
+	protected final LldbModelTargetDebugContainer debug;
 	protected final LldbModelTargetModuleContainer modules;
 	protected final LldbModelTargetSessionAttributesImpl attributes;
 	protected final LldbModelTargetProcessContainerImpl processes;
@@ -90,6 +92,7 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 		getManager().getClient().addBroadcaster(session);
 		this.session = session;
 
+		this.debug = new LldbModelTargetDebugContainerImpl(this);
 		this.attributes = new LldbModelTargetSessionAttributesImpl(this);
 		this.processes = new LldbModelTargetProcessContainerImpl(this);
 		this.modules = new LldbModelTargetModuleContainerImpl(this);
