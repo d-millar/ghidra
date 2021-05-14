@@ -71,25 +71,6 @@ public class LldbModelTargetStackFrameRegisterImpl
 	}
 
 	@Override
-	public String getDisplay() {
-		return getCachedAttribute(DISPLAY_ATTRIBUTE_NAME).toString();
-	}
-
-	public void stateChanged(byte[] bytes) {
-		BigInteger bigval = new BigInteger(1, bytes);
-		String value = bigval.toString(16);
-		Object oldval = getCachedAttributes().get(VALUE_ATTRIBUTE_NAME);
-		boolean modified = (bigval.longValue() != 0 && value.equals(oldval));
-
-		String newval = getName() + " : " + value;
-		changeAttributes(List.of(), Map.of( //
-			VALUE_ATTRIBUTE_NAME, value, //
-			DISPLAY_ATTRIBUTE_NAME, newval, //
-			MODIFIED_ATTRIBUTE_NAME, modified //
-		), "Value Updated");
-	}
-
-	@Override
 	public int getBitLength() {
 		// TODO Auto-generated method stub
 		return 0;

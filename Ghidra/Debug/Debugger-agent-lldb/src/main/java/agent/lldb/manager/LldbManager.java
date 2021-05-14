@@ -26,6 +26,7 @@ import SWIG.SBModule;
 import SWIG.SBProcess;
 import SWIG.SBTarget;
 import SWIG.SBThread;
+import SWIG.SBValue;
 import SWIG.StateType;
 import agent.lldb.lldb.DebugClient.DebugStatus;
 import agent.lldb.manager.LldbManager.ExecSuffix;
@@ -326,6 +327,13 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
 	CompletableFuture<Map<Integer, SBFrame>> listStackFrames(SBThread thread);
+
+	/**
+	 * List dbgeng's stack frames
+	 * 
+	 * @return a future that completes with a map of session IDs to session handles
+	 */
+	CompletableFuture<Map<Integer, SBValue>> listStackFrameRegisterBanks(SBFrame frame);
 
 	/**
 	 * List dbgeng's stack frames

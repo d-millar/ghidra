@@ -70,7 +70,7 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 
 	protected final LldbModelTargetThread thread;
 
-	protected SBFrame frame;
+	public SBFrame frame;
 	protected Address pc;
 	protected String func;
 	protected String display;
@@ -86,6 +86,7 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 		super(stack.getModel(), stack, keyFrame(frame), "StackFrame");
 		this.getModel().addModelObject(frame, this);
 		this.thread = thread;
+		this.frame = frame;
 		this.pc = getModel().getAddressSpace("ram").getAddress(-1);
 
 		this.registers = new LldbModelTargetStackFrameRegisterContainerImpl(this);
@@ -135,7 +136,9 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 		this.stackOffset = frame.GetSP().longValue();
 		this.frame = frame;
 
-		changeAttributes(List.of(), List.of(), Map.of( //
+		changeAttributes(List.of(), List.of(
+			registers //
+		), Map.of( //
 			PC_ATTRIBUTE_NAME, pc, //
 			DISPLAY_ATTRIBUTE_NAME, display = computeDisplay(frame), //
 			FUNC_ATTRIBUTE_NAME, func, //
@@ -147,7 +150,7 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public TargetObject getThread() {
-		return thread.getParent();
+		return thread;
 	}
 
 	@Override

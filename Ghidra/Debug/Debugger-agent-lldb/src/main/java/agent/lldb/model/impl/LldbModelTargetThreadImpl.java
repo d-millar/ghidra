@@ -73,7 +73,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 
 	protected final SBThread thread;
 
-	protected final LldbModelTargetRegisterContainerImpl registers;
+	//protected final LldbModelTargetRegisterContainerImpl registers;
 	protected final LldbModelTargetStackImpl stack;
 
 	private LldbModelTargetProcess process;
@@ -86,11 +86,11 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 		this.process = process;
 		this.thread = thread;
 
-		this.registers = new LldbModelTargetRegisterContainerImpl(this);
+		//this.registers = new LldbModelTargetRegisterContainerImpl(this);
 		this.stack = new LldbModelTargetStackImpl(this, process);
 
 		changeAttributes(List.of(), List.of( //
-			registers, //
+			//registers, //
 			stack //
 		), Map.of( //
 			ACCESSIBLE_ATTRIBUTE_NAME, accessible = false, //
@@ -133,7 +133,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 		), reason.desc());
 		*/
 		//setExecutionState(targetState, reason.desc());
-		registers.threadStateChangedSpecific(state, reason);
+		//registers.threadStateChangedSpecific(state, reason);
 	}
 
 	@Override
@@ -160,7 +160,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 	}
 
 	public LldbModelTargetRegisterContainerAndBank getRegisters() {
-		return registers;
+		return null; //registers;
 	}
 
 	@Override

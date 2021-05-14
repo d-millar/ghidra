@@ -22,11 +22,11 @@ import SWIG.SBFrame;
 import SWIG.SBThread;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
-public class LldbStackListFramesCommand extends AbstractLldbCommand<Map<Integer, SBFrame>> {
+public class LldbListStackFramesCommand extends AbstractLldbCommand<Map<Integer, SBFrame>> {
 	protected final SBThread thread;
 	private Map<Integer, SBFrame> result;
 
-	public LldbStackListFramesCommand(LldbManagerImpl manager, SBThread thread) {
+	public LldbListStackFramesCommand(LldbManagerImpl manager, SBThread thread) {
 		super(manager);
 		this.thread = thread;
 	}
