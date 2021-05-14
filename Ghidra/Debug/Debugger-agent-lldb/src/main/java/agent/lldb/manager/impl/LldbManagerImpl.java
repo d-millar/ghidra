@@ -41,6 +41,7 @@ import SWIG.SBModule;
 import SWIG.SBProcess;
 import SWIG.SBTarget;
 import SWIG.SBThread;
+import SWIG.SBValue;
 import SWIG.StateType;
 import agent.lldb.gadp.impl.AbstractClientThreadExecutor;
 import agent.lldb.gadp.impl.LldbClientThreadExecutor;
@@ -79,6 +80,7 @@ import agent.lldb.manager.cmd.LldbListBreakpointsCommand;
 import agent.lldb.manager.cmd.LldbListModulesCommand;
 import agent.lldb.manager.cmd.LldbListProcessesCommand;
 import agent.lldb.manager.cmd.LldbListSessionsCommand;
+import agent.lldb.manager.cmd.LldbListStackFrameRegisterBanksCommand;
 import agent.lldb.manager.cmd.LldbListThreadsCommand;
 import agent.lldb.manager.cmd.LldbOpenDumpCommand;
 import agent.lldb.manager.cmd.LldbPendingCommand;
@@ -87,7 +89,7 @@ import agent.lldb.manager.cmd.LldbRequestFocusCommand;
 import agent.lldb.manager.cmd.LldbSetActiveProcessCommand;
 import agent.lldb.manager.cmd.LldbSetActiveSessionCommand;
 import agent.lldb.manager.cmd.LldbSetActiveThreadCommand;
-import agent.lldb.manager.cmd.LldbStackListFramesCommand;
+import agent.lldb.manager.cmd.LldbListStackFramesCommand;
 import agent.lldb.manager.evt.AbstractLldbEvent;
 import agent.lldb.manager.evt.LldbBreakpointCreatedEvent;
 import agent.lldb.manager.evt.LldbBreakpointDeletedEvent;
@@ -1474,7 +1476,12 @@ public class LldbManagerImpl implements LldbManager {
 
 	@Override
 	public CompletableFuture<Map<Integer, SBFrame>> listStackFrames(SBThread thread) {
-		return execute(new LldbStackListFramesCommand(this, thread));
+		return execute(new LldbListStackFramesCommand(this, thread));
+	}
+
+	@Override
+	public CompletableFuture<Map<Integer, SBValue>> listStackFrameRegisterBanks(SBFrame frame) {
+		return execute(new LldbListStackFrameRegisterBanksCommand(this, frame));
 	}
 
 	@Override

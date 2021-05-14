@@ -15,9 +15,11 @@
  */
 package agent.lldb.model.iface2;
 
-import ghidra.dbg.target.TargetRegisterContainer;
+import agent.lldb.manager.LldbRegister;
 
-public interface LldbModelTargetRegisterContainer
-		extends LldbModelTargetObject, TargetRegisterContainer {
+public interface LldbModelTargetStackFrameRegisterBank
+		extends LldbModelTargetRegisterBank {
+
+	public LldbModelTargetRegister getTargetRegister(LldbRegister register);
 
 }

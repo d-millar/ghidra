@@ -15,16 +15,11 @@
  */
 package agent.lldb.model.impl;
 
-import java.math.BigInteger;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 import SWIG.SBThread;
 import SWIG.StateType;
@@ -33,15 +28,12 @@ import agent.lldb.manager.LldbRegister;
 import agent.lldb.model.iface2.LldbModelTargetRegister;
 import agent.lldb.model.iface2.LldbModelTargetRegisterContainerAndBank;
 import agent.lldb.model.iface2.LldbModelTargetThread;
-import ghidra.async.AsyncUtils;
-import ghidra.dbg.error.DebuggerRegisterAccessException;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.TargetRegisterBank;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetElementType;
 import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
-import ghidra.dbg.util.ConversionUtils;
 
 @TargetObjectSchemaInfo(name = "RegisterContainer", elements = {
 	@TargetElementType(type = LldbModelTargetRegisterImpl.class) }, elementResync = ResyncMode.ONCE, //
