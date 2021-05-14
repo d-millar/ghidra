@@ -114,8 +114,11 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 	}
 
 	@Override
-	public void moduleUnloaded(SBProcess proc, DebugModuleInfo info, LldbCause cause) {
-		session.getModules().libraryUnloaded(info.toString());
+	public void moduleUnloaded(SBProcess proc, DebugModuleInfo info, int index, LldbCause cause) {
+		LldbModelTargetModuleContainer modules = session.getModules();
+		if (modules != null) {
+			modules.libraryUnloaded(info, index);
+		}
 	}
 
 	@Override

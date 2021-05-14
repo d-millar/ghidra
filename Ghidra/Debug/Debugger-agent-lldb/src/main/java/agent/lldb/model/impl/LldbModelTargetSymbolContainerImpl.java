@@ -48,7 +48,7 @@ public class LldbModelTargetSymbolContainerImpl extends LldbModelTargetObjectImp
 
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
-		return null; /*module.module.listMinimalSymbols().thenAccept(byName -> {
+		return getManager().listModuleSymbols(module.module).thenAccept(byName -> {
 			List<TargetObject> symbols;
 			synchronized (this) {
 				symbols = byName.values()
@@ -58,7 +58,6 @@ public class LldbModelTargetSymbolContainerImpl extends LldbModelTargetObjectImp
 			}
 			setElements(symbols, Map.of(), "Refreshed");
 		});
-		*/
 	}
 
 	@Override

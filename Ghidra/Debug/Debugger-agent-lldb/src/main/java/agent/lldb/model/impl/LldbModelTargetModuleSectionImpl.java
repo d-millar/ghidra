@@ -18,11 +18,13 @@ package agent.lldb.model.impl;
 import java.util.List;
 import java.util.Map;
 
-import agent.lldb.manager.LldbModuleSection;
+import SWIG.SBSection;
+import SWIG.SBValue;
 import agent.lldb.model.iface2.LldbModelTargetModuleSection;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetElementType;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.util.PathUtils;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressRange;
 import ghidra.program.model.address.AddressRangeImpl;
@@ -30,32 +32,41 @@ import ghidra.program.model.address.AddressSpace;
 
 @TargetObjectSchemaInfo(name = "Section", elements = {
 	@TargetElementType(type = Void.class) }, attributes = {
-		@TargetAttributeType(type = Void.class) })
+		@TargetAttributeType(type = Object.class) })
 public class LldbModelTargetModuleSectionImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetModuleSection {
+
+	protected static String keySection(SBSection section) {
+		return PathUtils.makeKey(section.GetName());
+	}
+
 	protected static final String OBJFILE_ATTRIBUTE_NAME = PREFIX_INVISIBLE + "objfile";
 
-	protected AddressRangeImpl range;
+	protected AddressRange range;
 
 	public LldbModelTargetModuleSectionImpl(LldbModelTargetModuleSectionContainerImpl sections,
-			LldbModuleSection section) {
-		super(sections.getModel(), sections, section.getName(), "Section");
+			SBSection section) {
+		super(sections.getModel(), sections, keySection(section), "Section");
 		this.getModel().addModelObject(section, this);
 
 		AddressSpace space = getModel().getAddressSpace("ram");
-		Address min = space.getAddress(section.getStart());
+		Address min = space.getAddress(section.GetFileAddress().longValue());
 		// Ghidra ranges are not inclusive at the end.
-		Address max = space.getAddress(section.getStart() + section.getSize() - 1);
+		long sz = section.GetFileAddress().add(section.GetFileByteSize()).longValue() - 1;
+		Address max = space.getAddress(sz);
 		range = new AddressRangeImpl(min, max);
 
 		changeAttributes(List.of(), List.of(), Map.of( //
 			MODULE_ATTRIBUTE_NAME, sections.getParent(), //
 			RANGE_ATTRIBUTE_NAME, range, //
-			DISPLAY_ATTRIBUTE_NAME, section.getName() //
+			DISPLAY_ATTRIBUTE_NAME, section.GetName(), //
+			"Address", min, //
+			"Offset", section.GetFileOffset().toString(16), //
+			"Size", Long.toHexString(sz), //
+			"Permissions", section.GetPermissions() //
 		), "Initialized");
 	}
 
-	@TargetAttributeType(name = RANGE_ATTRIBUTE_NAME)
 	@Override
 	public AddressRange getRange() {
 		return range;

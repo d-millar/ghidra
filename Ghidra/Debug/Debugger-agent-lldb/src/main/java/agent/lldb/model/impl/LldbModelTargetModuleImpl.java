@@ -18,11 +18,13 @@ package agent.lldb.model.impl;
 import java.util.List;
 import java.util.Map;
 
+import SWIG.SBFileSpec;
 import SWIG.SBModule;
 import SWIG.SBProcess;
 import SWIG.SBTarget;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.LldbModelTargetModule;
+import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetElementType;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
@@ -31,13 +33,16 @@ import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSpace;
 
 @TargetObjectSchemaInfo(name = "Module", elements = {
-	@TargetElementType(type = Void.class) }, attributes = {
-		@TargetAttributeType(name = "Symbols", type = LldbModelTargetSymbolContainerImpl.class, required = true, fixed = true),
-		@TargetAttributeType(name = "BaseAddress", type = Address.class),
-		@TargetAttributeType(name = "ImageName", type = String.class),
-		@TargetAttributeType(name = "TimeStamp", type = Integer.class),
-		@TargetAttributeType(name = "Len", type = String.class),
-		@TargetAttributeType(type = Void.class) })
+	@TargetElementType(type = Void.class) 
+}, attributes = {
+	@TargetAttributeType(name = "Sections", type = LldbModelTargetModuleSectionContainerImpl.class, required = true, fixed = true),
+	@TargetAttributeType(name = "Symbols", type = LldbModelTargetSymbolContainerImpl.class, required = true, fixed = true),
+	@TargetAttributeType(name = "BaseAddress", type = Address.class),
+	@TargetAttributeType(name = "ImageName", type = String.class),
+	@TargetAttributeType(name = "UUID", type = String.class),
+	@TargetAttributeType(name = "Len", type = String.class),
+	@TargetAttributeType(type = Void.class) 
+})
 public class LldbModelTargetModuleImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetModule {
 	
@@ -52,8 +57,8 @@ public class LldbModelTargetModuleImpl extends LldbModelTargetObjectImpl
 	protected final SBTarget session;
 	protected final SBModule module;
 
-	protected final LldbModelTargetSymbolContainerImpl symbols;
-	//protected final LldbModelTargetModuleSectionContainerImpl sections;
+	//protected final LldbModelTargetSymbolContainerImpl symbols;
+	protected final LldbModelTargetModuleSectionContainerImpl sections;
 
 	public LldbModelTargetModuleImpl(LldbModelTargetModuleContainerImpl modules, SBModule module) {
 		super(modules.getModel(), modules, keyModule(module), "Module");
@@ -61,37 +66,37 @@ public class LldbModelTargetModuleImpl extends LldbModelTargetObjectImpl
 		this.session = modules.session;
 		this.module = module;
 
-		this.symbols = new LldbModelTargetSymbolContainerImpl(this);
-		//this.sections = new LldbModelTargetModuleSectionContainerImpl(this);
+		//this.symbols = new LldbModelTargetSymbolContainerImpl(this);
+		this.sections = new LldbModelTargetModuleSectionContainerImpl(this);
+		sections.requestElements(true).thenAccept(__ -> {
+			Map<String, TargetObject> elements = sections.getCachedElements();
+			LldbModelTargetModuleSectionImpl section = (LldbModelTargetModuleSectionImpl) elements.get("__TEXT");
+			if (section != null) {
+				changeAttributes(List.of(), List.of(), Map.of(					
+					"BaseAddress", section.getStart() //
+				), "Initialized");
+			}
+		});
 
 		AddressSpace space = getModel().getAddressSpace("ram");
-
+		
+		SBFileSpec fspec = module.GetFileSpec();
 		changeAttributes(List.of(), List.of( //
-			symbols //
-		//  sections.getName(), sections, //
+			sections //
+			//symbols //
 		), Map.of( //
-			DISPLAY_ATTRIBUTE_NAME, getIndex() //
+			DISPLAY_ATTRIBUTE_NAME, getIndex(), //
+			SHORT_DISPLAY_ATTRIBUTE_NAME, fspec.GetFilename(), //
+			MODULE_NAME_ATTRIBUTE_NAME, fspec.GetDirectory()+"/"+fspec.GetFilename(), //
+			"ImageName", fspec.GetDirectory()+"/"+fspec.GetFilename(), //
+			"UUID", module.GetUUIDString() //
 			/*
-			SHORT_DISPLAY_ATTRIBUTE_NAME, module.getName(), //
-			MODULE_NAME_ATTRIBUTE_NAME, module.getImageName(), //
 			"BaseAddress", space.getAddress(module.getKnownBase()), //
-			"ImageName", module.getImageName(), //
 			"TimeStamp", module.getTimeStamp(), //
 			"Len", Integer.toHexString(module.getSize()) //
 			*/
 		), "Initialized");
 
-		/*
-		SBMemoryRegionInfo section = new SBMemoryRegionInfo(module);
-		Address min = space.getAddress(section.getStart());
-		// Ghidra ranges are not inclusive at the end.
-		Address max = space.getAddress(section.getStart() + section.getSize() - 1);
-		AddressRange range = new AddressRangeImpl(min, max);
-
-		changeAttributes(List.of(), List.of(), Map.of( //
-			RANGE_ATTRIBUTE_NAME, range //
-		), "Initialized");
-		*/
 	}
 
 	protected Address doGetBase() {

@@ -19,14 +19,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import SWIG.SBMemoryRegionInfo;
+import SWIG.SBMemoryRegionInfoList;
+import SWIG.SBProcess;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 public class LldbListMemoryRegionsCommand extends AbstractLldbCommand<List<SBMemoryRegionInfo>> {
 
+	private SBProcess process;
 	private List<SBMemoryRegionInfo> memoryRegions = new ArrayList<>();
 
-	public LldbListMemoryRegionsCommand(LldbManagerImpl manager) {
+	public LldbListMemoryRegionsCommand(LldbManagerImpl manager, SBProcess process) {
 		super(manager);
+		this.process = process;
 	}
 
 	@Override
@@ -36,53 +40,14 @@ public class LldbListMemoryRegionsCommand extends AbstractLldbCommand<List<SBMem
 
 	@Override
 	public void invoke() {
-		/*
-		DebugDataSpaces dataSpaces = manager.getDataSpaces();
-		for (DebugMemoryBasicInformation info : dataSpaces.iterateVirtual(0)) {
-			if (info.state == PageState.FREE) {
-				continue;
+		SBMemoryRegionInfoList regions = process.GetMemoryRegions();
+		for (int i = 0; i < regions.GetSize(); i++) {
+			SBMemoryRegionInfo info = new SBMemoryRegionInfo();
+			boolean success = regions.GetMemoryRegionAtIndex(i, info);
+			if (success) {
+				memoryRegions.add(info);
 			}
-			String type = "[" + info.type + "]";
-			if (info.type == PageType.IMAGE) {
-				try {
-					DebugModule mod = manager.getSymbols().getModuleByOffset(info.baseAddress, 0);
-					if (mod != null) {
-						type = mod.getName(DebugModuleName.IMAGE);
-					}
-				}
-				catch (COMException e) {
-					type = "[IMAGE UNKNOWN]";
-				}
-			}
-			else if (info.type == PageType.MAPPED) {
-				// TODO: Figure out the file name
-			}
-			long vmaStart = info.baseAddress;
-			long vmaEnd = info.baseAddress + info.regionSize;
-
-			boolean isRead = false;
-			boolean isWrite = false;
-			boolean isExec = false;
-			List<String> ap = new ArrayList<>();
-			for (PageProtection protect : info.allocationProtect) {
-				ap.add(protect.toString());
-				isRead |= protect.isRead();
-				isWrite |= protect.isWrite();
-				isExec |= protect.isExecute();
-			}
-			List<String> ip = new ArrayList<>();
-			for (PageProtection protect : info.protect) {
-				ip.add(protect.toString());
-				isRead |= protect.isRead();
-				isWrite |= protect.isWrite();
-				isExec |= protect.isExecute();
-			}
-			SBMemoryRegionInfo section =
-				new SBMemoryRegionInfo(Long.toHexString(vmaStart), vmaStart, vmaEnd,
-					info.allocationBase, ap, ip, info.state, type, isRead, isWrite, isExec);
-			memoryRegions.add(section);
 		}
-		*/
 	}
 
 }

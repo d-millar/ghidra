@@ -37,10 +37,10 @@ import ghidra.lifecycle.Internal;
 @TargetObjectSchemaInfo(name = "ModuleContainer", elements = { //
 	@TargetElementType(type = LldbModelTargetModuleImpl.class) //
 }, //
-		elementResync = ResyncMode.ONCE, //
-		attributes = { //
-			@TargetAttributeType(type = Void.class) //
-		}, canonicalContainer = true)
+elementResync = ResyncMode.ONCE, //
+attributes = { //
+	@TargetAttributeType(type = Void.class) //
+}, canonicalContainer = true)
 public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetModuleContainer {
 	// NOTE: -file-list-shared-libraries omits the main module and system-supplied DSO.
@@ -58,8 +58,8 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 	@Override
 	@Internal
 	public void libraryLoaded(DebugModuleInfo info, int index) {
-		LldbModelTargetModule module;
-		String name = info.getModuleName(index);
+		LldbModelTargetModule targetModule;
+		SBModule module = info.getModule(index);
 		synchronized (this) {
 			/**
 			 * It's not a good idea to remove "stale" entries. If the entry's already present, it's
@@ -67,32 +67,32 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 			 * sections loaded. Removing it will cause it to load all module sections again!
 			 */
 			//modulesByName.remove(name);
-			module = getTargetModule(name);
+			targetModule = getTargetModule(module);
 		}
-		if (module == null) {
-			System.err.println("Module "+name+" not found!");
+		if (targetModule == null) {
+			System.err.println("Module "+info.getModuleName(index)+" not found!");
 			return;
 		}
 		TargetThread eventThread =
 			(TargetThread) getModel().getModelObject(getManager().getEventThread());
-		changeElements(List.of(), List.of(module), Map.of(), "Loaded");
+		changeElements(List.of(), List.of(targetModule), Map.of(), "Loaded");
 		getListeners().fire.event(getProxy(), eventThread, TargetEventType.MODULE_LOADED,
-			"Library " + name + " loaded", List.of(module));
+			"Library " + info.getModuleName(index) + " loaded", List.of(targetModule));
 	}
 
 	@Override
 	@Internal
-	public void libraryUnloaded(String name) {
-		LldbModelTargetModule targetModule = getTargetModule(name);
+	public void libraryUnloaded(DebugModuleInfo info, int index) {
+		LldbModelTargetModule targetModule = getTargetModule(info.getModule(index));
 		if (targetModule != null) {
 			TargetThread eventThread =
 				(TargetThread) getModel().getModelObject(getManager().getEventThread());
 			getListeners().fire.event(getProxy(), eventThread, TargetEventType.MODULE_UNLOADED,
-				"Library " + name + " unloaded", List.of(targetModule));
+				"Library " + info.getModuleName(index) + " unloaded", List.of(targetModule));
 			LldbModelImpl impl = (LldbModelImpl) model;
 			impl.deleteModelObject(targetModule.getModule());
 		}
-		changeElements(List.of(name), List.of(), Map.of(), "Unloaded");
+		changeElements(List.of(info.getModuleName(index)), List.of(), Map.of(), "Unloaded");
 	}
 
 	@Override
@@ -111,19 +111,14 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 			List<LldbModelTargetModule> result = new ArrayList<>();
 			synchronized (this) {
 				for (Map.Entry<String, SBModule> ent : byName.entrySet()) {
-					result.add(getTargetModule(ent.getKey()));
+					result.add(getTargetModule(ent.getValue()));
 				}
 			}
 			changeElements(List.of(), result, Map.of(), "Refreshed");
 		});
 	}
 
-	public LldbModelTargetModule getTargetModule(String name) {
-		// Only get here from libraryLoaded or getElements. The known list should be fresh.
-		SBModule module = getManager().getKnownModules(session).get(name);
-		if (module == null) {
-			return null;
-		}
+	public LldbModelTargetModule getTargetModule(SBModule module) {
 		LldbModelImpl impl = (LldbModelImpl) model;
 		TargetObject modelObject = impl.getModelObject(module);
 		if (modelObject != null) {
