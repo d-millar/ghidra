@@ -22,8 +22,11 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.commons.lang3.tuple.Pair;
 
 import SWIG.SBFrame;
+import SWIG.SBMemoryRegionInfo;
 import SWIG.SBModule;
 import SWIG.SBProcess;
+import SWIG.SBSection;
+import SWIG.SBSymbol;
 import SWIG.SBTarget;
 import SWIG.SBThread;
 import SWIG.SBValue;
@@ -348,6 +351,27 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
 	public CompletableFuture<Map<String, SBModule>> listModules(SBTarget session);
+	
+	/**
+	 * List dbgeng's stack frames
+	 * 
+	 * @return a future that completes with a map of session IDs to session handles
+	 */
+	public CompletableFuture<Map<Integer, SBSection>> listModuleSections(SBModule module);
+	
+	/**
+	 * List dbgeng's stack frames
+	 * 
+	 * @return a future that completes with a map of session IDs to session handles
+	 */
+	public CompletableFuture<Map<Integer, SBSymbol>> listModuleSymbols(SBModule module);
+		
+	/**
+	 * List dbgeng's stack frames
+	 * 
+	 * @return a future that completes with a map of session IDs to session handles
+	 */
+	public CompletableFuture<List<SBMemoryRegionInfo>> listMemory(SBProcess process);
 	
 	/**
 	 * List information for all breakpoints

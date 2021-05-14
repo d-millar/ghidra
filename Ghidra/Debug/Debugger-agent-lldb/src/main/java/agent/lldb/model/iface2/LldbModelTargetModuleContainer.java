@@ -17,6 +17,7 @@ package agent.lldb.model.iface2;
 
 import java.util.concurrent.CompletableFuture;
 
+import SWIG.SBModule;
 import agent.lldb.lldb.DebugModuleInfo;
 import agent.lldb.model.iface1.LldbModelTargetEventScope;
 import ghidra.dbg.target.TargetModule;
@@ -28,10 +29,10 @@ public interface LldbModelTargetModuleContainer
 	@Override
 	public CompletableFuture<? extends TargetModule> addSyntheticModule(String name);
 
-	public LldbModelTargetModule getTargetModule(String name);
+	public LldbModelTargetModule getTargetModule(SBModule module);
 
 	public void libraryLoaded(DebugModuleInfo info, int index);
 
-	public void libraryUnloaded(String name);
+	public void libraryUnloaded(DebugModuleInfo info, int index);
 
 }

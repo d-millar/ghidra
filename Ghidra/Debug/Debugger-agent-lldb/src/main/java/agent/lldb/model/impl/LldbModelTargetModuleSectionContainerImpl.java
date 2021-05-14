@@ -15,10 +15,12 @@
  */
 package agent.lldb.model.impl;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import SWIG.SBModule;
-import agent.lldb.manager.LldbModuleSection;
+import SWIG.SBSection;
 import agent.lldb.model.iface2.LldbModelTargetModule;
 import agent.lldb.model.iface2.LldbModelTargetModuleSection;
 import agent.lldb.model.iface2.LldbModelTargetModuleSectionContainer;
@@ -43,9 +45,7 @@ public class LldbModelTargetModuleSectionContainerImpl extends LldbModelTargetOb
 
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
-		return CompletableFuture.completedFuture(null);
-		/*
-		return module.listSections().thenAccept(byStart -> {
+		return getManager().listModuleSections(module).thenAccept(byStart -> {
 			List<TargetObject> sections;
 			synchronized (this) {
 				sections = byStart.values()
@@ -55,10 +55,9 @@ public class LldbModelTargetModuleSectionContainerImpl extends LldbModelTargetOb
 				setElements(sections, "Refreshed");
 			}
 		});
-		*/
 	}
 
-	protected synchronized LldbModelTargetModuleSection getModuleSection(LldbModuleSection section) {
+	protected synchronized LldbModelTargetModuleSection getModuleSection(SBSection section) {
 		LldbModelImpl impl = (LldbModelImpl) model;
 		TargetObject modelObject = impl.getModelObject(section);
 		if (modelObject != null) {

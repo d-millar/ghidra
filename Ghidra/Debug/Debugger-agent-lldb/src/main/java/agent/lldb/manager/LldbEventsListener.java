@@ -144,7 +144,7 @@ public interface LldbEventsListener {
 	 * @param name the name of the module on the target
 	 * @param cause the cause of this event
 	 */
-	void moduleUnloaded(SBProcess process, DebugModuleInfo info, LldbCause cause);
+	void moduleUnloaded(SBProcess process, DebugModuleInfo info, int index, LldbCause cause);
 
 	/**
 	 * A breakpoint has been created in the session

@@ -42,6 +42,7 @@ import agent.lldb.manager.cmd.LldbWritePhysicalMemoryCommand;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import agent.lldb.model.iface2.LldbModelTargetMemoryContainer;
 import agent.lldb.model.iface2.LldbModelTargetMemoryRegion;
+import agent.lldb.model.iface2.LldbModelTargetModule;
 import agent.lldb.model.iface2.LldbModelTargetProcess;
 import ghidra.async.AsyncUtils;
 import ghidra.dbg.error.DebuggerMemoryAccessException;
@@ -71,42 +72,23 @@ public class LldbModelTargetMemoryContainerImpl extends LldbModelTargetObjectImp
 
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
-		LldbModelTargetProcess targetProcess = getParentProcess();
-		if (!targetProcess.getProcess().equals(getManager().getCurrentProcess())) {
-			return AsyncUtils.NIL;
-		}
-		return listMemory().thenAccept(byName -> {
-			List<TargetObject> sections;
+		return getManager().listMemory(process.getProcess()).thenAccept(byName -> {
+			List<TargetObject> regions;
 			synchronized (this) {
-				sections = byName.stream().map(this::getTargetMemory).collect(Collectors.toList());
+				regions = byName.stream().map(this::getTargetMemory).collect(Collectors.toList());
 			}
-			setElements(sections, Map.of(), "Refreshed");
+			setElements(regions, Map.of(), "Refreshed");
 		});
 	}
 
 	@Override
-	public synchronized LldbModelTargetMemoryRegion getTargetMemory(SBMemoryRegionInfo section) {
-		/*
-		LldbModelTargetMemoryRegionImpl region = memoryRegions.get(section.getName());
-		if (region != null && region.isSame(section)) {
-			return region;
+	public synchronized LldbModelTargetMemoryRegion getTargetMemory(SBMemoryRegionInfo region) {
+		LldbModelImpl impl = (LldbModelImpl) model;
+		TargetObject modelObject = impl.getModelObject(region);
+		if (modelObject != null) {
+			return (LldbModelTargetMemoryRegion) modelObject;
 		}
-		region = new LldbModelTargetMemoryRegionImpl(this, section);
-		memoryRegions.put(section.getName(), region);
-		return region;
-		*/
-		return null;
-		// NB: The following logic will cause errors in setElements because of key re-use
-		//return memoryRegions.computeIfAbsent(section.getName(),
-		//	n -> new LldbModelTargetMemoryRegionImpl(this, section));
-	}
-
-	public CompletableFuture<List<SBMemoryRegionInfo>> listMemory() {
-		LldbManagerImpl manager = getManager();
-		if (manager.isKernelMode()) {
-			return manager.execute(new LldbListKernelMemoryRegionsCommand(manager));
-		}
-		return manager.execute(new LldbListMemoryRegionsCommand(manager));
+		return new LldbModelTargetMemoryRegionImpl(this, region);
 	}
 
 	public CompletableFuture<byte[]> readVirtualMemory(Address address, int length) {

@@ -37,8 +37,11 @@ import com.sun.jna.platform.win32.COM.COMException;
 
 import SWIG.SBEvent;
 import SWIG.SBFrame;
+import SWIG.SBMemoryRegionInfo;
 import SWIG.SBModule;
 import SWIG.SBProcess;
+import SWIG.SBSection;
+import SWIG.SBSymbol;
 import SWIG.SBTarget;
 import SWIG.SBThread;
 import SWIG.SBValue;
@@ -77,11 +80,15 @@ import agent.lldb.manager.cmd.LldbInsertBreakpointCommand;
 import agent.lldb.manager.cmd.LldbLaunchProcessCommand;
 import agent.lldb.manager.cmd.LldbListAvailableProcessesCommand;
 import agent.lldb.manager.cmd.LldbListBreakpointsCommand;
+import agent.lldb.manager.cmd.LldbListMemoryRegionsCommand;
+import agent.lldb.manager.cmd.LldbListModuleSectionsCommand;
+import agent.lldb.manager.cmd.LldbListModuleSymbolsCommand;
 import agent.lldb.manager.cmd.LldbListModulesCommand;
 import agent.lldb.manager.cmd.LldbListProcessesCommand;
 import agent.lldb.manager.cmd.LldbListSessionsCommand;
 import agent.lldb.manager.cmd.LldbListStackFrameRegisterBanksCommand;
 import agent.lldb.manager.cmd.LldbListStackFrameRegistersCommand;
+import agent.lldb.manager.cmd.LldbListStackFramesCommand;
 import agent.lldb.manager.cmd.LldbListThreadsCommand;
 import agent.lldb.manager.cmd.LldbOpenDumpCommand;
 import agent.lldb.manager.cmd.LldbPendingCommand;
@@ -90,7 +97,6 @@ import agent.lldb.manager.cmd.LldbRequestFocusCommand;
 import agent.lldb.manager.cmd.LldbSetActiveProcessCommand;
 import agent.lldb.manager.cmd.LldbSetActiveSessionCommand;
 import agent.lldb.manager.cmd.LldbSetActiveThreadCommand;
-import agent.lldb.manager.cmd.LldbListStackFramesCommand;
 import agent.lldb.manager.evt.AbstractLldbEvent;
 import agent.lldb.manager.evt.LldbBreakpointCreatedEvent;
 import agent.lldb.manager.evt.LldbBreakpointDeletedEvent;
@@ -1103,18 +1109,12 @@ public class LldbManagerImpl implements LldbManager {
 	 * @return retval handling/break status
 	 */
 	protected DebugStatus processModuleUnloaded(LldbModuleUnloadedEvent evt, Void v) {
-		/*
-		updateState();
-		SBProcess process = getCurrentProcess();
 		DebugModuleInfo info = evt.getInfo();
-		process.moduleUnloaded(info);
-		getEventListeners().fire.moduleUnloaded(process, info, evt.getCause());
-
-		String key = info.getModuleName();
-		if (statusByNameMap.containsKey(key)) {
-			return statusByNameMap.get(key);
+		long n = info.getNumberOfModules();
+		SBProcess process = info.getProcess();
+		for (int i = 0; i < n; i++) {
+			getEventListeners().fire.moduleUnloaded(process, info, i, evt.getCause());
 		}
-		*/
 		return statusMap.get(evt.getClass());
 	}
 
@@ -1493,6 +1493,21 @@ public class LldbManagerImpl implements LldbManager {
 	@Override
 	public CompletableFuture<Map<String, SBModule>> listModules(SBTarget session) {
 		return execute(new LldbListModulesCommand(this, session));
+	}
+
+	@Override
+	public CompletableFuture<Map<Integer, SBSection>> listModuleSections(SBModule module) {
+		return execute(new LldbListModuleSectionsCommand(this, module));
+	}
+
+	@Override
+	public CompletableFuture<Map<Integer, SBSymbol>> listModuleSymbols(SBModule module) {
+		return execute(new LldbListModuleSymbolsCommand(this, module));
+	}
+
+	@Override
+	public CompletableFuture<List<SBMemoryRegionInfo>> listMemory(SBProcess process) {
+		return execute(new LldbListMemoryRegionsCommand(this, process));
 	}
 
 	@Override

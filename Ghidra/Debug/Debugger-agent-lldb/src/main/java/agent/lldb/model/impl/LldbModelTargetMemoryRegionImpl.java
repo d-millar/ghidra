@@ -42,24 +42,15 @@ import ghidra.program.model.address.AddressSpace;
 		@TargetAttributeType(name = "BaseAddress", type = Address.class),
 		@TargetAttributeType(name = "EndAddress", type = Address.class),
 		@TargetAttributeType(name = "RegionSize", type = String.class),
-		@TargetAttributeType(name = "AllocationBase", type = Address.class),
-		@TargetAttributeType(name = "AllocationProtect", type = String.class),
-		@TargetAttributeType(name = "Protect", type = String.class),
-		@TargetAttributeType(name = "State", type = String.class),
-		@TargetAttributeType(name = "Type", type = String.class),
 		@TargetAttributeType(type = Void.class) })
 public class LldbModelTargetMemoryRegionImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetMemoryRegion {
 
-	protected static String indexSection(SBMemoryRegionInfo section) {
-		return null; //section.getName();
+	protected static String keySection(SBMemoryRegionInfo region) {
+		return PathUtils.makeKey(region.GetName());
 	}
 
-	protected static String keySection(SBMemoryRegionInfo section) {
-		return PathUtils.makeKey(indexSection(section));
-	}
-
-	protected final SBMemoryRegionInfo section;
+	protected final SBMemoryRegionInfo region;
 	protected AddressRange range;
 	protected List<String> protect;
 	protected List<String> allocProtect;
@@ -71,60 +62,29 @@ public class LldbModelTargetMemoryRegionImpl extends LldbModelTargetObjectImpl
 			SBMemoryRegionInfo region) {
 		super(memory.getModel(), memory, keySection(region), "Region");
 		this.getModel().addModelObject(region, this);
-		this.section = region;
-
-		/*
-		this.range = doGetRange(section);
-		allocProtect = region.getAllocationProtect();
-		String apx = "";
-		for (String p : allocProtect) {
-			apx += p + ":";
-		}
-		if (apx.length() > 1) {
-			apx = apx.substring(0, apx.length() - 1);
-		}
-		protect = region.getProtect();
-		String ipx = "";
-		for (String p : protect) {
-			ipx += p + ":";
-		}
-		if (ipx.length() > 1) {
-			ipx = ipx.substring(0, ipx.length() - 1);
-		}
-		isRead = region.isRead();
-		isWrite = region.isWrite();
-		isExec = region.isExec();
+		this.region = region;
 
 		this.changeAttributes(List.of(), List.of(), Map.of( //
 			MEMORY_ATTRIBUTE_NAME, memory, //
-			RANGE_ATTRIBUTE_NAME, doGetRange(section), //
-			READABLE_ATTRIBUTE_NAME, isReadable(), //
-			WRITABLE_ATTRIBUTE_NAME, isWritable(), //
-			EXECUTABLE_ATTRIBUTE_NAME, isExecutable() //
+			RANGE_ATTRIBUTE_NAME, range = doGetRange(region) //
+			//READABLE_ATTRIBUTE_NAME, isReadable(), //
+			//WRITABLE_ATTRIBUTE_NAME, isWritable(), //
+			//EXECUTABLE_ATTRIBUTE_NAME, isExecutable() //
 		), "Initialized");
 
 		AddressSpace space = getModel().getAddressSpace("ram");
 		this.changeAttributes(List.of(), List.of(), Map.of( //
-			"BaseAddress", space.getAddress(region.getVmaStart()), //
-			"EndAddress", space.getAddress(region.getVmaEnd()), //
-			"RegionSize", Long.toHexString(region.getVmaEnd() - region.getVmaStart()), //
-			"AllocationBase", space.getAddress(region.getAllocationBase()), //
-			"AllocationProtect", apx, //
-			"Protect", ipx, //
-			"State", region.getState(), //
-			"Type", region.getType() //
+			"BaseAddress", range.getMinAddress(), //
+			"EndAddress", range.getMaxAddress(), //
+			"RegionSize", range.getMaxAddress().subtract(range.getMinAddress()) //
 		), "Initialized");
-		*/
 	}
 
 	protected AddressRange doGetRange(SBMemoryRegionInfo s) {
 		AddressSpace addressSpace = getModel().getAddressSpace("ram");
-		/*
-		Address min = addressSpace.getAddress(s.getVmaStart());
-		Address max = addressSpace.getAddress(s.getVmaEnd() - 1);
+		Address min = addressSpace.getAddress(s.GetRegionBase().longValue());
+		Address max = addressSpace.getAddress(s.GetRegionEnd().longValue());
 		return new AddressRangeImpl(min, max);
-		*/
-		return null;
 	}
 
 	@Override
