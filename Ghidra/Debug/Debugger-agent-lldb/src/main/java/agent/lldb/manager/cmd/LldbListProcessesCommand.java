@@ -49,16 +49,12 @@ public class LldbListProcessesCommand extends AbstractLldbCommand<Map<Integer, S
 			if (cur.contains(id)) {
 				continue; // Do nothing, we're in sync
 			}
-			// Need to create the thread as if we receive =thread-created
-			Msg.warn(this, "Resync: Was missing rocess: " + id);
 			manager.addProcessIfAbsent(session, updatedProcesses.get(id));
 		}
 		for (Integer id : new ArrayList<>(cur)) {
 			if (updatedProcesses.containsKey(id)) {
 				continue; // Do nothing, we're in sync
 			}
-			// Need to remove the inferior as if we received =thread-group-removed
-			Msg.warn(this, "Resync: Had extra process: " + id);
 			manager.removeProcess(session, id, Causes.UNCLAIMED);
 		}
 		return allProcesses;

@@ -44,16 +44,12 @@ public class LldbListModulesCommand extends AbstractLldbCommand<Map<String, SBMo
 			if (cur.contains(id)) {
 				continue; // Do nothing, we're in sync
 			}
-			// Need to create the thread as if we receive =thread-created
-			Msg.warn(this, "Resync: Was missing module: " + id);
 			manager.addModuleIfAbsent(session, updatedModules.get(id));
 		}
 		for (String id : new ArrayList<>(cur)) {
 			if (updatedModules.containsKey(id)) {
 				continue; // Do nothing, we're in sync
 			}
-			// Need to remove the thread as if we received =thread-exited
-			Msg.warn(this, "Resync: Had extra module: " + id);
 			manager.removeModule(session, id);
 		}
 		return manager.getKnownModules(session);

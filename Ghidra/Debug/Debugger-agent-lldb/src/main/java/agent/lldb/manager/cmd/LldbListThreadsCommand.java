@@ -43,16 +43,12 @@ public class LldbListThreadsCommand extends AbstractLldbCommand<Map<Integer, SBT
 			if (cur.contains(id)) {
 				continue; // Do nothing, we're in sync
 			}
-			// Need to create the thread as if we receive =thread-created
-			Msg.warn(this, "Resync: Was missing thread: " + id);
 			manager.addThreadIfAbsent(process, updatedThreadIds.get(id));
 		}
 		for (Integer id : new ArrayList<>(cur)) {
 			if (updatedThreadIds.containsKey(id)) {
 				continue; // Do nothing, we're in sync
 			}
-			// Need to remove the thread as if we received =thread-exited
-			Msg.warn(this, "Resync: Had extra thread: " + id);
 			manager.removeThread(process, id);
 		}
 		return manager.getKnownThreads(process);
