@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import SWIG.SBThread;
+import SWIG.SBValue;
 import SWIG.StateType;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.manager.LldbRegister;
@@ -89,14 +90,14 @@ public class LldbModelTargetRegisterContainerImpl extends LldbModelTargetObjectI
 	}
 
 	@Override
-	public synchronized LldbModelTargetRegister getTargetRegister(LldbRegister register) {
+	public synchronized LldbModelTargetRegister getTargetRegister(SBValue register) {
 		LldbModelImpl impl = (LldbModelImpl) model;
 		TargetObject modelObject = impl.getModelObject(register);
 		if (modelObject != null) {
 			return (LldbModelTargetRegister) modelObject;
 		}
 		LldbModelTargetRegister reg = new LldbModelTargetRegisterImpl(this, register);
-		registersByName.put(register.getName(), reg);
+		registersByName.put(register.GetName(), reg);
 		return reg;
 	}
 

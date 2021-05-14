@@ -15,7 +15,7 @@
  */
 package agent.lldb.model.iface2;
 
-import agent.lldb.manager.LldbRegister;
+import SWIG.SBValue;
 import ghidra.dbg.target.TargetRegisterBank;
 import ghidra.dbg.target.TargetRegisterContainer;
 
@@ -24,6 +24,6 @@ public interface LldbModelTargetRegisterContainerAndBank extends //
 		TargetRegisterContainer, //
 		TargetRegisterBank {
 
-	public LldbModelTargetRegister getTargetRegister(LldbRegister register);
+	public LldbModelTargetRegister getTargetRegister(SBValue register);
 
 }

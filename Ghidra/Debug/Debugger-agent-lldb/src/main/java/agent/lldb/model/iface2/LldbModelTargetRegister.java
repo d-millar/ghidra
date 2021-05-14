@@ -17,7 +17,7 @@ package agent.lldb.model.iface2;
 
 import java.math.BigInteger;
 
-import agent.lldb.manager.LldbRegister;
+import SWIG.SBValue;
 import ghidra.dbg.target.TargetRegister;
 import ghidra.dbg.util.ConversionUtils;
 
@@ -26,7 +26,7 @@ public interface LldbModelTargetRegister extends LldbModelTargetObject, TargetRe
 	@Override
 	public int getBitLength();
 
-	public LldbRegister getRegister();
+	public SBValue getRegister();
 
 	public default byte[] getBytes() {
 		String val = (String) getCachedAttributes().get(VALUE_ATTRIBUTE_NAME);

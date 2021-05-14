@@ -340,6 +340,13 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
+	CompletableFuture<Map<Integer, SBValue>> listStackFrameRegisters(SBValue bank);
+
+	/**
+	 * List dbgeng's stack frames
+	 * 
+	 * @return a future that completes with a map of session IDs to session handles
+	 */
 	public CompletableFuture<Map<String, SBModule>> listModules(SBTarget session);
 	
 	/**

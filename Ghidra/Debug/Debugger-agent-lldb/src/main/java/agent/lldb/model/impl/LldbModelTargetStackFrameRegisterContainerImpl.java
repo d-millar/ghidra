@@ -20,19 +20,15 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import SWIG.DynamicValueType;
 import SWIG.SBValue;
-import SWIG.SBValueList;
 import SWIG.StateType;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface2.LldbModelTargetRegisterBank;
 import agent.lldb.model.iface2.LldbModelTargetStackFrameRegisterContainer;
-import agent.lldb.model.iface2.LldbModelTargetThread;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
-import ghidra.util.datastruct.WeakValueHashMap;
 
 @TargetObjectSchemaInfo(
 	name = "RegisterValueContainer",
@@ -59,15 +55,6 @@ public class LldbModelTargetStackFrameRegisterContainerImpl
 	 */
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
-		SBValueList registers = frame.frame.GetRegisters();
-		for (int i = 0; i < registers.GetSize(); i++) {
-			SBValue rset = registers.GetValueAtIndex(i);
-			System.err.println(rset.GetName()+":");
-			for (int j = 0; j < rset.GetNumChildren(); j++) {
-				SBValue child = rset.GetChildAtIndex(j, DynamicValueType.eDynamicCanRunTarget, true);
-				System.err.println(child.GetName()+":"+child.GetValue());
-			}
-		}
 		return getManager().listStackFrameRegisterBanks(frame.frame).thenAccept(banks -> {
 			List<TargetObject> targetBanks;
 			synchronized (this) {

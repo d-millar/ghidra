@@ -24,24 +24,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
-import SWIG.DynamicValueType;
-import SWIG.SBThread;
 import SWIG.SBValue;
-import SWIG.SBValueList;
 import SWIG.StateType;
-import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.manager.LldbRegister;
 import agent.lldb.model.iface2.LldbModelTargetRegister;
-import agent.lldb.model.iface2.LldbModelTargetStackFrame;
+import agent.lldb.model.iface2.LldbModelTargetRegisterBank;
 import agent.lldb.model.iface2.LldbModelTargetStackFrameRegisterBank;
-import agent.lldb.model.iface2.LldbModelTargetStackFrameRegisterContainer;
-import agent.lldb.model.iface2.LldbModelTargetThread;
+import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
-import ghidra.dbg.util.PathUtils;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.util.PathUtils;
 import ghidra.util.datastruct.WeakValueHashMap;
 
 @TargetObjectSchemaInfo(
@@ -88,21 +84,10 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 	 */
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
-		/*
-		SBValueList registers = frame.frame.GetRegisters();
-		for (int i = 0; i < registers.GetSize(); i++) {
-			SBValue rset = registers.GetValueAtIndex(i);
-			System.err.println(rset.GetName()+":");
-			for (int j = 0; j < rset.GetNumChildren(); j++) {
-				SBValue child = rset.GetChildAtIndex(j, DynamicValueType.eDynamicCanRunTarget, true);
-				System.err.println(child.GetName()+":"+child.GetValue());
-			}
-		}
-		*/
-		return null; /* thread.listRegisters().thenAccept(regs -> {
+		return getManager().listStackFrameRegisters(value).thenAccept(regs -> {
 			if (regs.size() != registersByName.size()) {
 				LldbModelImpl impl = (LldbModelImpl) model;
-				for (LldbRegister reg : regs) {
+				for (SBValue reg : regs.values()) {
 					impl.deleteModelObject(reg);
 				}
 				registersByName.clear();
@@ -110,20 +95,24 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 			}
 			List<TargetObject> registers;
 			synchronized (this) {
-				registers = regs.stream().map(this::getTargetRegister).collect(Collectors.toList());
+				registers = regs.values().stream().map(this::getTargetRegister).collect(Collectors.toList());
 			}
 			setElements(registers, Map.of(), "Refreshed");
 			if (!getCachedElements().isEmpty()) {
 				readRegistersNamed(getCachedElements().keySet());
 			}
-		}); */
+		}); 
 	}
 
 
 	@Override
-	public LldbModelTargetRegister getTargetRegister(LldbRegister register) {
-		// TODO Auto-generated method stub
-		return null;
+	public LldbModelTargetRegister getTargetRegister(SBValue register) {
+		LldbModelImpl impl = (LldbModelImpl) model;
+		TargetObject modelObject = impl.getModelObject(register);
+		if (modelObject != null) {
+			return (LldbModelTargetRegister) modelObject;
+		}
+		return new LldbModelTargetStackFrameRegisterImpl(this, register);
 	}
 
 	public void threadStateChangedSpecific(StateType state, LldbReason reason) {

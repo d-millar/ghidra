@@ -81,6 +81,7 @@ import agent.lldb.manager.cmd.LldbListModulesCommand;
 import agent.lldb.manager.cmd.LldbListProcessesCommand;
 import agent.lldb.manager.cmd.LldbListSessionsCommand;
 import agent.lldb.manager.cmd.LldbListStackFrameRegisterBanksCommand;
+import agent.lldb.manager.cmd.LldbListStackFrameRegistersCommand;
 import agent.lldb.manager.cmd.LldbListThreadsCommand;
 import agent.lldb.manager.cmd.LldbOpenDumpCommand;
 import agent.lldb.manager.cmd.LldbPendingCommand;
@@ -1482,6 +1483,11 @@ public class LldbManagerImpl implements LldbManager {
 	@Override
 	public CompletableFuture<Map<Integer, SBValue>> listStackFrameRegisterBanks(SBFrame frame) {
 		return execute(new LldbListStackFrameRegisterBanksCommand(this, frame));
+	}
+
+	@Override
+	public CompletableFuture<Map<Integer, SBValue>> listStackFrameRegisters(SBValue bank) {
+		return execute(new LldbListStackFrameRegistersCommand(this, bank));
 	}
 
 	@Override

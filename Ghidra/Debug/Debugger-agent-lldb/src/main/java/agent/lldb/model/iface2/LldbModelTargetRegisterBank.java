@@ -21,15 +21,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 
+import SWIG.SBValue;
 import SWIG.StateType;
 import agent.lldb.manager.LldbReason;
-import agent.lldb.manager.LldbRegister;
 import ghidra.async.AsyncUtils;
 import ghidra.dbg.target.TargetRegisterBank;
 
 public interface LldbModelTargetRegisterBank extends LldbModelTargetObject, TargetRegisterBank {
 
-	public LldbModelTargetRegister getTargetRegister(LldbRegister register);
+	public LldbModelTargetRegister getTargetRegister(SBValue register);
 
 	public default void threadStateChangedSpecific(StateType state, LldbReason reason) {
 		readRegistersNamed(getCachedElements().keySet());
