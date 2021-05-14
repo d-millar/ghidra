@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import SWIG.SBBreakpoint;
+import SWIG.SBTarget;
 import agent.lldb.manager.breakpoint.LldbBreakpointInfo;
 import agent.lldb.model.iface2.LldbModelTargetBreakpointContainer;
 import agent.lldb.model.iface2.LldbModelTargetBreakpointSpec;
@@ -47,32 +49,31 @@ import ghidra.util.datastruct.ListenerSet;
 public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetBreakpointSpec {
 
-	protected static String indexBreakpoint(LldbBreakpointInfo info) {
-		return PathUtils.makeIndex(info.getNumber());
+	protected static String keyBreakpoint(SBBreakpoint bpt) {
+		return PathUtils.makeKey(Integer.toHexString(bpt.GetID()));
 	}
 
-	protected static String keyBreakpoint(LldbBreakpointInfo info) {
-		return PathUtils.makeKey(indexBreakpoint(info));
-	}
-
-	protected LldbBreakpointInfo info;
+	private LldbModelTargetBreakpointContainer breakpoints;
+	protected SBBreakpoint bpt;
 	protected boolean enabled;
 
 	public void changeAttributeSet(String reason) {
+		/*
 		this.changeAttributes(List.of(), List.of(), Map.of( //
-			DISPLAY_ATTRIBUTE_NAME, "[" + info.getNumber() + "] " + info.getExpression(), //
+			DISPLAY_ATTRIBUTE_NAME, "[" + bpt.GetID() + "] " + bpt.getExpression(), //
 			ADDRESS_ATTRIBUTE_NAME, doGetAddress(), //
-			LENGTH_ATTRIBUTE_NAME, info.getSize(), //
+			LENGTH_ATTRIBUTE_NAME, bpt.getSize(), //
 			SPEC_ATTRIBUTE_NAME, this, //
-			EXPRESSION_ATTRIBUTE_NAME, info.getExpression(), //
+			EXPRESSION_ATTRIBUTE_NAME, bpt.getExpression(), //
 			KINDS_ATTRIBUTE_NAME, getKinds() //
 		), reason);
 		this.changeAttributes(List.of(), List.of(), Map.of( //
-			BPT_TYPE_ATTRIBUTE_NAME, info.getType().name(), //
-			BPT_DISP_ATTRIBUTE_NAME, info.getDisp().name(), //
-			BPT_PENDING_ATTRIBUTE_NAME, info.getPending(), //
-			BPT_TIMES_ATTRIBUTE_NAME, info.getTimes() //
+			BPT_TYPE_ATTRIBUTE_NAME, bpt.getType().name(), //
+			BPT_DISP_ATTRIBUTE_NAME, bpt.getDisp().name(), //
+			BPT_PENDING_ATTRIBUTE_NAME, bpt.getPending(), //
+			BPT_TIMES_ATTRIBUTE_NAME, bpt.getTimes() //
 		), reason);
+		*/
 	}
 
 	private final ListenerSet<TargetBreakpointAction> actions =
@@ -84,27 +85,28 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetObjectImpl
 		};
 
 	public LldbModelTargetBreakpointSpecImpl(LldbModelTargetBreakpointContainer breakpoints,
-			LldbBreakpointInfo info) {
-		super(breakpoints.getModel(), breakpoints, keyBreakpoint(info), "BreakpointSpec");
-		this.getModel().addModelObject(info.getDebugBreakpoint(), this);
+			SBBreakpoint bpt) {
+		super(breakpoints.getModel(), breakpoints, keyBreakpoint(bpt), "BreakpointSpec");
+		this.breakpoints = breakpoints;
+		this.bpt = bpt;
+		this.getModel().addModelObject(bpt, this);
 		//this.setBreakpointInfo(info);
 
-		updateInfo(null, info, "Created");
+		updateInfo(bpt, "Created");
 	}
 
 	@Override
-	public void updateInfo(LldbBreakpointInfo oldInfo, LldbBreakpointInfo newInfo, String reason) {
+	public void updateInfo(SBBreakpoint bpt, String reason) {
 		synchronized (this) {
-			assert oldInfo == getBreakpointInfo();
-			setBreakpointInfo(newInfo);
+			setBreakpointInfo(bpt);
 		}
 		changeAttributeSet("Refreshed");
-		setEnabled(newInfo.isEnabled(), reason);
+		setEnabled(bpt.IsEnabled(), reason);
 	}
 
 	@Override
-	public LldbBreakpointInfo getBreakpointInfo() {
-		return info;
+	public SBBreakpoint getBreakpointInfo() {
+		return bpt;
 	}
 
 	@Override
@@ -113,8 +115,8 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetObjectImpl
 	}
 
 	@Override
-	public void setBreakpointInfo(LldbBreakpointInfo info) {
-		this.info = info;
+	public void setBreakpointInfo(SBBreakpoint bpt) {
+		this.bpt = bpt;
 	}
 
 	/**
@@ -150,9 +152,10 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetObjectImpl
 		return actions;
 	}
 
-	protected CompletableFuture<LldbBreakpointInfo> getInfo() {
-		return getManager().listBreakpoints()
-				.thenApply(__ -> getManager().getKnownBreakpoints().get(getNumber()));
+	protected CompletableFuture<SBBreakpoint> getInfo() {
+		SBTarget session = breakpoints.getSession();
+		return getManager().listBreakpoints(session)
+				.thenApply(__ -> getManager().getKnownBreakpoints(session).get(getNumber()));
 	}
 
 	@Override

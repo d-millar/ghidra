@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import SWIG.SBBreakpoint;
 import agent.lldb.manager.breakpoint.LldbBreakpointInfo;
 import agent.lldb.model.iface1.LldbModelTargetBptHelper;
 import ghidra.dbg.target.TargetBreakpointLocation;
@@ -63,15 +64,16 @@ public interface LldbModelTargetBreakpointSpec extends //
 
 	@Override
 	public default String getExpression() {
-		return getBreakpointInfo().getExpression();
+		return null; //getBreakpointInfo().getExpression();
 	}
 
-	public default long getNumber() {
-		return getBreakpointInfo().getNumber();
+	public default int getNumber() {
+		return getBreakpointInfo().GetID();
 	}
 
 	@Override
 	public default TargetBreakpointKindSet getKinds() {
+		/*
 		switch (getBreakpointInfo().getType()) {
 			case BREAKPOINT:
 				return TargetBreakpointKindSet.of(TargetBreakpointKind.SW_EXECUTE);
@@ -87,6 +89,8 @@ public interface LldbModelTargetBreakpointSpec extends //
 			default:
 				return TargetBreakpointKindSet.of();
 		}
+		*/
+		return TargetBreakpointKindSet.of();
 	}
 
 	@Override
@@ -117,8 +121,8 @@ public interface LldbModelTargetBreakpointSpec extends //
 				//map.put(BPT_INDEX_ATTRIBUTE_NAME, Long.decode(idstr));
 				map.put(ENABLED_ATTRIBUTE_NAME, enstr.equals("-1"));
 				setEnabled(enstr.equals("-1"), "Refreshed");
-				int size = getBreakpointInfo().getSize();
-				map.put(LENGTH_ATTRIBUTE_NAME, size);
+				//int size = getBreakpointInfo().getSize();
+				//map.put(LENGTH_ATTRIBUTE_NAME, size);
 
 				String oldval = (String) getCachedAttribute(DISPLAY_ATTRIBUTE_NAME);
 				String display = "[" + idstr + "] " + addstr;
@@ -136,17 +140,15 @@ public interface LldbModelTargetBreakpointSpec extends //
 	}
 
 	public default Address doGetAddress() {
-		LldbBreakpointInfo info = getBreakpointInfo();
-		return getModel().getAddress("ram", orZero(info.getOffset()));
+		SBBreakpoint info = getBreakpointInfo();
+		return null; //getModel().getAddress("ram", orZero(info.getOffset()));
 	}
 
-	public default void updateInfo(LldbBreakpointInfo oldInfo, LldbBreakpointInfo newInfo,
-			String reason) {
+	public default void updateInfo(SBBreakpoint info, String reason) {
 		synchronized (this) {
-			assert oldInfo == getBreakpointInfo();
-			setBreakpointInfo(newInfo);
+			setBreakpointInfo(info);
 		}
-		setEnabled(newInfo.isEnabled(), reason);
+		setEnabled(info.IsEnabled(), reason);
 	}
 
 	/**

@@ -15,13 +15,13 @@
  */
 package agent.lldb.manager;
 
+import SWIG.SBBreakpoint;
 import SWIG.SBFrame;
 import SWIG.SBProcess;
 import SWIG.SBTarget;
 import SWIG.SBThread;
 import SWIG.StateType;
 import agent.lldb.lldb.DebugModuleInfo;
-import agent.lldb.manager.breakpoint.LldbBreakpointInfo;
 
 public interface LldbEventsListenerAdapter extends LldbEventsListener {
 
@@ -98,23 +98,22 @@ public interface LldbEventsListenerAdapter extends LldbEventsListener {
 	}
 
 	@Override
-	public default void breakpointCreated(LldbBreakpointInfo info, LldbCause cause) {
+	public default void breakpointCreated(SBBreakpoint info, LldbCause cause) {
 		// Extension point
 	}
 
 	@Override
-	public default void breakpointModified(LldbBreakpointInfo newInfo, LldbBreakpointInfo oldInfo,
-			LldbCause cause) {
+	public default void breakpointModified(SBBreakpoint info, LldbCause cause) {
 		// Extension point
 	}
 
 	@Override
-	public default void breakpointDeleted(LldbBreakpointInfo info, LldbCause cause) {
+	public default void breakpointDeleted(SBBreakpoint info, LldbCause cause) {
 		// Extension point
 	}
 
 	@Override
-	public default void breakpointHit(LldbBreakpointInfo info, LldbCause cause) {
+	public default void breakpointHit(SBBreakpoint info, LldbCause cause) {
 		// Extension point
 	}
 

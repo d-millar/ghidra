@@ -74,7 +74,6 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 
 	protected final SBProcess process;
 
-	protected final LldbModelTargetDebugContainer debug;
 	protected final LldbModelTargetMemoryContainer memory;
 	protected final LldbModelTargetThreadContainer threads;
 	// Note: not sure section info is available from the Lldbeng
@@ -88,13 +87,11 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 		getManager().getClient().addBroadcaster(process);
 		this.process = process;
 
-		this.debug = new LldbModelTargetDebugContainerImpl(this);
 		this.memory = new LldbModelTargetMemoryContainerImpl(this);
 		//this.sections = new LldbModelTargetProcessSectionContainerImpl(this);
 		this.threads = new LldbModelTargetThreadContainerImpl(this);
 
 		changeAttributes(List.of(), List.of( //
-			debug, //
 			memory, //
 			//sections, //
 			threads //

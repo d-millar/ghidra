@@ -15,13 +15,13 @@
  */
 package agent.lldb.manager.evt;
 
-import agent.lldb.manager.breakpoint.LldbBreakpointInfo;
+import agent.lldb.lldb.DebugBreakpointInfo;
 
 /**
  * The event corresponding with "{@code =breakpoint-deleted}"
  */
-public class LldbBreakpointDeletedEvent extends AbstractLldbEvent<LldbBreakpointInfo> {
-	private final long number;
+public class LldbBreakpointDeletedEvent extends AbstractLldbEvent<DebugBreakpointInfo> {
+	private final int number;
 
 	/**
 	 * Construct a new event by parsing the tail for information
@@ -30,9 +30,9 @@ public class LldbBreakpointDeletedEvent extends AbstractLldbEvent<LldbBreakpoint
 	 * 
 	 * @param info breakpoint info
 	 */
-	public LldbBreakpointDeletedEvent(LldbBreakpointInfo info) {
+	public LldbBreakpointDeletedEvent(DebugBreakpointInfo info) {
 		super(info);
-		this.number = info.getNumber();
+		this.number = info.bpt.GetID();
 	}
 
 	/**
@@ -40,7 +40,7 @@ public class LldbBreakpointDeletedEvent extends AbstractLldbEvent<LldbBreakpoint
 	 * 
 	 * @return the breakpoint number
 	 */
-	public long getNumber() {
+	public int getNumber() {
 		return number;
 	}
 }

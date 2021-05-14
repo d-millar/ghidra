@@ -15,13 +15,14 @@
  */
 package agent.lldb.manager.evt;
 
-import agent.lldb.manager.breakpoint.LldbBreakpointInfo;
+import SWIG.SBBreakpoint;
+import agent.lldb.lldb.DebugBreakpointInfo;
 
 /**
  * The event corresponding with "{@code =breakpoint-created}"
  */
-public class LldbBreakpointCreatedEvent extends AbstractLldbEvent<LldbBreakpointInfo> {
-	private final LldbBreakpointInfo bkptInfo;
+public class LldbBreakpointCreatedEvent extends AbstractLldbEvent<DebugBreakpointInfo> {
+	private final SBBreakpoint bkptInfo;
 
 	/**
 	 * Construct a new event by parsing the tail for information
@@ -31,9 +32,9 @@ public class LldbBreakpointCreatedEvent extends AbstractLldbEvent<LldbBreakpoint
 	 * @param info breakpoint info
 	 * 
 	 */
-	public LldbBreakpointCreatedEvent(LldbBreakpointInfo info) {
+	public LldbBreakpointCreatedEvent(DebugBreakpointInfo info) {
 		super(info);
-		this.bkptInfo = info;
+		this.bkptInfo = info.bpt;
 	}
 
 	/**
@@ -41,7 +42,7 @@ public class LldbBreakpointCreatedEvent extends AbstractLldbEvent<LldbBreakpoint
 	 * 
 	 * @return the parsed, but not processed, breakpoint information
 	 */
-	public LldbBreakpointInfo getBreakpointInfo() {
+	public SBBreakpoint getBreakpointInfo() {
 		return bkptInfo;
 	}
 }

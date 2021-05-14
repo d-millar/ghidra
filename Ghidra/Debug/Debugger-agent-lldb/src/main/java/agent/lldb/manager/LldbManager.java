@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import SWIG.SBBreakpoint;
 import SWIG.SBFrame;
 import SWIG.SBMemoryRegionInfo;
 import SWIG.SBModule;
@@ -33,7 +34,6 @@ import SWIG.SBValue;
 import SWIG.StateType;
 import agent.lldb.lldb.DebugClient.DebugStatus;
 import agent.lldb.manager.LldbManager.ExecSuffix;
-import agent.lldb.manager.breakpoint.LldbBreakpointInfo;
 import agent.lldb.manager.breakpoint.LldbBreakpointInsertions;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
@@ -221,7 +221,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a map of dbgeng-assigned breakpoint IDs to corresponding breakpoint information
 	 */
-	Map<Long, LldbBreakpointInfo> getKnownBreakpoints();
+	Map<Integer, SBBreakpoint> getKnownBreakpoints(SBTarget session);
 
 	/**
 	 * Send an interrupt to dbgeng regardless of other queued commands
@@ -378,7 +378,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a future that completes with a list of information for all breakpoints
 	 */
-	CompletableFuture<Map<Long, LldbBreakpointInfo>> listBreakpoints();
+	CompletableFuture<Map<Integer, SBBreakpoint>> listBreakpoints(SBTarget session);
 
 	/**
 	 * Disable the given breakpoints

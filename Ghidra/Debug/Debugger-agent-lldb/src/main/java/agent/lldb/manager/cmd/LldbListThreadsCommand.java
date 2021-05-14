@@ -27,6 +27,7 @@ import agent.lldb.manager.impl.LldbManagerImpl;
 import ghidra.util.Msg;
 
 public class LldbListThreadsCommand extends AbstractLldbCommand<Map<Integer, SBThread>> {
+
 	protected final SBProcess process;
 	private Map<Integer, SBThread> updatedThreadIds = new HashMap<>();
 

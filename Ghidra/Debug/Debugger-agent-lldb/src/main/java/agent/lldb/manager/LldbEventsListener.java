@@ -15,6 +15,7 @@
  */
 package agent.lldb.manager;
 
+import SWIG.SBBreakpoint;
 import SWIG.SBFrame;
 import SWIG.SBProcess;
 import SWIG.SBTarget;
@@ -101,7 +102,8 @@ public interface LldbEventsListener {
 	void threadCreated(SBThread thread, LldbCause cause);
 
 	/**
-	 * A thread's state has changed, e.g., {@link DbgState#RUNNING} to {@link DbgState#STOPPED}
+	 * A thread's sta@Override
+	te has changed, e.g., {@link DbgState#RUNNING} to {@link DbgState#STOPPED}
 	 * 
 	 * @param thread a handle to the thread whose state has changed
 	 * @param state the state to which the thread changed
@@ -152,7 +154,7 @@ public interface LldbEventsListener {
 	 * @param info information about the new breakpoint
 	 * @param cause the cause of this event
 	 */
-	void breakpointCreated(LldbBreakpointInfo info, LldbCause cause);
+	void breakpointCreated(SBBreakpoint info, LldbCause cause);
 
 	/**
 	 * A breakpoint in the session has been modified
@@ -161,7 +163,7 @@ public interface LldbEventsListener {
 	 * @param oldInfo old information about the modified breakpoint
 	 * @param cause the cause of this event
 	 */
-	void breakpointModified(LldbBreakpointInfo newInfo, LldbBreakpointInfo oldInfo, LldbCause cause);
+	void breakpointModified(SBBreakpoint info, LldbCause cause);
 
 	/**
 	 * A breakpoint has been deleted from the session
@@ -169,7 +171,7 @@ public interface LldbEventsListener {
 	 * @param info information about the now-deleted breakpoint
 	 * @param cause the cause of this event
 	 */
-	void breakpointDeleted(LldbBreakpointInfo info, LldbCause cause);
+	void breakpointDeleted(SBBreakpoint info, LldbCause cause);
 
 	/**
 	 * A breakpoint was hit in the session
@@ -177,7 +179,7 @@ public interface LldbEventsListener {
 	 * @param info information about the breakpoint hit
 	 * @param cause the cause of this event
 	 */
-	void breakpointHit(LldbBreakpointInfo info, LldbCause cause);
+	void breakpointHit(SBBreakpoint info, LldbCause cause);
 
 	/**
 	 * A breakpoint has effectively been applied to an process

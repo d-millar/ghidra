@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+import SWIG.SBTarget;
 import agent.lldb.manager.LldbEventsListenerAdapter;
 import agent.lldb.manager.breakpoint.LldbBreakpointType;
 import ghidra.async.AsyncFence;
@@ -93,5 +94,7 @@ public interface LldbModelTargetBreakpointContainer extends LldbModelTargetObjec
 		int len = (int) range.getLength();
 		return doPlaceBreakpoint(kinds, t -> getManager().insertBreakpoint(offset, len, t));
 	}
+	
+	public SBTarget getSession();
 
 }
