@@ -15,11 +15,11 @@
  */
 package agent.lldb.model.iface2;
 
-import agent.lldb.manager.LldbRegister;
+import SWIG.SBValue;
 
 public interface LldbModelTargetStackFrameRegisterBank
 		extends LldbModelTargetRegisterBank {
 
-	public LldbModelTargetRegister getTargetRegister(LldbRegister register);
+	public LldbModelTargetRegister getTargetRegister(SBValue register);
 
 }

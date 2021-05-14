@@ -18,7 +18,7 @@ package agent.lldb.model.impl;
 import java.util.List;
 import java.util.Map;
 
-import agent.lldb.manager.LldbRegister;
+import SWIG.SBValue;
 import agent.lldb.model.iface2.LldbModelTargetRegister;
 import agent.lldb.model.iface2.LldbModelTargetRegisterContainerAndBank;
 import ghidra.dbg.target.TargetRegister;
@@ -34,46 +34,41 @@ import ghidra.dbg.util.PathUtils;
 public class LldbModelTargetRegisterImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetRegister {
 
-	protected static String indexRegister(LldbRegister register) {
-		String name = register.getName();
-		if ("".equals(name)) {
-			return "UNNAMED," + register.getNumber();
-		}
-		return name;
+	protected static String indexRegister(SBValue register) {
+		return register.GetName();
 	}
 
-	protected static String keyRegister(LldbRegister register) {
+	protected static String keyRegister(SBValue register) {
 		return PathUtils.makeKey(indexRegister(register));
 	}
 
 	protected final LldbModelTargetRegisterContainerAndBank registers;
-	protected final LldbRegister register;
-
+	protected final SBValue register;
 	protected final int bitLength;
 
 	public LldbModelTargetRegisterImpl(LldbModelTargetRegisterContainerAndBank registers,
-			LldbRegister register) {
+			SBValue register) {
 		super(registers.getModel(), registers, keyRegister(register), "Register");
 		this.getModel().addModelObject(register, this);
 		this.registers = registers;
 		this.register = register;
 
-		this.bitLength = register.getSize() * 8;
+		this.bitLength = (int) (register.GetByteSize() * 8);
 
 		changeAttributes(List.of(), List.of(), Map.of( //
 			CONTAINER_ATTRIBUTE_NAME, registers, //
 			LENGTH_ATTRIBUTE_NAME, bitLength, //
-			DISPLAY_ATTRIBUTE_NAME, "[" + register.getName() + "]" //
+			DISPLAY_ATTRIBUTE_NAME, "[" + register.GetName() + "]" //
 		), "Initialized");
 	}
 
 	@Override
 	public int getBitLength() {
-		return bitLength;
+		return 64;
 	}
 
 	@Override
-	public LldbRegister getRegister() {
+	public SBValue getRegister() {
 		return register;
 	}
 }

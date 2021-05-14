@@ -15,14 +15,11 @@
  */
 package agent.lldb.model.impl;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
-import agent.lldb.manager.LldbRegister;
+import SWIG.SBValue;
 import agent.lldb.model.iface2.LldbModelTargetStackFrameRegister;
-import ghidra.dbg.agent.DefaultTargetObject;
-import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetElementType;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
@@ -38,48 +35,45 @@ public class LldbModelTargetStackFrameRegisterImpl
 		extends LldbModelTargetObjectImpl
 		implements LldbModelTargetStackFrameRegister {
 
-	protected static String indexRegister(LldbRegister register) {
-		String name = register.getName();
-		if ("".equals(name)) {
-			return "UNNAMED," + register.getNumber();
-		}
-		return name;
+	protected static String indexRegister(SBValue register) {
+		return register.GetName();
 	}
 
-	protected static String keyRegister(LldbRegister register) {
+	protected static String keyRegister(SBValue register) {
 		return PathUtils.makeKey(indexRegister(register));
 	}
 
-	protected final LldbRegister register;
+	protected final SBValue register;
+	private String value;
 
 	protected final int bitLength;
 
-	public LldbModelTargetStackFrameRegisterImpl(LldbModelTargetStackFrameRegisterContainerImpl registers,
-			LldbRegister register) {
-		super(registers.getModel(), registers, keyRegister(register), "Register");
+	public LldbModelTargetStackFrameRegisterImpl(LldbModelTargetStackFrameRegisterBankImpl bank,
+			SBValue register) {
+		super(bank.getModel(), bank, keyRegister(register), "Register");
 		this.register = register;
+		this.value = register.GetValue();
 		this.getModel().addModelObject(register, this);
-
-		this.bitLength = register.getSize() * 8;
+		
+		this.bitLength = (int) (register.GetByteSize() * 8);
 
 		changeAttributes(List.of(), Map.of( //
-			CONTAINER_ATTRIBUTE_NAME, registers, //
-			LENGTH_ATTRIBUTE_NAME, bitLength, //
-			DISPLAY_ATTRIBUTE_NAME, getName(), //
+			CONTAINER_ATTRIBUTE_NAME, bank, //
+			LENGTH_ATTRIBUTE_NAME, getBitLength(), //
+			DISPLAY_ATTRIBUTE_NAME, getName()+":"+value, //
+			VALUE_ATTRIBUTE_NAME, value, //
 			MODIFIED_ATTRIBUTE_NAME, false //
 		), "Initialized");
 	}
 
 	@Override
 	public int getBitLength() {
-		// TODO Auto-generated method stub
-		return 0;
+		return bitLength;
 	}
 
 	@Override
-	public LldbRegister getRegister() {
-		// TODO Auto-generated method stub
-		return null;
+	public SBValue getRegister() {
+		return register;
 	}
 
 }
