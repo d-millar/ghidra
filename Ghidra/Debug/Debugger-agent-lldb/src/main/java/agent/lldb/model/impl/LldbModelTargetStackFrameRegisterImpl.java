@@ -63,7 +63,7 @@ public class LldbModelTargetStackFrameRegisterImpl
 			CONTAINER_ATTRIBUTE_NAME, bank, //
 			LENGTH_ATTRIBUTE_NAME, getBitLength(), //
 			DISPLAY_ATTRIBUTE_NAME, getName()+":"+value, //
-			VALUE_ATTRIBUTE_NAME, value, //
+			VALUE_ATTRIBUTE_NAME, value == null ? "" : value, //
 			MODIFIED_ATTRIBUTE_NAME, false //
 		), "Initialized");
 	}

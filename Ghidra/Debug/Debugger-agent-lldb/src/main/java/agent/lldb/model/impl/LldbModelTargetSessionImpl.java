@@ -42,6 +42,11 @@ import ghidra.dbg.util.PathUtils;
 		@TargetElementType(type = Void.class) },
 	attributes = {
 		@TargetAttributeType(
+			name = "Debug", 
+			type = LldbModelTargetDebugContainerImpl.class, 
+			required = true, 
+			fixed = true),
+		@TargetAttributeType(
 			name = "Attributes",
 			type = LldbModelTargetSessionAttributesImpl.class,
 			fixed = true),

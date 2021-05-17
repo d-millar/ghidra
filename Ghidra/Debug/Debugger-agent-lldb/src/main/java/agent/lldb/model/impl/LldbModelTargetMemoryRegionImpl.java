@@ -47,7 +47,7 @@ public class LldbModelTargetMemoryRegionImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetMemoryRegion {
 
 	protected static String keySection(SBMemoryRegionInfo region) {
-		return PathUtils.makeKey(region.GetName());
+		return PathUtils.makeKey(region.GetRegionBase().toString(16));
 	}
 
 	protected final SBMemoryRegionInfo region;
@@ -76,7 +76,7 @@ public class LldbModelTargetMemoryRegionImpl extends LldbModelTargetObjectImpl
 		this.changeAttributes(List.of(), List.of(), Map.of( //
 			"BaseAddress", range.getMinAddress(), //
 			"EndAddress", range.getMaxAddress(), //
-			"RegionSize", range.getMaxAddress().subtract(range.getMinAddress()) //
+			"RegionSize", Long.toHexString(range.getMaxAddress().subtract(range.getMinAddress())) //
 		), "Initialized");
 	}
 

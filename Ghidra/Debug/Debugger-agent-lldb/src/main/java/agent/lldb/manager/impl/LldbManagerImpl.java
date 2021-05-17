@@ -187,6 +187,7 @@ public class LldbManagerImpl implements LldbManager {
 		new ListenerSet<>(LldbEventsListener.class);
 
 	//private DebugEventInformation lastEventInformation;
+	private SBEvent currentEvent;
 	private SBTarget currentSession;
 	private SBProcess currentProcess;
 	private SBThread currentThread;
@@ -196,6 +197,7 @@ public class LldbManagerImpl implements LldbManager {
 	private volatile boolean waiting = false;
 	private boolean kernelMode = false;
 	private CompletableFuture<String> continuation;
+
 
 	/**
 	 * Instantiate a new manager
@@ -617,6 +619,8 @@ public class LldbManagerImpl implements LldbManager {
 	@Override
 	public <T> CompletableFuture<T> execute(LldbCommand<? extends T> cmd) {
 		assert cmd != null;
+		if (currentThread != null)
+			System.err.println(cmd+":"+currentThread.IsValid());
 		checkStarted();
 		LldbPendingCommand<T> pcmd = new LldbPendingCommand<>(cmd);
 
@@ -757,49 +761,30 @@ public class LldbManagerImpl implements LldbManager {
 		statusMap.put(LldbStoppedEvent.class, DebugStatus.BREAK);
 	}
 
-	private Integer updateState(SBEvent event) {
+	private void updateState(SBEvent event) {
 		DebugClientImpl client = (DebugClientImpl) engThread.getClient();
 		currentProcess = eventProcess = SBProcess.GetProcessFromEvent(event);
-		SBTarget candidateSession = SBTarget.GetTargetFromEvent(event);
-		if (candidateSession.IsValid()) {
-			currentSession = eventSession = candidateSession;
-			System.err.println("session from event was valid!");
-		} else {
-			candidateSession = currentProcess.GetTarget();
+		if (!currentSession.IsValid()) {
+			SBTarget candidateSession = SBTarget.GetTargetFromEvent(event);
 			if (candidateSession.IsValid()) {
 				currentSession = eventSession = candidateSession;
 			} 
-		}
-		SBThread candidateThread = SBThread.GetThreadFromEvent(event);
-		if (candidateThread.IsValid()) {
-			currentThread = eventThread = candidateThread;
-			System.err.println("thread from event was valid!");
-		} else {
-			candidateThread = currentProcess.GetSelectedThread();
+		} 
+		if (!currentThread.IsValid()) {
+			SBThread candidateThread = SBThread.GetThreadFromEvent(event);
 			if (candidateThread.IsValid()) {
 				currentThread = eventThread = candidateThread;
+			} else {
+				candidateThread = currentProcess.GetSelectedThread();
+				if (candidateThread.IsValid()) {
+					currentThread = eventThread = candidateThread;
+				}
 			} 
 		}
 		addSessionIfAbsent(eventSession);
 		addProcessIfAbsent(eventSession, eventProcess);
 		addThreadIfAbsent(eventProcess, eventThread);
 		client.translateAndFireEvent(event);
-		/*
-		Integer etid = so.getEventThread();
-		DebugProcessId epid = so.getEventProcess();
-		DebugSessionId esid = so.getCurrentSystemId();
-
-		DebugControl control = client.getControl();
-		int execType = WinNTExtra.Machine.IMAGE_FILE_MACHINE_AMD64.val;
-		try {
-			so.setCurrentProcessId(epid);
-			so.setCurrentThreadId(etid);
-			execType = control.getExecutingProcessorType();
-		}
-		catch (Exception e) {
-			// Ignore for now
-		}
-		*/
 
 		/*
 		lastEventInformation = control.getLastEventInformation();
@@ -815,7 +800,6 @@ public class LldbManagerImpl implements LldbManager {
 		}
 		return etid;
 		*/
-		return null;
 	}
 
 	/**
@@ -1663,6 +1647,15 @@ public class LldbManagerImpl implements LldbManager {
 
 
 	public SBThread getCurrentThread() {
+		if (!currentThread.IsValid()) {
+			currentProcess = currentSession.GetProcess();
+			for (int i = 0; i < currentProcess.GetNumThreads(); i++) {
+				SBThread thread = currentProcess.GetThreadAtIndex(i);
+				System.err.println(thread +":" +thread.IsValid());
+			}
+			currentThread = SBThread.GetThreadFromEvent(currentEvent);
+			System.err.println(currentThread.IsValid());
+		}
 		return currentThread != null ? currentThread : eventThread;
 	}
 
@@ -1745,7 +1738,13 @@ public class LldbManagerImpl implements LldbManager {
 
 	@Override
 	public StateType getState() {
-		return currentProcess == null ? StateType.eStateInvalid : currentProcess.GetState();
+		if (currentProcess == null) {
+			return StateType.eStateInvalid;
+		}
+		if (!currentThread.IsValid()) {
+			return StateType.eStateRunning;
+		}
+		return currentProcess.GetState();
 	}
 
 	@Override
@@ -1797,5 +1796,10 @@ public class LldbManagerImpl implements LldbManager {
 	
 	public DebugStatus getStatus() {
 		return status;
+	}
+
+	@Override
+	public void setCurrentEvent(SBEvent evt) {
+		this.currentEvent = evt;
 	}
 }

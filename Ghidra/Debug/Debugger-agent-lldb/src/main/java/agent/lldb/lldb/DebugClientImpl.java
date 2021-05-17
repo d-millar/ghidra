@@ -112,8 +112,7 @@ public class DebugClientImpl implements DebugClient {
 
 	@Override
 	public void createProcess(DebugServerId si, String commandLine, BitmaskSet<DebugCreateFlags> createFlags) {
-		session = connectSession("/opt/X11/bin/xclock");
-		session.BreakpointCreateByName("c", "/opt/X11/bin/xclock");
+		session = connectSession("/opt/X11/bin/xclock-x86_64");
 		SBProcess process = session.LaunchSimple(null, null, null);
 		/*
 		listener = new SBListener(process.GetProcessID().toString());
@@ -188,6 +187,7 @@ public class DebugClientImpl implements DebugClient {
 	}
 
 	public void translateAndFireEvent(SBEvent evt) {
+		manager.setCurrentEvent(evt);
 		long type = evt.GetType();
 		if (SBTarget.EventIsTargetEvent(evt)) {
 			if ((type & SBTarget.eBroadcastBitBreakpointChanged) != 0) {

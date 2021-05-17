@@ -26,6 +26,7 @@ import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.cmd.LldbContinueCommand;
 import agent.lldb.manager.cmd.LldbListProcessesCommand;
+import agent.lldb.manager.cmd.LldbStepCommand;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import agent.lldb.model.iface1.LldbModelTargetFocusScope;
 import agent.lldb.model.iface2.LldbModelTargetDebugContainer;
@@ -46,7 +47,6 @@ import ghidra.dbg.util.PathUtils;
 
 @TargetObjectSchemaInfo(name = "Process", elements = {
 	@TargetElementType(type = Void.class) }, attributes = {
-		@TargetAttributeType(name = "Debug", type = LldbModelTargetDebugContainerImpl.class, required = true, fixed = true),
 		@TargetAttributeType(name = "Memory", type = LldbModelTargetMemoryContainerImpl.class, required = true, fixed = true),
 		@TargetAttributeType(name = "Threads", type = LldbModelTargetThreadContainerImpl.class, required = true, fixed = true),
 		@TargetAttributeType(name = LldbModelTargetProcessImpl.EXIT_CODE_ATTRIBUTE_NAME, type = String.class),
@@ -179,13 +179,13 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 			case ADVANCE: // Why no exec-advance in Lldbeng?
 				throw new UnsupportedOperationException(kind.name());
 			default:
-				return null; //model.gateFuture(process.step(convertToLldb(kind)));
+				return getManager().execute(new LldbStepCommand(getManager(), 0, null));
 		}
 	}
 
 	@Override
 	public CompletableFuture<Void> step(Map<String, ?> args) {
-		return null; //model.gateFuture(process.step(args));
+		return getManager().execute(new LldbStepCommand(getManager(), 0, null));
 	}
 
 	@Override
