@@ -619,8 +619,6 @@ public class LldbManagerImpl implements LldbManager {
 	@Override
 	public <T> CompletableFuture<T> execute(LldbCommand<? extends T> cmd) {
 		assert cmd != null;
-		if (currentThread != null)
-			System.err.println(cmd+":"+currentThread.IsValid());
 		checkStarted();
 		LldbPendingCommand<T> pcmd = new LldbPendingCommand<>(cmd);
 
@@ -764,19 +762,24 @@ public class LldbManagerImpl implements LldbManager {
 	private void updateState(SBEvent event) {
 		DebugClientImpl client = (DebugClientImpl) engThread.getClient();
 		currentProcess = eventProcess = SBProcess.GetProcessFromEvent(event);
-		if (!currentSession.IsValid()) {
+		if (currentSession == null || !currentSession.IsValid()) {
 			SBTarget candidateSession = SBTarget.GetTargetFromEvent(event);
-			if (candidateSession.IsValid()) {
+			if (candidateSession != null && candidateSession.IsValid()) {
 				currentSession = eventSession = candidateSession;
-			} 
+			} else {
+				candidateSession = currentProcess.GetTarget();
+				if (candidateSession != null && candidateSession.IsValid()) {
+					currentSession = eventSession = candidateSession;
+				} 
+			}
 		} 
-		if (!currentThread.IsValid()) {
+		if (currentThread == null || !currentThread.IsValid()) {
 			SBThread candidateThread = SBThread.GetThreadFromEvent(event);
-			if (candidateThread.IsValid()) {
+			if (candidateThread != null && candidateThread.IsValid()) {
 				currentThread = eventThread = candidateThread;
 			} else {
 				candidateThread = currentProcess.GetSelectedThread();
-				if (candidateThread.IsValid()) {
+				if (candidateThread != null && candidateThread.IsValid()) {
 					currentThread = eventThread = candidateThread;
 				}
 			} 
@@ -1741,7 +1744,7 @@ public class LldbManagerImpl implements LldbManager {
 		if (currentProcess == null) {
 			return StateType.eStateInvalid;
 		}
-		if (!currentThread.IsValid()) {
+		if (currentThread != null && !currentThread.IsValid()) {
 			return StateType.eStateRunning;
 		}
 		return currentProcess.GetState();

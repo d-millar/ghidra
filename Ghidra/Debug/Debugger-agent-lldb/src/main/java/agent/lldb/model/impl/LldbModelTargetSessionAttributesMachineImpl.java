@@ -54,8 +54,8 @@ public class LldbModelTargetSessionAttributesMachineImpl extends LldbModelTarget
 
 		changeAttributes(List.of(), List.of(), Map.of( //
 			ARCH_ATTRIBUTE_NAME, "x86_64", //
-			DEBUGGER_ATTRIBUTE_NAME, "Lldbeng", //
-			OS_ATTRIBUTE_NAME, "Windows" //
+			DEBUGGER_ATTRIBUTE_NAME, "lldb", //
+			OS_ATTRIBUTE_NAME, "OSX" //
 		), "Initialized");
 
 		getManager().addEventsListener(this);
@@ -89,10 +89,10 @@ public class LldbModelTargetSessionAttributesMachineImpl extends LldbModelTarget
 
 		AtomicReference<String> capture = new AtomicReference<>();
 		AsyncUtils.sequence(TypeSpec.VOID).then(seq -> {
-			getManager().consoleCapture("vertarget").handle(seq::next);
+			getManager().consoleCapture("version").handle(seq::next);
 		}, capture).then(seq -> {
 			changeAttributes(List.of(), List.of(), Map.of( //
-				OS_ATTRIBUTE_NAME, capture.get()), "Refreshed");
+				"Version", capture.get()), "Refreshed");
 		}).finish();
 	}
 

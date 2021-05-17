@@ -51,8 +51,8 @@ public class LldbModelTargetSessionAttributesImpl extends LldbModelTargetObjectI
 			machineAttributes //
 		), Map.of( //
 			ARCH_ATTRIBUTE_NAME, "x86_64", //
-			DEBUGGER_ATTRIBUTE_NAME, "Lldbeng", //
-			OS_ATTRIBUTE_NAME, "Windows", //
+			DEBUGGER_ATTRIBUTE_NAME, "lldb", //
+			OS_ATTRIBUTE_NAME, "OSX", //
 			ENDIAN_ATTRIBUTE_NAME, "little" //
 		), "Initialized");
 
