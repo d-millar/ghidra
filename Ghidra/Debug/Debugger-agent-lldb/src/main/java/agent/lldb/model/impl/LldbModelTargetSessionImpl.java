@@ -98,6 +98,7 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 		this.modules = new LldbModelTargetModuleContainerImpl(this);
 
 		changeAttributes(List.of(), List.of( //
+			debug, //
 			attributes, //
 			processes, //
 			modules //
