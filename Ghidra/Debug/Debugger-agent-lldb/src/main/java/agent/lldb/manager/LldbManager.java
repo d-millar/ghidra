@@ -23,6 +23,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import SWIG.SBBreakpoint;
 import SWIG.SBBreakpointLocation;
+import SWIG.SBEvent;
 import SWIG.SBFrame;
 import SWIG.SBMemoryRegionInfo;
 import SWIG.SBModule;
@@ -443,5 +444,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	//DebugEventInformation getLastEventInformation();
 
 	DebugStatus getStatus();
+
+	void setCurrentEvent(SBEvent evt);
 
 }
