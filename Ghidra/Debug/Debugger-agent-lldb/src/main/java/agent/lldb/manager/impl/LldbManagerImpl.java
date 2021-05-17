@@ -35,6 +35,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.sun.jna.platform.win32.COM.COMException;
 
 import SWIG.SBBreakpoint;
+import SWIG.SBBreakpointLocation;
 import SWIG.SBEvent;
 import SWIG.SBFrame;
 import SWIG.SBMemoryRegionInfo;
@@ -80,6 +81,7 @@ import agent.lldb.manager.cmd.LldbEnableBreakpointsCommand;
 import agent.lldb.manager.cmd.LldbInsertBreakpointCommand;
 import agent.lldb.manager.cmd.LldbLaunchProcessCommand;
 import agent.lldb.manager.cmd.LldbListAvailableProcessesCommand;
+import agent.lldb.manager.cmd.LldbListBreakpointLocationsCommand;
 import agent.lldb.manager.cmd.LldbListBreakpointsCommand;
 import agent.lldb.manager.cmd.LldbListMemoryRegionsCommand;
 import agent.lldb.manager.cmd.LldbListModuleSectionsCommand;
@@ -381,8 +383,6 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	/**
-	 * Use {@link SBModule#remove()} instead
-	 * 
 	 * @param id the module name to remove
 	 */
 	public void removeBreakpoint(SBTarget session, Integer id) {
@@ -414,7 +414,7 @@ public class LldbManagerImpl implements LldbManager {
 			}
 		}
 	}
-	
+		
 	@Override
 	public Map<Integer, SBThread> getKnownThreads(SBProcess process) {
 		Map<Integer, SBThread> map = threads.get(process);
@@ -517,6 +517,11 @@ public class LldbManagerImpl implements LldbManager {
 	@Override
 	public CompletableFuture<Map<Integer, SBBreakpoint>> listBreakpoints(SBTarget session) {
 		return execute(new LldbListBreakpointsCommand(this, session));
+	}
+
+	@Override
+	public CompletableFuture<Map<Integer, SBBreakpointLocation>> listBreakpointLocations(SBBreakpoint spec) {
+		return execute(new LldbListBreakpointLocationsCommand(this, spec));
 	}
 
 	private void checkStarted() {

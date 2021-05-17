@@ -40,7 +40,6 @@ import ghidra.program.model.address.AddressRange;
 	canonicalContainer = true)
 public interface LldbModelTargetBreakpointContainer extends LldbModelTargetObject, //
 		TargetBreakpointSpecContainer, //
-		TargetBreakpointLocationContainer, //
 		LldbEventsListenerAdapter {
 
 	/*

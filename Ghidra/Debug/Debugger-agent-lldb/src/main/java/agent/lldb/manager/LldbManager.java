@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.commons.lang3.tuple.Pair;
 
 import SWIG.SBBreakpoint;
+import SWIG.SBBreakpointLocation;
 import SWIG.SBFrame;
 import SWIG.SBMemoryRegionInfo;
 import SWIG.SBModule;
@@ -379,6 +380,12 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * @return a future that completes with a list of information for all breakpoints
 	 */
 	CompletableFuture<Map<Integer, SBBreakpoint>> listBreakpoints(SBTarget session);
+	/**
+	 * List information for all breakpoints
+	 * 
+	 * @return a future that completes with a list of information for all breakpoints
+	 */
+	CompletableFuture<Map<Integer, SBBreakpointLocation>> listBreakpointLocations(SBBreakpoint spec);
 
 	/**
 	 * Disable the given breakpoints
