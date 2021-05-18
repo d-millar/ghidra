@@ -46,21 +46,12 @@ public class LldbModelTargetStackFrameRegisterImpl
 		return PathUtils.makeKey(indexRegister(register));
 	}
 
-	protected final SBValue register;
-	private String value;
-
-	protected final int bitLength;
-
 	public LldbModelTargetStackFrameRegisterImpl(LldbModelTargetStackFrameRegisterBankImpl bank,
 			SBValue register) {
-		super(bank.getModel(), bank, keyRegister(register), "Register");
+		super(bank.getModel(), bank, keyRegister(register), register, "Register");
 		this.getModel().addModelObject(DebugClient.getRegisterId(register), this);
-		this.register = register;
-		this.value = register.GetValue();
-		this.getModel().addModelObject(DebugClient.getRegisterId(register), this);
+		String value = register.GetValue();
 		
-		this.bitLength = (int) (register.GetByteSize() * 8);
-
 		changeAttributes(List.of(), Map.of( //
 			CONTAINER_ATTRIBUTE_NAME, bank, //
 			LENGTH_ATTRIBUTE_NAME, getBitLength(), //
@@ -72,25 +63,31 @@ public class LldbModelTargetStackFrameRegisterImpl
 
 	@Override
 	public int getBitLength() {
-		return bitLength;
+		return (int) (getRegister().GetByteSize() * 8);
+	}
+
+	@Override
+	public String getValue() {
+		return getRegister().GetValue();
 	}
 
 	@Override
 	public SBValue getRegister() {
-		return register;
+		return (SBValue) getModelObject();
 	}
 	
 	public byte [] getBytes() {
+		String value = getValue();
 		if (value == null) {
 			return new byte[0];
 		}
 		BigInteger val = new BigInteger(value);
-		byte[] bytes = ConversionUtils.bigIntegerToBytes((int) register.GetByteSize(), val);
+		byte[] bytes = ConversionUtils.bigIntegerToBytes((int) getRegister().GetByteSize(), val);
 		return bytes;
 	}
 	
 	public String getDisplay() {
-		return value == null ? getName() : getName() + " : " + value;
+		return getValue() == null ? getName() : getName() + " : " + getValue();
 	}
 
 }

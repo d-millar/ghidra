@@ -83,12 +83,14 @@ public class LldbModelTargetStackImpl extends LldbModelTargetObjectImpl
 
 	public void threadStateChangedSpecific(StateType state, LldbReason reason) {
 		if (state.equals(StateType.eStateStopped)) {
-			for (TargetObject element : getCachedElements().values()) {
-				if (element instanceof LldbModelTargetStackFrame) {
-					LldbModelTargetStackFrameImpl frame = (LldbModelTargetStackFrameImpl) element;
-					frame.threadStateChangedSpecific(state, reason);
-				}
-			} 
+			requestElements(true).thenAccept(__ -> {
+				for (TargetObject element : getCachedElements().values()) {
+					if (element instanceof LldbModelTargetStackFrame) {
+						LldbModelTargetStackFrameImpl frame = (LldbModelTargetStackFrameImpl) element;
+						frame.threadStateChangedSpecific(state, reason);
+					}
+				} 
+			});
 		}
 	}
 
