@@ -46,8 +46,6 @@ public class LldbModelTargetStackFrameRegisterContainerImpl
 	public LldbModelTargetStackFrameRegisterContainerImpl(LldbModelTargetStackFrameImpl frame) {
 		super(frame.getModel(), frame, NAME, "StackFrameRegisterContainer");
 		this.frame = frame;
-
-		requestElements(false);
 	}
 
 	/**

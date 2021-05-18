@@ -53,6 +53,7 @@ public class LldbModelTargetStackFrameRegisterImpl
 	public LldbModelTargetStackFrameRegisterImpl(LldbModelTargetStackFrameRegisterBankImpl bank,
 			SBValue register) {
 		super(bank.getModel(), bank, keyRegister(register), "Register");
+		this.getModel().addModelObject(register, this);
 		this.register = register;
 		this.value = register.GetValue();
 		this.getModel().addModelObject(register, this);
