@@ -20,15 +20,16 @@ import java.util.Map;
 
 import SWIG.SBBreakpoint;
 import SWIG.SBBreakpointLocation;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 
 /**
  * Implementation of {@link LldbProcess#listBreakpoints()}
  */
-public class LldbListBreakpointLocationsCommand extends AbstractLldbCommand<Map<Integer, SBBreakpointLocation>> {
+public class LldbListBreakpointLocationsCommand extends AbstractLldbCommand<Map<String, SBBreakpointLocation>> {
 
-	private Map<Integer, SBBreakpointLocation> updatedLocations = new HashMap<>();
+	private Map<String, SBBreakpointLocation> updatedLocations = new HashMap<>();
 	protected final SBBreakpoint spec;
 
 	public LldbListBreakpointLocationsCommand(LldbManagerImpl manager, SBBreakpoint spec) {
@@ -37,7 +38,7 @@ public class LldbListBreakpointLocationsCommand extends AbstractLldbCommand<Map<
 	}
 
 	@Override
-	public Map<Integer, SBBreakpointLocation> complete(LldbPendingCommand<?> pending) {
+	public Map<String, SBBreakpointLocation> complete(LldbPendingCommand<?> pending) {
 		return updatedLocations;
 	}
 
@@ -46,8 +47,8 @@ public class LldbListBreakpointLocationsCommand extends AbstractLldbCommand<Map<
 		updatedLocations.clear();
 		long n = spec.GetNumLocations();
 		for (int i = 0; i < n; i++) {
-			SBBreakpointLocation bpt = spec.GetLocationAtIndex(i);
-			updatedLocations.put(bpt.GetID(), bpt);
+			SBBreakpointLocation loc = spec.GetLocationAtIndex(i);
+			updatedLocations.put(DebugClient.getBreakpointLocationId(loc), loc);
 		}
 	}
 }

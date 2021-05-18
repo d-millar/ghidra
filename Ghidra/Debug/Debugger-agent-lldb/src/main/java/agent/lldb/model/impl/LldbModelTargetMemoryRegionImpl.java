@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import SWIG.SBMemoryRegionInfo;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.LldbModelTargetMemoryContainer;
 import agent.lldb.model.iface2.LldbModelTargetMemoryRegion;
 import ghidra.dbg.target.TargetMemoryRegion;
@@ -61,7 +62,7 @@ public class LldbModelTargetMemoryRegionImpl extends LldbModelTargetObjectImpl
 	public LldbModelTargetMemoryRegionImpl(LldbModelTargetMemoryContainer memory,
 			SBMemoryRegionInfo region) {
 		super(memory.getModel(), memory, keySection(region), "Region");
-		this.getModel().addModelObject(region, this);
+		this.getModel().addModelObject(DebugClient.getRegionId(region), this);
 		this.region = region;
 
 		this.changeAttributes(List.of(), List.of(), Map.of( //

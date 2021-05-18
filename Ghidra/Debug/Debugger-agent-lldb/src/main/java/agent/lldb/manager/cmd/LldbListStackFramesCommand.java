@@ -20,11 +20,12 @@ import java.util.Map;
 
 import SWIG.SBFrame;
 import SWIG.SBThread;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
-public class LldbListStackFramesCommand extends AbstractLldbCommand<Map<Integer, SBFrame>> {
+public class LldbListStackFramesCommand extends AbstractLldbCommand<Map<String, SBFrame>> {
 	protected final SBThread thread;
-	private Map<Integer, SBFrame> result;
+	private Map<String, SBFrame> result;
 
 	public LldbListStackFramesCommand(LldbManagerImpl manager, SBThread thread) {
 		super(manager);
@@ -32,7 +33,7 @@ public class LldbListStackFramesCommand extends AbstractLldbCommand<Map<Integer,
 	}
 
 	@Override
-	public Map<Integer, SBFrame> complete(LldbPendingCommand<?> pending) {
+	public Map<String, SBFrame> complete(LldbPendingCommand<?> pending) {
 		return result;
 	}
 
@@ -41,7 +42,8 @@ public class LldbListStackFramesCommand extends AbstractLldbCommand<Map<Integer,
 		result = new HashMap<>();
 		long n = thread.GetNumFrames();
 		for (int i = 0; i < n; i++) {
-			result.put(i, thread.GetFrameAtIndex(i));
+			SBFrame frame = thread.GetFrameAtIndex(i);
+			result.put(DebugClient.getFrameId(frame), frame);
 		}
 	}
 }

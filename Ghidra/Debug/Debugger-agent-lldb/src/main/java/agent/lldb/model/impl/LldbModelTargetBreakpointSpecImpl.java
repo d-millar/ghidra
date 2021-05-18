@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 
 import SWIG.SBBreakpoint;
 import SWIG.SBTarget;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.breakpoint.LldbBreakpointInfo;
 import agent.lldb.model.iface2.LldbModelTargetBreakpointContainer;
 import agent.lldb.model.iface2.LldbModelTargetBreakpointSpec;
@@ -89,7 +90,7 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetObjectImpl
 		super(breakpoints.getModel(), breakpoints, keyBreakpoint(bpt), "BreakpointSpec");
 		this.breakpoints = breakpoints;
 		this.bpt = bpt;
-		this.getModel().addModelObject(bpt, this);
+		this.getModel().addModelObject(DebugClient.getBreakpointId(bpt), this);
 		//this.setBreakpointInfo(info);
 
 		updateInfo(bpt, "Created");

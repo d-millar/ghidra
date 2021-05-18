@@ -22,11 +22,12 @@ import SWIG.SBModule;
 import SWIG.SBSection;
 import SWIG.SBValue;
 import SWIG.SBValueList;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
-public class LldbListModuleSectionsCommand extends AbstractLldbCommand<Map<Integer, SBSection>> {
+public class LldbListModuleSectionsCommand extends AbstractLldbCommand<Map<String, SBSection>> {
 	protected final SBModule module;
-	private Map<Integer, SBSection> result;
+	private Map<String, SBSection> result;
 
 	public LldbListModuleSectionsCommand(LldbManagerImpl manager, SBModule module) {
 		super(manager);
@@ -34,7 +35,7 @@ public class LldbListModuleSectionsCommand extends AbstractLldbCommand<Map<Integ
 	}
 
 	@Override
-	public Map<Integer, SBSection> complete(LldbPendingCommand<?> pending) {
+	public Map<String, SBSection> complete(LldbPendingCommand<?> pending) {
 		return result;
 	}
 
@@ -43,7 +44,8 @@ public class LldbListModuleSectionsCommand extends AbstractLldbCommand<Map<Integ
 		result = new HashMap<>();
 		long n = module.GetNumSections();
 		for (int i = 0; i < n; i++) {
-			result.put(i, module.GetSectionAtIndex(i));
+			SBSection section = module.GetSectionAtIndex(i);
+			result.put(DebugClient.getModuleSectionId(section), section);
 		}
 	}
 }

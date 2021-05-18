@@ -99,9 +99,9 @@ public class LldbModelTargetStackImpl extends LldbModelTargetObjectImpl
 	@Override
 	public void onStopped() {
 		setAccessible(true);
-		Integer id = DebugClient.getThreadId(thread.getThread());
-		Integer eid =  DebugClient.getThreadId(getManager().getEventThread());
-		if (id == eid) {
+		String id = DebugClient.getThreadId(thread.getThread());
+		String eid =  DebugClient.getThreadId(getManager().getEventThread());
+		if (id.equals(eid)) {
 			update();
 		}
 	}

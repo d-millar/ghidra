@@ -20,6 +20,7 @@ import java.util.Map;
 
 import SWIG.SBSection;
 import SWIG.SBValue;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.LldbModelTargetModuleSection;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetElementType;
@@ -47,7 +48,7 @@ public class LldbModelTargetModuleSectionImpl extends LldbModelTargetObjectImpl
 	public LldbModelTargetModuleSectionImpl(LldbModelTargetModuleSectionContainerImpl sections,
 			SBSection section) {
 		super(sections.getModel(), sections, keySection(section), "Section");
-		this.getModel().addModelObject(section, this);
+		this.getModel().addModelObject(DebugClient.getModuleSectionId(section), this);
 
 		AddressSpace space = getModel().getAddressSpace("ram");
 		Address min = space.getAddress(section.GetFileAddress().longValue());

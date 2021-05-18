@@ -23,9 +23,9 @@ import agent.lldb.manager.impl.LldbManagerImpl;
  */
 public class LldbRemoveProcessCommand extends AbstractLldbCommand<Void> {
 	private SBTarget session;
-	private Integer id;
+	private String id;
 
-	public LldbRemoveProcessCommand(LldbManagerImpl manager, SBTarget session, Integer id) {
+	public LldbRemoveProcessCommand(LldbManagerImpl manager, SBTarget session, String id) {
 		super(manager);
 		this.session = session;
 		this.id = id;

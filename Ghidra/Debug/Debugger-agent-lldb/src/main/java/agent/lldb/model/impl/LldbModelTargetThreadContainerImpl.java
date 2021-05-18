@@ -81,7 +81,7 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 	}
 
 	@Override
-	public void threadExited(Integer threadId) {
+	public void threadExited(String threadId) {
 		LldbModelImpl impl = (LldbModelImpl) model;
 		LldbModelTargetThread targetThread = (LldbModelTargetThread) impl.getModelObject(threadId);
 		if (targetThread != null) {
@@ -89,7 +89,7 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 				"Thread " + threadId + " exited", List.of(targetThread));
 		}
 		changeElements(List.of( //
-			LldbModelTargetThreadImpl.indexThread(threadId) //
+			threadId //
 		), List.of(), Map.of(), "Exited");
 	}
 

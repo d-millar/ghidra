@@ -27,7 +27,7 @@ import SWIG.SBTarget;
 public class DebugSessionInfo {
 
 	public SBTarget session;
-	public Integer id;
+	public String id;
 
 	public DebugSessionInfo(SBTarget session) {
 		this.session = session;
@@ -35,7 +35,7 @@ public class DebugSessionInfo {
 	}
 
 	public String toString() {
-		return Integer.toHexString(id);
+		return id;
 	}
 
 }

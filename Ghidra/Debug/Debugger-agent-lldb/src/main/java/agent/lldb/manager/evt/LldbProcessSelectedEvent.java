@@ -21,8 +21,8 @@ import agent.lldb.lldb.DebugClient;
 /**
  * The event corresponding with "{@code =thread-selected}"
  */
-public class LldbProcessSelectedEvent extends AbstractLldbEvent<Integer> {
-	private final Integer id;
+public class LldbProcessSelectedEvent extends AbstractLldbEvent<String> {
+	private final String id;
 	private SBProcess process;
 
 	/**
@@ -41,7 +41,7 @@ public class LldbProcessSelectedEvent extends AbstractLldbEvent<Integer> {
 	 * 
 	 * @return the process ID
 	 */
-	public Integer getProcessId() {
+	public String getProcessId() {
 		return id;
 	}
 

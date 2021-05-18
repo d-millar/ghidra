@@ -78,9 +78,9 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 	}
 
 	@Override
-	public void processRemoved(Integer processId, LldbCause cause) {
+	public void processRemoved(String processId, LldbCause cause) {
 		changeElements(List.of( //
-			LldbModelTargetProcessImpl.indexProcess(processId) //
+			processId //
 		), List.of(), Map.of(), "Removed");
 	}
 
@@ -98,7 +98,7 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 	}
 
 	@Override
-	public void threadExited(Integer threadId, SBProcess proc, LldbCause cause) {
+	public void threadExited(String threadId, SBProcess proc, LldbCause cause) {
 		LldbModelTargetProcess process = getTargetProcess(proc);
 		if (process != null) {
 			process.getThreads().threadExited(threadId);

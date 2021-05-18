@@ -32,8 +32,8 @@ import ghidra.util.Msg;
 /**
  * Implementation of {@link LldbManager#listProcesses()}
  */
-public class LldbListProcessesCommand extends AbstractLldbCommand<Map<Integer, SBProcess>> {
-	private Map<Integer, SBProcess> updatedProcesses;
+public class LldbListProcessesCommand extends AbstractLldbCommand<Map<String, SBProcess>> {
+	private Map<String, SBProcess> updatedProcesses;
 	private SBTarget session;
 
 	public LldbListProcessesCommand(LldbManagerImpl manager, SBTarget session) {
@@ -42,20 +42,21 @@ public class LldbListProcessesCommand extends AbstractLldbCommand<Map<Integer, S
 	}
 
 	@Override
-	public Map<Integer, SBProcess> complete(LldbPendingCommand<?> pending) {
-		Map<Integer, SBProcess> allProcesses = manager.getKnownProcesses(session);
-		Set<Integer> cur = allProcesses.keySet();
-		for (Integer id : updatedProcesses.keySet()) {
+	public Map<String, SBProcess> complete(LldbPendingCommand<?> pending) {
+		Map<String, SBProcess> allProcesses = manager.getKnownProcesses(session);
+		Set<String> cur = allProcesses.keySet();
+		for (String id : updatedProcesses.keySet()) {
 			if (cur.contains(id)) {
 				continue; // Do nothing, we're in sync
 			}
 			manager.addProcessIfAbsent(session, updatedProcesses.get(id));
 		}
-		for (Integer id : new ArrayList<>(cur)) {
+		String sessionId = DebugClient.getSessionId(session);
+		for (String id : new ArrayList<>(cur)) {
 			if (updatedProcesses.containsKey(id)) {
 				continue; // Do nothing, we're in sync
 			}
-			manager.removeProcess(session, id, Causes.UNCLAIMED);
+			manager.removeProcess(sessionId, id, Causes.UNCLAIMED);
 		}
 		return allProcesses;
 	}

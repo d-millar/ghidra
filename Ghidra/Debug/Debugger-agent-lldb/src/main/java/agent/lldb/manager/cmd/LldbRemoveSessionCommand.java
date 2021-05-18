@@ -21,9 +21,9 @@ import agent.lldb.manager.impl.LldbManagerImpl;
  * Implementation of {@link DbgManager#addProcess()}
  */
 public class LldbRemoveSessionCommand extends AbstractLldbCommand<Void> {
-	private Integer id;
+	private String id;
 
-	public LldbRemoveSessionCommand(LldbManagerImpl manager, Integer id) {
+	public LldbRemoveSessionCommand(LldbManagerImpl manager, String id) {
 		super(manager);
 		this.id = id;
 	}

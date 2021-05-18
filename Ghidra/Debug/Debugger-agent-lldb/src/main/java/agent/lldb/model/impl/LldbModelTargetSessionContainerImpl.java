@@ -50,13 +50,13 @@ public class LldbModelTargetSessionContainerImpl extends LldbModelTargetObjectIm
 	}
 
 	@Override
-	public void sessionRemoved(Integer sessionId, LldbCause cause) {
+	public void sessionRemoved(String sessionId, LldbCause cause) {
 		//synchronized (this) {
 		//	sessionsById.remove(sessionId);
 		//}
 		System.err.println(sessionId+" removed");
 		changeElements(List.of( //
-			LldbModelTargetSessionImpl.indexSession(sessionId) //
+			sessionId //
 		), List.of(), Map.of(), "Removed");
 	}
 

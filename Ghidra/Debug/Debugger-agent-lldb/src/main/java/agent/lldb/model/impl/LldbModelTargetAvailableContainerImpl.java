@@ -45,7 +45,7 @@ import ghidra.util.datastruct.WeakValueHashMap;
 public class LldbModelTargetAvailableContainerImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetAvailableContainer, LldbModelTargetConfigurable {
 
-	protected final Map<Integer, LldbModelTargetAvailable> attachablesById =
+	protected final Map<String, LldbModelTargetAvailable> attachablesById =
 		new WeakValueHashMap<>();
 
 	public LldbModelTargetAvailableContainerImpl(LldbModelTargetRoot root) {
@@ -66,13 +66,13 @@ public class LldbModelTargetAvailableContainerImpl extends LldbModelTargetObject
 		});
 	}
 
-	public synchronized LldbModelTargetAvailable getTargetAttachableEx(Pair<Integer, String> pair) {
+	public synchronized LldbModelTargetAvailable getTargetAttachableEx(Pair<String, String> pair) {
 		return attachablesById.computeIfAbsent(pair.getLeft(),
 			i -> new LldbModelTargetAvailableImpl(this, pair.getLeft(), pair.getRight()));
 	}
 
 	@Override
-	public synchronized LldbModelTargetAvailable getTargetAttachable(int pid) {
+	public synchronized LldbModelTargetAvailable getTargetAttachable(String pid) {
 		return attachablesById.computeIfAbsent(pid,
 			i -> new LldbModelTargetAvailableImpl(this, pid));
 	}

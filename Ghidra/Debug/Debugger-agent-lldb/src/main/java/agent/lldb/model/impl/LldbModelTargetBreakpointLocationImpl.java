@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import SWIG.SBBreakpointLocation;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.LldbModelTargetBreakpointLocation;
 import agent.lldb.model.iface2.LldbModelTargetBreakpointLocationContainer;
 import ghidra.dbg.target.schema.TargetAttributeType;
@@ -49,7 +50,7 @@ public class LldbModelTargetBreakpointLocationImpl extends LldbModelTargetObject
 		super(locs.getModel(), locs, keyLocation(loc), "BreakpointLocation");
 		this.locs = locs;
 		this.loc = loc;
-		this.getModel().addModelObject(loc, this);
+		this.getModel().addModelObject(DebugClient.getBreakpointLocationId(loc), this);
 		
 		doChangeAttributes("Initialization");
 	}

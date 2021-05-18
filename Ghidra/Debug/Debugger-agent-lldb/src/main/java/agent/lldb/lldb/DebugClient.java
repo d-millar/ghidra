@@ -17,13 +17,7 @@ package agent.lldb.lldb;
 
 import com.sun.jna.platform.win32.WinBase;
 
-import SWIG.SBEvent;
-import SWIG.SBListener;
-import SWIG.SBModule;
-import SWIG.SBProcess;
-import SWIG.SBTarget;
-import SWIG.SBThread;
-import SWIG.StateType;
+import SWIG.*;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.LldbManager;
 import ghidra.comm.util.BitmaskSet;
@@ -316,20 +310,52 @@ public interface DebugClient extends DebugClientReentrant {
 		}
 	}
 	
-	public static Integer getSessionId(SBTarget session) {
-		return (int) session.GetProcess().GetUniqueID();
+	public static String getSessionId(SBTarget session) {
+		return Long.toHexString(session.GetProcess().GetUniqueID());
 	}
 
-	public static Integer getProcessId(SBProcess process) {
-		return process.GetProcessID().intValue();
+	public static String getProcessId(SBProcess process) {
+		return Integer.toHexString(process.GetProcessID().intValue());
 	}
 
-	public static Integer getThreadId(SBThread thread) {
-		return thread.GetThreadID().intValue();
+	public static String getThreadId(SBThread thread) {
+		return Integer.toHexString(thread.GetThreadID().intValue());
+	}
+
+	public static String getFrameId(SBFrame frame) {
+		return Long.toHexString(frame.GetFrameID());
+	}
+
+	public static String getBankId(SBValue bank) {
+		return Long.toHexString(bank.GetID().longValue());
+	}
+
+	public static String getRegisterId(SBValue register) {
+		return Long.toHexString(register.GetID().longValue());
 	}
 
 	public static String getModuleId(SBModule module) {
 		return module.GetFileSpec().GetFilename();
+	}
+	
+	public static String getModuleSectionId(SBSection section) {
+		return section.GetName();
+	}
+
+	public static String getRegionId(SBMemoryRegionInfo region) {
+		return Long.toHexString(region.GetRegionBase().longValue());
+	}
+
+	public static String getSymbolId(SBSymbol sym) {
+		return sym.GetName();
+	}
+	
+	public static String getBreakpointId(SBBreakpoint spec) {
+		return Integer.toHexString(spec.GetID());
+	}
+
+	public static String getBreakpointLocationId(SBBreakpointLocation loc) {
+		return Long.toHexString(loc.GetAddress().GetOffset().longValue());
 	}
 
 	public SBListener getListener();
@@ -376,7 +402,7 @@ public interface DebugClient extends DebugClientReentrant {
 			BitmaskSet<ProcessDescriptionFlags> flags);
 	*/
 
-	void attachProcess(DebugServerId si, int processId, BitmaskSet<DebugAttachFlags> attachFlags);
+	void attachProcess(DebugServerId si, String processId, BitmaskSet<DebugAttachFlags> attachFlags);
 
 	void createProcess(DebugServerId si, String commandLine,
 			BitmaskSet<DebugCreateFlags> createFlags);
@@ -422,4 +448,5 @@ public interface DebugClient extends DebugClientReentrant {
 	public void addBroadcaster(Object process);
 
 	public void execute(String command);
+
 }
