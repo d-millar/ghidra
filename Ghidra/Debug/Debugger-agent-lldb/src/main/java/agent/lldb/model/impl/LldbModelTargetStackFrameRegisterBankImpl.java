@@ -16,13 +16,7 @@
 package agent.lldb.model.impl;
 
 import java.math.BigInteger;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -30,7 +24,6 @@ import SWIG.SBValue;
 import SWIG.StateType;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbReason;
-import agent.lldb.manager.LldbRegister;
 import agent.lldb.model.iface2.LldbModelTargetRegister;
 import agent.lldb.model.iface2.LldbModelTargetStackFrameRegisterBank;
 import ghidra.async.AsyncUtils;
@@ -40,7 +33,6 @@ import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 import ghidra.dbg.util.PathUtils;
-import ghidra.util.datastruct.WeakValueHashMap;
 
 @TargetObjectSchemaInfo(
 	name = "RegisterValueContainer",
@@ -64,7 +56,7 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 
 	public LldbModelTargetStackFrameRegisterBankImpl(LldbModelTargetStackFrameRegisterContainerImpl container, SBValue val) {
 		super(container.getModel(), container, keyValue(val), "StackFrameRegisterBank");
-		this.getModel().addModelObject(val, this);
+		this.getModel().addModelObject(DebugClient.getBankId(container.frame.frame, val), this);
 		this.container = container;
 		this.value = val;
 
@@ -73,6 +65,8 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 			DISPLAY_ATTRIBUTE_NAME, value.GetName(), 
 			DESCRIPTIONS_ATTRIBUTE_NAME, this
 		), "Initialized");
+		
+		requestElements(false);
 	}
 
 	/**

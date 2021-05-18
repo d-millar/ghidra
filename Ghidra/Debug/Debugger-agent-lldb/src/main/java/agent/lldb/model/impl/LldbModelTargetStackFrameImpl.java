@@ -21,6 +21,7 @@ import java.util.Map;
 
 import SWIG.SBFrame;
 import SWIG.SBThread;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.model.iface1.LldbModelTargetFocusScope;
 import agent.lldb.model.iface2.LldbModelTargetProcess;
@@ -84,7 +85,7 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 	public LldbModelTargetStackFrameImpl(LldbModelTargetStack stack, LldbModelTargetThread thread,
 			SBFrame frame) {
 		super(stack.getModel(), stack, keyFrame(frame), "StackFrame");
-		this.getModel().addModelObject(frame, this);
+		this.getModel().addModelObject(DebugClient.getFrameId(frame), this);
 		this.thread = thread;
 		this.frame = frame;
 		this.pc = getModel().getAddressSpace("ram").getAddress(-1);

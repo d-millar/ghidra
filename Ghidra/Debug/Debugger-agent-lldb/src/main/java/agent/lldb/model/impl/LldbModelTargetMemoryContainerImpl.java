@@ -49,6 +49,7 @@ public class LldbModelTargetMemoryContainerImpl extends LldbModelTargetObjectImp
 	public LldbModelTargetMemoryContainerImpl(LldbModelTargetProcess process) {
 		super(process.getModel(), process, "Memory", "MemoryContainer");
 		this.process = process;
+		requestElements(false);
 	}
 
 	@Override

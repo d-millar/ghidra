@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import SWIG.SBValue;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.LldbModelTargetStackFrameRegister;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetElementType;
@@ -53,10 +54,10 @@ public class LldbModelTargetStackFrameRegisterImpl
 	public LldbModelTargetStackFrameRegisterImpl(LldbModelTargetStackFrameRegisterBankImpl bank,
 			SBValue register) {
 		super(bank.getModel(), bank, keyRegister(register), "Register");
-		this.getModel().addModelObject(register, this);
+		this.getModel().addModelObject(DebugClient.getRegisterId(register), this);
 		this.register = register;
 		this.value = register.GetValue();
-		this.getModel().addModelObject(register, this);
+		this.getModel().addModelObject(DebugClient.getRegisterId(register), this);
 		
 		this.bitLength = (int) (register.GetByteSize() * 8);
 

@@ -21,7 +21,7 @@ public interface LldbModelTargetAvailable extends LldbModelTargetObject, TargetA
 	String PID_ATTRIBUTE_NAME = PREFIX_INVISIBLE + "pid";
 	// TODO: DESCRIPTION, TYPE, USER?
 
-	public String getPid();
+	public Long getPid();
 
 	public void setBase(Object value);
 

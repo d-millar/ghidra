@@ -81,7 +81,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 	public LldbModelTargetThreadImpl(LldbModelTargetThreadContainer threads,
 			LldbModelTargetProcess process, SBThread thread) {
 		super(threads.getModel(), threads, keyThread(thread), "Thread");
-		this.getModel().addModelObject(thread, this);
+		this.getModel().addModelObject(DebugClient.getThreadId(thread), this);
 		this.process = process;
 		this.thread = thread;
 

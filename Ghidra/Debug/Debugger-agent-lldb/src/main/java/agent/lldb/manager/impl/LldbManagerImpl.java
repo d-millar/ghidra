@@ -196,7 +196,7 @@ public class LldbManagerImpl implements LldbManager {
 				processes.put(sessionId, map);
 			}
 			String id = DebugClient.getProcessId(process);
-			if (!map.containsKey(id)) {
+			if (!map.containsKey(id) && process.IsValid()) {
 				map.put(id, process);
 				getClient().processEvent(new LldbProcessCreatedEvent(new DebugProcessInfo(process)));
 			}
