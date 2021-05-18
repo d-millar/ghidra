@@ -19,8 +19,7 @@ import java.util.concurrent.CompletableFuture;
 
 import SWIG.SBThread;
 import SWIG.StateType;
-import agent.lldb.manager.LldbEventsListenerAdapter;
-import agent.lldb.manager.LldbReason;
+import agent.lldb.manager.*;
 import agent.lldb.manager.cmd.LldbSetActiveThreadCommand;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import agent.lldb.model.iface1.LldbModelSelectableObject;
@@ -38,6 +37,7 @@ public interface LldbModelTargetThread extends //
 		LldbModelTargetAccessConditioned, //
 		LldbModelTargetExecutionStateful, //
 		LldbModelTargetSteppable, //
+		LldbStateListener, //
 		LldbEventsListenerAdapter, //
 		LldbModelSelectableObject {
 

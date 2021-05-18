@@ -66,9 +66,11 @@ public class LldbModelTargetMemoryContainerImpl extends LldbModelTargetObjectImp
 	@Override
 	public synchronized LldbModelTargetMemoryRegion getTargetMemory(SBMemoryRegionInfo region) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(DebugClient.getRegionId(region));
-		if (modelObject != null) {
-			return (LldbModelTargetMemoryRegion) modelObject;
+		TargetObject targetObject = impl.getModelObject(DebugClient.getRegionId(region));
+		if (targetObject != null) {
+			LldbModelTargetMemoryRegion targetRegion = (LldbModelTargetMemoryRegion) targetObject;
+			targetRegion.setModelObject(region);
+			return targetRegion;
 		}
 		return new LldbModelTargetMemoryRegionImpl(this, region);
 	}
@@ -249,8 +251,4 @@ public class LldbModelTargetMemoryContainerImpl extends LldbModelTargetObjectImp
 		return CompletableFuture.completedFuture(null);
 	}
 
-	@Override
-	protected void update() {
-		requestElements(true);
-	}
 }

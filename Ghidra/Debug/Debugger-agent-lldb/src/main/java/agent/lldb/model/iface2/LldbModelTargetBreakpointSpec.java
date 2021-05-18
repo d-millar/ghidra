@@ -146,7 +146,7 @@ public interface LldbModelTargetBreakpointSpec extends //
 
 	public default void updateInfo(SBBreakpoint info, String reason) {
 		synchronized (this) {
-			setBreakpointInfo(info);
+			setModelObject(info);
 		}
 		setEnabled(info.IsEnabled(), reason);
 	}

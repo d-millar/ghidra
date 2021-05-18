@@ -44,7 +44,7 @@ public class LldbModelTargetDebugContainerImpl extends LldbModelTargetObjectImpl
 		super(session.getModel(), session, "Debug", "DebugContainer");
 		this.session = session;
 
-		this.breakpoints = new LldbModelTargetBreakpointContainerImpl(this, session.session);
+		this.breakpoints = new LldbModelTargetBreakpointContainerImpl(this, session.getSession());
 
 		changeAttributes(List.of(), List.of(  //
 			breakpoints //

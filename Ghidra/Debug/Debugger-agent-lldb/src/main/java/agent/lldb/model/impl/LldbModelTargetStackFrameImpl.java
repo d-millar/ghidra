@@ -19,10 +19,10 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
-import SWIG.SBFrame;
-import SWIG.SBThread;
+import SWIG.*;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
+import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface1.LldbModelTargetFocusScope;
 import agent.lldb.model.iface2.LldbModelTargetProcess;
 import agent.lldb.model.iface2.LldbModelTargetStack;
@@ -31,6 +31,7 @@ import agent.lldb.model.iface2.LldbModelTargetStackFrameRegisterContainer;
 import agent.lldb.model.iface2.LldbModelTargetThread;
 import ghidra.dbg.target.TargetFocusScope;
 import ghidra.dbg.target.TargetObject;
+import ghidra.dbg.target.TargetExecutionStateful.TargetExecutionState;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetElementType;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
@@ -71,12 +72,11 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 
 	protected final LldbModelTargetThread thread;
 
-	public SBFrame frame;
 	protected Address pc;
 	protected String func;
 	protected String display;
 
-	private final LldbModelTargetStackFrameRegisterContainer registers;
+	private final LldbModelTargetStackFrameRegisterContainerImpl registers;
 
 	private Long frameOffset = -1L;
 	//private Long returnOffset = -1L;
@@ -84,10 +84,9 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 
 	public LldbModelTargetStackFrameImpl(LldbModelTargetStack stack, LldbModelTargetThread thread,
 			SBFrame frame) {
-		super(stack.getModel(), stack, keyFrame(frame), "StackFrame");
+		super(stack.getModel(), stack, keyFrame(frame), frame, "StackFrame");
 		this.getModel().addModelObject(DebugClient.getFrameId(frame), this);
 		this.thread = thread;
-		this.frame = frame;
 		this.pc = getModel().getAddressSpace("ram").getAddress(-1);
 
 		this.registers = new LldbModelTargetStackFrameRegisterContainerImpl(this);
@@ -111,7 +110,7 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public void threadSelected(SBThread eventThread, SBFrame eventFrame, LldbCause cause) {
-		if (eventFrame != null && eventFrame.equals(frame)) {
+		if (eventFrame != null && eventFrame.equals(getFrame())) {
 			((LldbModelTargetFocusScope) searchForSuitable(TargetFocusScope.class)).setFocus(this);
 		}
 	}
@@ -135,7 +134,6 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 		}
 		this.frameOffset = frame.GetFP().longValue();
 		this.stackOffset = frame.GetSP().longValue();
-		this.frame = frame;
 
 		changeAttributes(List.of(), List.of(
 			registers //
@@ -154,6 +152,10 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 		return thread;
 	}
 
+	public SBFrame getFrame() {
+		return (SBFrame) getModelObject();
+	}
+
 	@Override
 	public Address getPC() {
 		return pc;
@@ -164,10 +166,9 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 		return ((LldbModelTargetThreadImpl) thread).getProcess();
 	}
 
-	/*
-	public void invalidateRegisterCaches() {
-		listeners.fire.invalidateCacheRequested(this);
+	public void threadStateChangedSpecific(StateType state, LldbReason reason) {
+		setFrame(getFrame());
+		registers.threadStateChangedSpecific(state, reason);
 	}
-	*/
 
 }

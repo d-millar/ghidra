@@ -41,28 +41,28 @@ public class LldbModelTargetBreakpointLocationContainerImpl extends LldbModelTar
 		implements LldbModelTargetBreakpointLocationContainer {
 
 	protected final LldbModelTargetBreakpointSpecImpl targetBreakpoint;
-	private final SBTarget session;
 
 	public LldbModelTargetBreakpointLocationContainerImpl(LldbModelTargetBreakpointSpec targetBreakpoint, SBTarget session) {
 		super(targetBreakpoint.getModel(), targetBreakpoint, "BreakpointLocations", "BreakpointLocationContainer");
 		this.targetBreakpoint = (LldbModelTargetBreakpointSpecImpl) targetBreakpoint;
-		this.session = session;
 
 		getManager().addEventsListener(this);
 	}
 
 	public LldbModelTargetBreakpointLocation getTargetBreakpointLocation(SBBreakpointLocation loc) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(DebugClient.getBreakpointLocationId(loc));
-		if (modelObject != null) {
-			return (LldbModelTargetBreakpointLocation) modelObject;
+		TargetObject targetObject = impl.getModelObject(DebugClient.getBreakpointLocationId(loc));
+		if (targetObject != null) {
+			LldbModelTargetBreakpointLocation location = (LldbModelTargetBreakpointLocation) targetObject;
+			location.setModelObject(loc);
+			return location;
 		}
 		return new LldbModelTargetBreakpointLocationImpl(this, loc);
 	}
 
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
-		return getManager().listBreakpointLocations(targetBreakpoint.bpt).thenAccept(byNumber -> {
+		return getManager().listBreakpointLocations(targetBreakpoint.getBreakpointInfo()).thenAccept(byNumber -> {
 			List<TargetObject> specs;
 			synchronized (this) {
 				specs = byNumber.values()
@@ -75,6 +75,6 @@ public class LldbModelTargetBreakpointLocationContainerImpl extends LldbModelTar
 	}
 
 	public SBTarget getSession() {
-		return session;
+		return (SBTarget) getModelObject();
 	}
 }

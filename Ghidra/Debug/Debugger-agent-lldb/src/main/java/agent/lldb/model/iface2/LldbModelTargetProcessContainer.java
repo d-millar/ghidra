@@ -24,8 +24,6 @@ public interface LldbModelTargetProcessContainer extends //
 		LldbModelTargetEventScope, //
 		LldbEventsListenerAdapter {
 
-	public LldbModelTargetProcess getTargetProcess(String id);
-
 	public LldbModelTargetProcess getTargetProcess(SBProcess process);
 
 }

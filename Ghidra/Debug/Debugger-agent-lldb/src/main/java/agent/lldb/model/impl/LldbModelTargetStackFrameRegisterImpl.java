@@ -64,7 +64,7 @@ public class LldbModelTargetStackFrameRegisterImpl
 		changeAttributes(List.of(), Map.of( //
 			CONTAINER_ATTRIBUTE_NAME, bank, //
 			LENGTH_ATTRIBUTE_NAME, getBitLength(), //
-			DISPLAY_ATTRIBUTE_NAME, getName()+":"+value, //
+			DISPLAY_ATTRIBUTE_NAME, getDisplay(), //
 			VALUE_ATTRIBUTE_NAME, value == null ? "" : value, //
 			MODIFIED_ATTRIBUTE_NAME, false //
 		), "Initialized");
@@ -81,9 +81,16 @@ public class LldbModelTargetStackFrameRegisterImpl
 	}
 	
 	public byte [] getBytes() {
+		if (value == null) {
+			return new byte[0];
+		}
 		BigInteger val = new BigInteger(value);
 		byte[] bytes = ConversionUtils.bigIntegerToBytes((int) register.GetByteSize(), val);
 		return bytes;
+	}
+	
+	public String getDisplay() {
+		return value == null ? getName() : getName() + " : " + value;
 	}
 
 }

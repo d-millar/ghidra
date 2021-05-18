@@ -19,30 +19,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import SWIG.SBProcess;
-import SWIG.SBThread;
-import SWIG.StateType;
+import SWIG.*;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.cmd.LldbContinueCommand;
-import agent.lldb.manager.cmd.LldbListProcessesCommand;
 import agent.lldb.manager.cmd.LldbStepCommand;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import agent.lldb.model.iface1.LldbModelTargetFocusScope;
-import agent.lldb.model.iface2.LldbModelTargetDebugContainer;
-import agent.lldb.model.iface2.LldbModelTargetMemoryContainer;
-import agent.lldb.model.iface2.LldbModelTargetModuleContainer;
-import agent.lldb.model.iface2.LldbModelTargetProcess;
-import agent.lldb.model.iface2.LldbModelTargetProcessContainer;
-import agent.lldb.model.iface2.LldbModelTargetThreadContainer;
-import ghidra.dbg.target.TargetAttachable;
+import agent.lldb.model.iface2.*;
+import ghidra.dbg.target.*;
 import ghidra.dbg.target.TargetEventScope.TargetEventType;
-import ghidra.dbg.target.TargetFocusScope;
-import ghidra.dbg.target.TargetMethod;
-import ghidra.dbg.target.TargetObject;
-import ghidra.dbg.target.schema.TargetAttributeType;
-import ghidra.dbg.target.schema.TargetElementType;
-import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.target.schema.*;
 import ghidra.dbg.util.PathUtils;
 
 @TargetObjectSchemaInfo(name = "Process", elements = {
@@ -68,8 +55,6 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 		return PathUtils.makeKey(indexProcess(process));
 	}
 
-	protected final SBProcess process;
-
 	protected final LldbModelTargetMemoryContainer memory;
 	protected final LldbModelTargetThreadContainer threads;
 	// Note: not sure section info is available from the Lldbeng
@@ -78,10 +63,9 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 	private Integer base = 16;
 
 	public LldbModelTargetProcessImpl(LldbModelTargetProcessContainer processes, SBProcess process) {
-		super(processes.getModel(), processes, keyProcess(process), "Process");
+		super(processes.getModel(), processes, keyProcess(process), process, "Process");
 		this.getModel().addModelObject(DebugClient.getProcessId(process), this);
 		getManager().getClient().addBroadcaster(process);
-		this.process = process;
 
 		this.memory = new LldbModelTargetMemoryContainerImpl(this);
 		//this.sections = new LldbModelTargetProcessSectionContainerImpl(this);
@@ -109,7 +93,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 			return "[kernel]";
 		}
 
-		String pidstr = DebugClient.getProcessId(process);
+		String pidstr = DebugClient.getProcessId(getProcess());
 		if (base == 16) {
 			pidstr = "0x" + pidstr;
 		}
@@ -118,7 +102,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public void processSelected(SBProcess eventProcess, LldbCause cause) {
-		if (eventProcess.equals(process)) {
+		if (eventProcess.equals(getProcess())) {
 			((LldbModelTargetFocusScope) searchForSuitable(TargetFocusScope.class)).setFocus(this);
 		}
 	}
@@ -130,12 +114,12 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public CompletableFuture<Void> launch(List<String> args) {
-		return model.gateFuture(LldbModelImplUtils.launch(getModel(), process, args));
+		return model.gateFuture(LldbModelImplUtils.launch(getModel(), getProcess(), args));
 	}
 
 	@Override
 	public CompletableFuture<Void> resume() {
-		return getManager().execute(new LldbContinueCommand(getManager(), process));
+		return getManager().execute(new LldbContinueCommand(getManager(), getProcess()));
 		//return model.gateFuture(process.cont());
 	}
 
@@ -188,7 +172,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 	public void processStarted(SBProcess proc) {
 		if (proc != null) {
 			changeAttributes(List.of(), List.of(), Map.of( //
-				PID_ATTRIBUTE_NAME, process.GetProcessID().longValue(), //
+				PID_ATTRIBUTE_NAME, getProcess().GetProcessID().longValue(), //
 				DISPLAY_ATTRIBUTE_NAME, getDisplay()//
 			), "Started");
 		}
@@ -197,13 +181,13 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public void processExited(SBProcess proc, LldbCause cause) {
-		if (proc.equals(this.process)) {
+		if (proc.equals(this.getProcess())) {
 			changeAttributes(List.of(), List.of(), Map.of( //
 				STATE_ATTRIBUTE_NAME, TargetExecutionState.TERMINATED, //
 				EXIT_CODE_ATTRIBUTE_NAME, proc.GetExitDescription() //
 			), "Exited");
 			getListeners().fire.event(getProxy(), null, TargetEventType.PROCESS_EXITED,
-				"Process " + DebugClient.getProcessId(process) + " exited code=" + proc.GetExitDescription(),
+				"Process " + DebugClient.getProcessId(getProcess()) + " exited code=" + proc.GetExitDescription(),
 				List.of(getProxy()));
 		}
 	}
@@ -211,7 +195,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 	@Override
 	public CompletableFuture<Void> setActive() {
 		LldbManagerImpl manager = getManager();
-		return manager.setActiveProcess(process);
+		return manager.setActiveProcess(getProcess());
 	}
 
 	@Override
@@ -221,7 +205,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public SBProcess getProcess() {
-		return process;
+		return (SBProcess) getModelObject();
 	}
 
 	@Override

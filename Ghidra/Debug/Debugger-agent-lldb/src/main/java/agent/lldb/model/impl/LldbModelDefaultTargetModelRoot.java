@@ -22,12 +22,12 @@ public class LldbModelDefaultTargetModelRoot extends LldbModelTargetObjectImpl
 		implements TargetAggregate {
 
 	public LldbModelDefaultTargetModelRoot(LldbModelImpl model, String typeHint) {
-		super(model, null, null, typeHint);
+		super(model, null, null, null, typeHint);
 	}
 
 	public LldbModelDefaultTargetModelRoot(LldbModelImpl model, String typeHint,
 			TargetObjectSchema schema) {
-		super(model, null, null, typeHint, schema);
+		super(model, null, null, null, typeHint, schema);
 	}
 
 }

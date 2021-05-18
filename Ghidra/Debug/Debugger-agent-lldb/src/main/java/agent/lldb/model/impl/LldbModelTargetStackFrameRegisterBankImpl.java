@@ -24,8 +24,7 @@ import SWIG.SBValue;
 import SWIG.StateType;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbReason;
-import agent.lldb.model.iface2.LldbModelTargetRegister;
-import agent.lldb.model.iface2.LldbModelTargetStackFrameRegisterBank;
+import agent.lldb.model.iface2.*;
 import ghidra.async.AsyncUtils;
 import ghidra.dbg.error.DebuggerRegisterAccessException;
 import ghidra.dbg.target.TargetObject;
@@ -56,7 +55,7 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 
 	public LldbModelTargetStackFrameRegisterBankImpl(LldbModelTargetStackFrameRegisterContainerImpl container, SBValue val) {
 		super(container.getModel(), container, keyValue(val), "StackFrameRegisterBank");
-		this.getModel().addModelObject(DebugClient.getBankId(container.frame.frame, val), this);
+		this.getModel().addModelObject(DebugClient.getBankId(container.frame.getFrame(), val), this);
 		this.container = container;
 		this.value = val;
 
@@ -87,9 +86,11 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 	@Override
 	public LldbModelTargetRegister getTargetRegister(SBValue register) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(DebugClient.getRegisterId(register));
-		if (modelObject != null) {
-			return (LldbModelTargetRegister) modelObject;
+		TargetObject targetObject = impl.getModelObject(DebugClient.getRegisterId(register));
+		if (targetObject != null) {
+			LldbModelTargetRegister targetRegister = (LldbModelTargetRegister) targetObject;
+			targetRegister.setModelObject(register);
+			return targetRegister;
 		}
 		return new LldbModelTargetStackFrameRegisterImpl(this, register);
 	}

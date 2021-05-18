@@ -28,10 +28,7 @@ import agent.lldb.lldb.DebugModuleInfo;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface1.LldbModelTargetConfigurable;
-import agent.lldb.model.iface2.LldbModelTargetModuleContainer;
-import agent.lldb.model.iface2.LldbModelTargetProcess;
-import agent.lldb.model.iface2.LldbModelTargetProcessContainer;
-import agent.lldb.model.iface2.LldbModelTargetSession;
+import agent.lldb.model.iface2.*;
 import ghidra.async.AsyncUtils;
 import ghidra.dbg.error.DebuggerIllegalArgumentException;
 import ghidra.dbg.target.TargetConfigurable;
@@ -123,7 +120,7 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
-		return getManager().listProcesses(session.session).thenAccept(byIID -> {
+		return getManager().listProcesses(session.getSession()).thenAccept(byIID -> {
 			List<TargetObject> processes;
 			synchronized (this) {
 				processes = byIID.values()
@@ -136,21 +133,13 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 	}
 
 	@Override
-	public synchronized LldbModelTargetProcess getTargetProcess(String id) {
-		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(id);
-		if (modelObject != null) {
-			return (LldbModelTargetProcess) modelObject;
-		}
-		return new LldbModelTargetProcessImpl(this, getManager().getKnownProcesses(session.session).get(id));
-	}
-
-	@Override
 	public synchronized LldbModelTargetProcess getTargetProcess(SBProcess process) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(DebugClient.getProcessId(process));
-		if (modelObject != null) {
-			return (LldbModelTargetProcess) modelObject;
+		TargetObject targetObject = impl.getModelObject(DebugClient.getProcessId(process));
+		if (targetObject != null) {
+			LldbModelTargetProcess targetProcess = (LldbModelTargetProcess) targetObject;
+			targetProcess.setModelObject(process);
+			return targetProcess;
 		}
 		return new LldbModelTargetProcessImpl(this, process);
 	}

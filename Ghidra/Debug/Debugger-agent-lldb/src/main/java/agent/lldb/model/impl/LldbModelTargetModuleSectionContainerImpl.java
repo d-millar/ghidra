@@ -60,9 +60,11 @@ public class LldbModelTargetModuleSectionContainerImpl extends LldbModelTargetOb
 
 	protected synchronized LldbModelTargetModuleSection getModuleSection(SBSection section) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(DebugClient.getModuleSectionId(module.getModule(), section));
-		if (modelObject != null) {
-			return (LldbModelTargetModuleSection) modelObject;
+		TargetObject targetObject = impl.getModelObject(DebugClient.getModuleSectionId(module.getModule(), section));
+		if (targetObject != null) {
+			LldbModelTargetModuleSection targetSection = (LldbModelTargetModuleSection) targetObject;
+			targetSection.setModelObject(section);
+			return targetSection;
 		}
 		return new LldbModelTargetModuleSectionImpl(this, section);
 	}

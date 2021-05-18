@@ -51,7 +51,7 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 
 	public LldbModelTargetThreadContainerImpl(LldbModelTargetProcessImpl process) {
 		super(process.getModel(), process, "Threads", "ThreadContainer");
-		this.process = process.process;
+		this.process = process.getProcess();
 		this.changeAttributes(List.of(), Map.of(BASE_ATTRIBUTE_NAME, 16), "Initialized");
 
 		getManager().addEventsListener(this);
