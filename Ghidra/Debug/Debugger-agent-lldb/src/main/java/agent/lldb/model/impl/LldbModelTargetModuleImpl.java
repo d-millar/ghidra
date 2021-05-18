@@ -29,8 +29,7 @@ import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetElementType;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 import ghidra.dbg.util.PathUtils;
-import ghidra.program.model.address.Address;
-import ghidra.program.model.address.AddressSpace;
+import ghidra.program.model.address.*;
 
 @TargetObjectSchemaInfo(name = "Module", elements = {
 	@TargetElementType(type = Void.class) 
@@ -68,18 +67,7 @@ public class LldbModelTargetModuleImpl extends LldbModelTargetObjectImpl
 
 		//this.symbols = new LldbModelTargetSymbolContainerImpl(this);
 		this.sections = new LldbModelTargetModuleSectionContainerImpl(this);
-		sections.requestElements(true).thenAccept(__ -> {
-			Map<String, TargetObject> elements = sections.getCachedElements();
-			LldbModelTargetModuleSectionImpl section = (LldbModelTargetModuleSectionImpl) elements.get("__TEXT");
-			if (section != null) {
-				changeAttributes(List.of(), List.of(), Map.of(					
-					"BaseAddress", section.getStart() //
-				), "Initialized");
-			}
-		});
-
-		AddressSpace space = getModel().getAddressSpace("ram");
-		
+	
 		SBFileSpec fspec = module.GetFileSpec();
 		changeAttributes(List.of(), List.of( //
 			sections //
@@ -110,6 +98,15 @@ public class LldbModelTargetModuleImpl extends LldbModelTargetObjectImpl
 
 	public SBTarget getSession() {
 		return session;
+	}
+
+	@Override
+	public void setRange(AddressRangeImpl range) {
+		changeAttributes(List.of(), List.of(), Map.of( //
+			RANGE_ATTRIBUTE_NAME, range, //
+			"BaseAddress", range.getMinAddress(), //
+			"Len", Long.toHexString(range.getLength()) //
+		), "Initialized");
 	}
 
 }

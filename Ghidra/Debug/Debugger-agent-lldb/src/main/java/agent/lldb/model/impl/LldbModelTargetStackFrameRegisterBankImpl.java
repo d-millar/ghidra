@@ -66,7 +66,6 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 		this.container = container;
 		this.value = val;
 
-		requestElements(false);
 		changeAttributes(List.of(), List.of(),
 		Map.of(
 			DISPLAY_ATTRIBUTE_NAME, value.GetName(), 

@@ -66,4 +66,6 @@ public interface LldbModelTargetModule extends LldbModelTargetObject, TargetModu
 		});
 	}
 
+	void setRange(AddressRangeImpl addressRangeImpl);
+
 }
