@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 import SWIG.SBProcess;
 import SWIG.SBThread;
 import SWIG.StateType;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface1.LldbModelSelectableObject;
@@ -131,7 +132,7 @@ public class LldbModelTargetRootImpl extends LldbModelDefaultTargetModelRoot
 	public void threadStateChanged(SBThread thread, StateType state, LldbCause cause,
 			LldbReason reason) {
 		LldbModelTargetThread targetThread =
-			(LldbModelTargetThread) getModel().getModelObject(thread);
+			(LldbModelTargetThread) getModel().getModelObject(DebugClient.getThreadId(thread));
 		changeAttributes(List.of(), List.of(), Map.of( //
 			TargetEventScope.EVENT_OBJECT_ATTRIBUTE_NAME, targetThread //
 		), reason.desc());

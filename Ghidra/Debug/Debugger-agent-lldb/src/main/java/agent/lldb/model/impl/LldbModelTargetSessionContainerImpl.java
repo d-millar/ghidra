@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import SWIG.SBTarget;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.model.iface2.LldbModelTargetRoot;
 import agent.lldb.model.iface2.LldbModelTargetSession;
@@ -63,7 +64,7 @@ public class LldbModelTargetSessionContainerImpl extends LldbModelTargetObjectIm
 	@Override
 	public synchronized LldbModelTargetSession getTargetSession(SBTarget session) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(session);
+		TargetObject modelObject = impl.getModelObject(DebugClient.getSessionId(session));
 		if (modelObject != null) {
 			return (LldbModelTargetSession) modelObject;
 		}

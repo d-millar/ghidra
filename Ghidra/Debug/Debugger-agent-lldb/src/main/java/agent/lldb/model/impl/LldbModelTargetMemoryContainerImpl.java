@@ -24,6 +24,7 @@ import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 
 import SWIG.SBMemoryRegionInfo;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.cmd.*;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import agent.lldb.model.iface2.*;
@@ -64,7 +65,7 @@ public class LldbModelTargetMemoryContainerImpl extends LldbModelTargetObjectImp
 	@Override
 	public synchronized LldbModelTargetMemoryRegion getTargetMemory(SBMemoryRegionInfo region) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(region);
+		TargetObject modelObject = impl.getModelObject(DebugClient.getRegionId(region));
 		if (modelObject != null) {
 			return (LldbModelTargetMemoryRegion) modelObject;
 		}

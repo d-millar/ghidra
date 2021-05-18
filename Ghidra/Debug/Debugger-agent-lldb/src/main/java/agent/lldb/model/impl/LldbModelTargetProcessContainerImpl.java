@@ -136,7 +136,7 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 	}
 
 	@Override
-	public synchronized LldbModelTargetProcess getTargetProcess(Integer id) {
+	public synchronized LldbModelTargetProcess getTargetProcess(String id) {
 		LldbModelImpl impl = (LldbModelImpl) model;
 		TargetObject modelObject = impl.getModelObject(id);
 		if (modelObject != null) {
@@ -148,7 +148,7 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 	@Override
 	public synchronized LldbModelTargetProcess getTargetProcess(SBProcess process) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(process);
+		TargetObject modelObject = impl.getModelObject(DebugClient.getProcessId(process));
 		if (modelObject != null) {
 			return (LldbModelTargetProcess) modelObject;
 		}

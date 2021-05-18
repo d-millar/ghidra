@@ -160,15 +160,18 @@ public class LldbModelImpl extends AbstractLldbModel implements DebuggerObjectMo
 
 	@Override
 	public void addModelObject(Object object, TargetObject targetObject) {
+		assert(object instanceof String);
 		objectMap.put(object, targetObject);
 	}
 
 	@Override
 	public TargetObject getModelObject(Object object) {
+		assert(object instanceof String);
 		return objectMap.get(object);
 	}
 
 	public void deleteModelObject(Object object) {
+		assert(object instanceof String);
 		objectMap.remove(object);
 	}
 

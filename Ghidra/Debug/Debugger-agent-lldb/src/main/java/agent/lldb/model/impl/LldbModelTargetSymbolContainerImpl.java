@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import SWIG.SBSymbol;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.LldbModelTargetSymbolContainer;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.TargetAttributeType;
@@ -63,7 +64,7 @@ public class LldbModelTargetSymbolContainerImpl extends LldbModelTargetObjectImp
 	@Override
 	public synchronized LldbModelTargetSymbolImpl getTargetSymbol(SBSymbol symbol) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(symbol);
+		TargetObject modelObject = impl.getModelObject(DebugClient.getSymbolId(symbol));
 		if (modelObject != null) {
 			return (LldbModelTargetSymbolImpl) modelObject;
 		}
