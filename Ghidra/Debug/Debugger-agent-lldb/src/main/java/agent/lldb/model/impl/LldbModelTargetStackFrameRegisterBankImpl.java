@@ -63,6 +63,7 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 
 	public LldbModelTargetStackFrameRegisterBankImpl(LldbModelTargetStackFrameRegisterContainerImpl container, SBValue val) {
 		super(container.getModel(), container, keyValue(val), "StackFrameRegisterBank");
+		this.getModel().addModelObject(val, this);
 		this.container = container;
 		this.value = val;
 
