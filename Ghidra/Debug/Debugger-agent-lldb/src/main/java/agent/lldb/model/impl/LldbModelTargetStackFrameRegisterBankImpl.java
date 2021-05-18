@@ -129,7 +129,7 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 					throw new DebuggerRegisterAccessException("No such register: " + regname);
 				}
 				BigInteger val = new BigInteger(1, ent.getValue());
-				reg.register.SetValueFromCString(val.toString());
+				reg.getRegister().SetValueFromCString(val.toString());
 			}
 			return AsyncUtils.NIL;
 		});
