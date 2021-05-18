@@ -140,7 +140,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * @param id the dbgeng-asigned thread ID
 	 * @return a handle to the thread, if it exists
 	 */
-	SBThread getThread(SBProcess process, Integer id);
+	SBThread getThread(SBProcess process, String id);
 
 	/**
 	 * Get an process by its dbgeng-assigned ID
@@ -151,7 +151,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * @param id the process ID
 	 * @return a handle to the process, if it exists
 	 */
-	SBProcess getProcess(SBTarget session, Integer id);
+	SBProcess getProcess(SBTarget session, String id);
 
 	/**
 	 * Get an session by its dbgeng-assigned ID
@@ -162,7 +162,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * @param id the process ID
 	 * @return a handle to the process, if it exists
 	 */
-	SBTarget getSession(Integer id);
+	SBTarget getSession(String id);
 
 	/**
 	 * Get an session by its dbgeng-assigned ID
@@ -183,7 +183,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a map of dbgeng-assigned thread IDs to corresponding thread handles
 	 */
-	Map<Integer, SBThread> getKnownThreads(SBProcess process);
+	Map<String, SBThread> getKnownThreads(SBProcess process);
 
 	/**
 	 * Get all processes known to the manager
@@ -193,7 +193,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a map of process IDs to corresponding process handles
 	 */
-	Map<Integer, SBProcess> getKnownProcesses(SBTarget session);
+	Map<String, SBProcess> getKnownProcesses(SBTarget session);
 
 	/**
 	 * Get all sessions known to the manager
@@ -203,7 +203,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a map of session IDs to corresponding session handles
 	 */
-	Map<Integer, SBTarget> getKnownSessions();
+	Map<String, SBTarget> getKnownSessions();
 
 	/**
 	 * Get all sessions known to the manager
@@ -223,7 +223,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a map of dbgeng-assigned breakpoint IDs to corresponding breakpoint information
 	 */
-	Map<Integer, SBBreakpoint> getKnownBreakpoints(SBTarget session);
+	Map<String, SBBreakpoint> getKnownBreakpoints(SBTarget session);
 
 	/**
 	 * Send an interrupt to dbgeng regardless of other queued commands
@@ -303,49 +303,49 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a future that completes with a map of process IDs to process handles
 	 */
-	CompletableFuture<Map<Integer, SBThread>> listThreads(SBProcess process);
+	CompletableFuture<Map<String, SBThread>> listThreads(SBProcess process);
 
 	/**
 	 * List dbgeng's processes
 	 * 
 	 * @return a future that completes with a map of process IDs to process handles
 	 */
-	CompletableFuture<Map<Integer, SBProcess>> listProcesses(SBTarget session);
+	CompletableFuture<Map<String, SBProcess>> listProcesses(SBTarget session);
 
 	/**
 	 * List the available processes on target
 	 * 
 	 * @return a future that completes with a list of PIDs
 	 */
-	CompletableFuture<List<Pair<Integer, String>>> listAvailableProcesses();
+	CompletableFuture<List<Pair<String, String>>> listAvailableProcesses();
 
 	/**
 	 * List dbgeng's sessions
 	 * 
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
-	CompletableFuture<Map<Integer, SBTarget>> listSessions();
+	CompletableFuture<Map<String, SBTarget>> listSessions();
 
 	/**
 	 * List dbgeng's stack frames
 	 * 
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
-	CompletableFuture<Map<Integer, SBFrame>> listStackFrames(SBThread thread);
+	CompletableFuture<Map<String, SBFrame>> listStackFrames(SBThread thread);
 
 	/**
 	 * List dbgeng's stack frames
 	 * 
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
-	CompletableFuture<Map<Integer, SBValue>> listStackFrameRegisterBanks(SBFrame frame);
+	CompletableFuture<Map<String, SBValue>> listStackFrameRegisterBanks(SBFrame frame);
 
 	/**
 	 * List dbgeng's stack frames
 	 * 
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
-	CompletableFuture<Map<Integer, SBValue>> listStackFrameRegisters(SBValue bank);
+	CompletableFuture<Map<String, SBValue>> listStackFrameRegisters(SBValue bank);
 
 	/**
 	 * List dbgeng's stack frames
@@ -359,14 +359,14 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
-	public CompletableFuture<Map<Integer, SBSection>> listModuleSections(SBModule module);
+	public CompletableFuture<Map<String, SBSection>> listModuleSections(SBModule module);
 	
 	/**
 	 * List dbgeng's stack frames
 	 * 
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
-	public CompletableFuture<Map<Integer, SBSymbol>> listModuleSymbols(SBModule module);
+	public CompletableFuture<Map<String, SBSymbol>> listModuleSymbols(SBModule module);
 		
 	/**
 	 * List dbgeng's stack frames
@@ -380,13 +380,13 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a future that completes with a list of information for all breakpoints
 	 */
-	CompletableFuture<Map<Integer, SBBreakpoint>> listBreakpoints(SBTarget session);
+	CompletableFuture<Map<String, SBBreakpoint>> listBreakpoints(SBTarget session);
 	/**
 	 * List information for all breakpoints
 	 * 
 	 * @return a future that completes with a list of information for all breakpoints
 	 */
-	CompletableFuture<Map<Integer, SBBreakpointLocation>> listBreakpointLocations(SBBreakpoint spec);
+	CompletableFuture<Map<String, SBBreakpointLocation>> listBreakpointLocations(SBBreakpoint spec);
 
 	/**
 	 * Disable the given breakpoints

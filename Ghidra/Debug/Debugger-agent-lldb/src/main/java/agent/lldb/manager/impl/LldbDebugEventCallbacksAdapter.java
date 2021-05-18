@@ -58,7 +58,7 @@ public class LldbDebugEventCallbacksAdapter extends DebugEventCallbacksAdapter {
 
 	@Override
 	public DebugStatus createThread(DebugThreadInfo threadInfo) {
-		Msg.info(this, "***Thread created: " + Integer.toHexString(threadInfo.id));
+		Msg.info(this, "***Thread created: " + threadInfo.id);
 		return checkInterrupt(manager.processEvent(new LldbThreadCreatedEvent(threadInfo)));
 	}
 
@@ -70,7 +70,7 @@ public class LldbDebugEventCallbacksAdapter extends DebugEventCallbacksAdapter {
 
 	@Override
 	public DebugStatus createProcess(DebugProcessInfo processInfo) {
-		Msg.info(this, "***Process created: " + Integer.toHexString(processInfo.id));
+		Msg.info(this, "***Process created: " + processInfo.id);
 		return checkInterrupt(manager.processEvent(new LldbProcessCreatedEvent(processInfo)));
 	}
 
@@ -82,7 +82,7 @@ public class LldbDebugEventCallbacksAdapter extends DebugEventCallbacksAdapter {
 
 	@Override
 	public DebugStatus createSession(DebugSessionInfo sessionInfo) {
-		Msg.info(this, "***Session created: " + Integer.toHexString(sessionInfo.id));
+		Msg.info(this, "***Session created: " + sessionInfo.id);
 		return checkInterrupt(manager.processEvent(new LldbSessionCreatedEvent(sessionInfo)));
 	}
 

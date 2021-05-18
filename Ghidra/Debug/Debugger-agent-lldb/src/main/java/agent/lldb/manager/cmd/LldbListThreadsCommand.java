@@ -26,10 +26,10 @@ import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import ghidra.util.Msg;
 
-public class LldbListThreadsCommand extends AbstractLldbCommand<Map<Integer, SBThread>> {
+public class LldbListThreadsCommand extends AbstractLldbCommand<Map<String, SBThread>> {
 
 	protected final SBProcess process;
-	private Map<Integer, SBThread> updatedThreadIds = new HashMap<>();
+	private Map<String, SBThread> updatedThreadIds = new HashMap<>();
 
 	public LldbListThreadsCommand(LldbManagerImpl manager, SBProcess process) {
 		super(manager);
@@ -37,20 +37,20 @@ public class LldbListThreadsCommand extends AbstractLldbCommand<Map<Integer, SBT
 	}
 
 	@Override
-	public Map<Integer, SBThread> complete(LldbPendingCommand<?> pending) {
-		Map<Integer, SBThread> threads = manager.getKnownThreads(process);
-		Set<Integer> cur = threads.keySet();
-		for (Integer id : updatedThreadIds.keySet()) {
+	public Map<String, SBThread> complete(LldbPendingCommand<?> pending) {
+		Map<String, SBThread> threads = manager.getKnownThreads(process);
+		Set<String> cur = threads.keySet();
+		for (String id : updatedThreadIds.keySet()) {
 			if (cur.contains(id)) {
 				continue; // Do nothing, we're in sync
 			}
 			manager.addThreadIfAbsent(process, updatedThreadIds.get(id));
 		}
-		for (Integer id : new ArrayList<>(cur)) {
+		for (String id : new ArrayList<>(cur)) {
 			if (updatedThreadIds.containsKey(id)) {
 				continue; // Do nothing, we're in sync
 			}
-			manager.removeThread(process, id);
+			manager.removeThread(DebugClient.getProcessId(process), id);
 		}
 		return manager.getKnownThreads(process);
 	}

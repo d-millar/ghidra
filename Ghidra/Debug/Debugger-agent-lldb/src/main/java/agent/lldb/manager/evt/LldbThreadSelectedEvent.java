@@ -23,8 +23,8 @@ import agent.lldb.lldb.DebugClient;
 /**
  * The event corresponding with "{@code =thread-selected}"
  */
-public class LldbThreadSelectedEvent extends AbstractLldbEvent<Integer> {
-	private final Integer id;
+public class LldbThreadSelectedEvent extends AbstractLldbEvent<String> {
+	private final String id;
 	private StateType state;
 	private SBThread thread;
 	private SBFrame frame;
@@ -48,7 +48,7 @@ public class LldbThreadSelectedEvent extends AbstractLldbEvent<Integer> {
 	 * 
 	 * @return the thread ID
 	 */
-	public Integer getThreadId() {
+	public String getThreadId() {
 		return id;
 	}
 

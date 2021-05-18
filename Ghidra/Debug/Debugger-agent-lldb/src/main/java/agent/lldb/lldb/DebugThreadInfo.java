@@ -27,7 +27,7 @@ import SWIG.SBThread;
 public class DebugThreadInfo {
 	
 	public SBThread thread;
-	public Integer id;
+	public String id;
 
 	public DebugThreadInfo(SBThread thread) {
 		this.thread = thread;
@@ -35,7 +35,7 @@ public class DebugThreadInfo {
 	}
 
 	public String toString() {
-		return Integer.toHexString(id);
+		return id;
 	}
 
 }

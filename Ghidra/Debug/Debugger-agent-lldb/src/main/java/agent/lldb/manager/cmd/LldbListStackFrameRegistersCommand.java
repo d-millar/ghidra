@@ -20,11 +20,12 @@ import java.util.Map;
 
 import SWIG.DynamicValueType;
 import SWIG.SBValue;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
-public class LldbListStackFrameRegistersCommand extends AbstractLldbCommand<Map<Integer, SBValue>> {
+public class LldbListStackFrameRegistersCommand extends AbstractLldbCommand<Map<String, SBValue>> {
 	protected final SBValue bank;
-	private Map<Integer, SBValue> result;
+	private Map<String, SBValue> result;
 
 	public LldbListStackFrameRegistersCommand(LldbManagerImpl manager, SBValue bank) {
 		super(manager);
@@ -32,7 +33,7 @@ public class LldbListStackFrameRegistersCommand extends AbstractLldbCommand<Map<
 	}
 
 	@Override
-	public Map<Integer, SBValue> complete(LldbPendingCommand<?> pending) {
+	public Map<String, SBValue> complete(LldbPendingCommand<?> pending) {
 		return result;
 	}
 
@@ -42,7 +43,7 @@ public class LldbListStackFrameRegistersCommand extends AbstractLldbCommand<Map<
 		long n = bank.GetNumChildren();
 		for (int i = 0; i < n; i++) {
 			SBValue child = bank.GetChildAtIndex(i, DynamicValueType.eDynamicCanRunTarget, true);
-			result.put(i, child);
+			result.put(DebugClient.getRegisterId(child), child);
 		}
 	}
 }

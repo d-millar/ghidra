@@ -22,16 +22,17 @@ import java.util.Set;
 
 import SWIG.SBBreakpoint;
 import SWIG.SBTarget;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 
 /**
  * Implementation of {@link LldbProcess#listBreakpoints()}
  */
-public class LldbListBreakpointsCommand extends AbstractLldbCommand<Map<Integer, SBBreakpoint>> {
+public class LldbListBreakpointsCommand extends AbstractLldbCommand<Map<String, SBBreakpoint>> {
 
 	protected final SBTarget session;
-	private Map<Integer, SBBreakpoint> updatedBreakpoints = new HashMap<>();
+	private Map<String, SBBreakpoint> updatedBreakpoints = new HashMap<>();
 
 	public LldbListBreakpointsCommand(LldbManagerImpl manager, SBTarget session) {
 		super(manager);
@@ -39,16 +40,16 @@ public class LldbListBreakpointsCommand extends AbstractLldbCommand<Map<Integer,
 	}
 
 	@Override
-	public Map<Integer, SBBreakpoint> complete(LldbPendingCommand<?> pending) {
-		Map<Integer, SBBreakpoint> breakpoints = manager.getKnownBreakpoints(session);
-		Set<Integer> cur = breakpoints.keySet();
-		for (Integer id : updatedBreakpoints.keySet()) {
+	public Map<String, SBBreakpoint> complete(LldbPendingCommand<?> pending) {
+		Map<String, SBBreakpoint> breakpoints = manager.getKnownBreakpoints(session);
+		Set<String> cur = breakpoints.keySet();
+		for (String id : updatedBreakpoints.keySet()) {
 			if (cur.contains(id)) {
 				continue; // Do nothing, we're in sync
 			}
 			manager.addBreakpointIfAbsent(session, updatedBreakpoints.get(id));
 		}
-		for (Integer id : new ArrayList<>(cur)) {
+		for (String id : new ArrayList<>(cur)) {
 			if (updatedBreakpoints.containsKey(id)) {
 				continue; // Do nothing, we're in sync
 			}
@@ -63,7 +64,7 @@ public class LldbListBreakpointsCommand extends AbstractLldbCommand<Map<Integer,
 		long n = session.GetNumBreakpoints();
 		for (int i = 0; i < n; i++) {
 			SBBreakpoint bpt = session.GetBreakpointAtIndex(i);
-			updatedBreakpoints.put(bpt.GetID(), bpt);
+			updatedBreakpoints.put(DebugClient.getBreakpointId(bpt), bpt);
 		}
 	}
 }

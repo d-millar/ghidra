@@ -27,7 +27,7 @@ import SWIG.SBProcess;
 public class DebugProcessInfo {
 
 	public SBProcess process;
-	public Integer id;
+	public String id;
 
 	public DebugProcessInfo(SBProcess process) {
 		this.process = process;
@@ -35,6 +35,6 @@ public class DebugProcessInfo {
 	}
 
 	public String toString() {
-		return Integer.toHexString(id);
+		return id;
 	}
 }

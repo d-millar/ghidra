@@ -21,8 +21,8 @@ import agent.lldb.lldb.DebugClient;
 /**
  * The event corresponding with "{@code =thread-selected}"
  */
-public class LldbSessionSelectedEvent extends AbstractLldbEvent<Integer> {
-	private final Integer id;
+public class LldbSessionSelectedEvent extends AbstractLldbEvent<String> {
+	private final String id;
 	private SBTarget session;
 
 	/**
@@ -41,7 +41,7 @@ public class LldbSessionSelectedEvent extends AbstractLldbEvent<Integer> {
 	 * 
 	 * @return the session ID
 	 */
-	public Integer getSessionId() {
+	public String getSessionId() {
 		return id;
 	}
 

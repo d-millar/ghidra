@@ -31,7 +31,7 @@ public interface LldbEventsListenerAdapter extends LldbEventsListener {
 	}
 
 	@Override
-	public default void sessionRemoved(Integer sessionId, LldbCause cause) {
+	public default void sessionRemoved(String sessionId, LldbCause cause) {
 		// Extension point
 	}
 
@@ -46,7 +46,7 @@ public interface LldbEventsListenerAdapter extends LldbEventsListener {
 	}
 
 	@Override
-	public default void processRemoved(Integer processId, LldbCause cause) {
+	public default void processRemoved(String processId, LldbCause cause) {
 		// Extension point
 	}
 
@@ -77,7 +77,7 @@ public interface LldbEventsListenerAdapter extends LldbEventsListener {
 	}
 
 	@Override
-	public default void threadExited(Integer threadId, SBProcess process, LldbCause cause) {
+	public default void threadExited(String threadId, SBProcess process, LldbCause cause) {
 		// Extension point
 
 	}

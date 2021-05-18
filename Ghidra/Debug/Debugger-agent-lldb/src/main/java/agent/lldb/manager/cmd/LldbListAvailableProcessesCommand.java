@@ -23,7 +23,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 public class LldbListAvailableProcessesCommand
-		extends AbstractLldbCommand<List<Pair<Integer, String>>> {
+		extends AbstractLldbCommand<List<Pair<String, String>>> {
 
 	//private Snapshot snap;
 
@@ -32,8 +32,8 @@ public class LldbListAvailableProcessesCommand
 	}
 
 	@Override
-	public List<Pair<Integer, String>> complete(LldbPendingCommand<?> pending) {
-		List<Pair<Integer, String>> result = new ArrayList<>();
+	public List<Pair<String, String>> complete(LldbPendingCommand<?> pending) {
+		List<Pair<String, String>> result = new ArrayList<>();
 		/*
 		for (PROCESSENTRY32W proc : snap.getProcesses()) {
 			int pid = proc.th32ProcessID.intValue();

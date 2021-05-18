@@ -69,12 +69,8 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 
 	// NB: This should almost certainly always be implemented by the root of the object tree
 
-	protected static String indexSession(Integer id) {
-		return PathUtils.makeIndex(id);
-	}
-
 	protected static String indexSession(SBTarget session) {
-		return indexSession(DebugClient.getSessionId(session));
+		return DebugClient.getSessionId(session);
 	}
 
 	protected static String keySession(SBTarget session) {
@@ -93,7 +89,7 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 	public LldbModelTargetSessionImpl(LldbModelTargetSessionContainerImpl sessions,
 			SBTarget session) {
 		super(sessions.getModel(), sessions, keySession(session), "Session");
-		this.getModel().addModelObject(session, this);
+		this.getModel().addModelObject(DebugClient.getSessionId(session), this);
 		getManager().getClient().addBroadcaster(session);
 		this.session = session;
 

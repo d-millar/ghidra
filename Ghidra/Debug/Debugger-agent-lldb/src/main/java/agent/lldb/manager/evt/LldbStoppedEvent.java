@@ -22,8 +22,8 @@ import SWIG.StateType;
 /**
  * The event corresponding with "{@code *stopped}"
  */
-public class LldbStoppedEvent extends AbstractLldbEvent<Integer> {
-	private final Integer id;
+public class LldbStoppedEvent extends AbstractLldbEvent<String> {
+	private final String id;
 
 	/**
 	 * Construct a new event, parsing the tail for information
@@ -32,7 +32,7 @@ public class LldbStoppedEvent extends AbstractLldbEvent<Integer> {
 	 * 
 	 * @param id the event info
 	 */
-	public LldbStoppedEvent(Integer id) {
+	public LldbStoppedEvent(String id) {
 		super(id);
 		this.id = id;
 	}
@@ -42,7 +42,7 @@ public class LldbStoppedEvent extends AbstractLldbEvent<Integer> {
 	 * 
 	 * @return the thread ID
 	 */
-	public Integer getThreadId() {
+	public String getThreadId() {
 		return id;
 	}
 

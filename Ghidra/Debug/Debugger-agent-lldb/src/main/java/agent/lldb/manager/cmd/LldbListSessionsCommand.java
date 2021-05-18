@@ -28,15 +28,15 @@ import ghidra.util.Msg;
 /**
  * Implementation of {@link DbgManager#listSessions()}
  */
-public class LldbListSessionsCommand extends AbstractLldbCommand<Map<Integer, SBTarget>> {
-	private List<Integer> updatedSessionIds = new ArrayList<>();
+public class LldbListSessionsCommand extends AbstractLldbCommand<Map<String, SBTarget>> {
+	private List<String> updatedSessionIds = new ArrayList<>();
 
 	public LldbListSessionsCommand(LldbManagerImpl manager) {
 		super(manager);
 	}
 
 	@Override
-	public Map<Integer, SBTarget> complete(LldbPendingCommand<?> pending) {
+	public Map<String, SBTarget> complete(LldbPendingCommand<?> pending) {
 		return manager.getKnownSessions();
 		/*
 		Set<Integer> cur = allSessions.keySet();

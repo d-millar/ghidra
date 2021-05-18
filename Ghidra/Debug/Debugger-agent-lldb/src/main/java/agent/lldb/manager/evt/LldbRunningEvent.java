@@ -20,8 +20,8 @@ import SWIG.StateType;
 /**
  * The event corresponding with "{@code *running}"
  */
-public class LldbRunningEvent extends AbstractLldbEvent<Integer> {
-	private final Integer id;
+public class LldbRunningEvent extends AbstractLldbEvent<String> {
+	private final String id;
 
 	/**
 	 * Construct a new event, parsing the tail for information
@@ -30,7 +30,7 @@ public class LldbRunningEvent extends AbstractLldbEvent<Integer> {
 	 * 
 	 * @param id the event info
 	 */
-	public LldbRunningEvent(Integer id) {
+	public LldbRunningEvent(String id) {
 		super(id);
 		this.id = id;
 	}
@@ -40,7 +40,7 @@ public class LldbRunningEvent extends AbstractLldbEvent<Integer> {
 	 * 
 	 * @return the thread ID
 	 */
-	public Integer getThreadId() {
+	public String getThreadId() {
 		return id;
 	}
 

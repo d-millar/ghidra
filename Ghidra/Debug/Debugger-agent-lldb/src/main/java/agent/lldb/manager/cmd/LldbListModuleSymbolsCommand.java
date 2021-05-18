@@ -20,11 +20,12 @@ import java.util.Map;
 
 import SWIG.SBModule;
 import SWIG.SBSymbol;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
-public class LldbListModuleSymbolsCommand extends AbstractLldbCommand<Map<Integer, SBSymbol>> {
+public class LldbListModuleSymbolsCommand extends AbstractLldbCommand<Map<String, SBSymbol>> {
 	protected final SBModule module;
-	private Map<Integer, SBSymbol> result;
+	private Map<String, SBSymbol> result;
 
 	public LldbListModuleSymbolsCommand(LldbManagerImpl manager, SBModule module) {
 		super(manager);
@@ -32,7 +33,7 @@ public class LldbListModuleSymbolsCommand extends AbstractLldbCommand<Map<Intege
 	}
 
 	@Override
-	public Map<Integer, SBSymbol> complete(LldbPendingCommand<?> pending) {
+	public Map<String, SBSymbol> complete(LldbPendingCommand<?> pending) {
 		return result;
 	}
 
@@ -41,7 +42,8 @@ public class LldbListModuleSymbolsCommand extends AbstractLldbCommand<Map<Intege
 		result = new HashMap<>();
 		long n = module.GetNumSymbols();
 		for (int i = 0; i < n; i++) {
-			result.put(i, module.GetSymbolAtIndex(i));
+			SBSymbol sym = module.GetSymbolAtIndex(i);
+			result.put(DebugClient.getSymbolId(sym), sym);
 		}
 	}
 }

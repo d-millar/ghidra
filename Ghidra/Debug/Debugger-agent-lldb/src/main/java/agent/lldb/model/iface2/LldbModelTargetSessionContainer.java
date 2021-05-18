@@ -28,7 +28,7 @@ public interface LldbModelTargetSessionContainer
 	}
 
 	@Override
-	public void sessionRemoved(Integer sessionId, LldbCause cause);
+	public void sessionRemoved(String sessionId, LldbCause cause);
 
 	public LldbModelTargetSession getTargetSession(SBTarget session);
 

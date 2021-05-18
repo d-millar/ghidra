@@ -105,7 +105,7 @@ public class DebugClientImpl implements DebugClient {
 	}
 
 	@Override
-	public void attachProcess(DebugServerId si, int processId, BitmaskSet<DebugAttachFlags> attachFlags) {
+	public void attachProcess(DebugServerId si, String processId, BitmaskSet<DebugAttachFlags> attachFlags) {
 		// TODO Auto-generated method stub
 		
 	}

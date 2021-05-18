@@ -63,7 +63,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 	}
 
 	protected static String indexThread(SBThread thread) {
-		return indexThread(DebugClient.getThreadId(thread));
+		return DebugClient.getThreadId(thread);
 	}
 
 	protected static String keyThread(SBThread thread) {
@@ -107,10 +107,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 		if (getManager().isKernelMode()) {
 			return "[PR" +  DebugClient.getThreadId(thread) + "]";
 		}
-		String tidstr = Long.toString(DebugClient.getThreadId(thread), base);
-		if (base == 16) {
-			tidstr = "0x" + tidstr;
-		}
+		String tidstr = DebugClient.getThreadId(thread);
 		return "[" + tidstr + "]";
 	}
 

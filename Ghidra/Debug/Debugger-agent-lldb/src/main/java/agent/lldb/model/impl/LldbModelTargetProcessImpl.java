@@ -60,12 +60,8 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 	public static final TargetAttachKindSet SUPPORTED_KINDS = TargetAttachKindSet.of( //
 		TargetAttachKind.BY_OBJECT_REF, TargetAttachKind.BY_ID);
 
-	protected static String indexProcess(Integer id) {
-		return PathUtils.makeIndex(id);
-	}
-
 	protected static String indexProcess(SBProcess process) {
-		return indexProcess(DebugClient.getProcessId(process));
+		return DebugClient.getProcessId(process);
 	}
 
 	protected static String keyProcess(SBProcess process) {
@@ -113,7 +109,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 			return "[kernel]";
 		}
 
-		String pidstr = Integer.toString(DebugClient.getProcessId(process), base);
+		String pidstr = DebugClient.getProcessId(process);
 		if (base == 16) {
 			pidstr = "0x" + pidstr;
 		}

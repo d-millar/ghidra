@@ -40,7 +40,7 @@ public interface LldbEventsListener {
 	 * @param sessionId the ID of the now-defunct session
 	 * @param cause the cause of this event
 	 */
-	void sessionRemoved(Integer sessionId, LldbCause cause);
+	void sessionRemoved(String sessionId, LldbCause cause);
 
 	/**
 	 * A different session has been selected (gained focus)
@@ -64,7 +64,7 @@ public interface LldbEventsListener {
 	 * @param processId the ID of the now-defunct process
 	 * @param cause the cause of this event
 	 */
-	void processRemoved(Integer processId, LldbCause cause);
+	void processRemoved(String processId, LldbCause cause);
 
 	/**
 	 * A different process has been selected (gained focus)
@@ -119,7 +119,7 @@ public interface LldbEventsListener {
 	 * @param process a handle to the process to which the thread belonged
 	 * @param cause the cause of this event
 	 */
-	void threadExited(Integer threadId, SBProcess process, LldbCause cause);
+	void threadExited(String threadId, SBProcess process, LldbCause cause);
 
 	/**
 	 * A different thread has been selected (gained focus)

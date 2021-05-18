@@ -61,7 +61,7 @@ public class LldbModelTargetModuleImpl extends LldbModelTargetObjectImpl
 
 	public LldbModelTargetModuleImpl(LldbModelTargetModuleContainerImpl modules, SBModule module) {
 		super(modules.getModel(), modules, keyModule(module), "Module");
-		this.getModel().addModelObject(module, this);
+		this.getModel().addModelObject(DebugClient.getModuleId(module), this);
 		this.session = modules.session;
 		this.module = module;
 

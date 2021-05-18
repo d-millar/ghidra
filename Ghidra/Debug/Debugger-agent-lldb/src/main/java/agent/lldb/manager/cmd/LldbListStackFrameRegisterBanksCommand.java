@@ -21,11 +21,12 @@ import java.util.Map;
 import SWIG.SBFrame;
 import SWIG.SBValue;
 import SWIG.SBValueList;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
-public class LldbListStackFrameRegisterBanksCommand extends AbstractLldbCommand<Map<Integer, SBValue>> {
+public class LldbListStackFrameRegisterBanksCommand extends AbstractLldbCommand<Map<String, SBValue>> {
 	protected final SBFrame frame;
-	private Map<Integer, SBValue> result;
+	private Map<String, SBValue> result;
 
 	public LldbListStackFrameRegisterBanksCommand(LldbManagerImpl manager, SBFrame frame) {
 		super(manager);
@@ -33,7 +34,7 @@ public class LldbListStackFrameRegisterBanksCommand extends AbstractLldbCommand<
 	}
 
 	@Override
-	public Map<Integer, SBValue> complete(LldbPendingCommand<?> pending) {
+	public Map<String, SBValue> complete(LldbPendingCommand<?> pending) {
 		return result;
 	}
 
@@ -43,7 +44,7 @@ public class LldbListStackFrameRegisterBanksCommand extends AbstractLldbCommand<
 		SBValueList registers = frame.GetRegisters();
 		long n = registers.GetSize();
 		for (int i = 0; i < n; i++) {
-			result.put(i, registers.GetValueAtIndex(i));
+			result.put(DebugClient.getRegisterId(null), registers.GetValueAtIndex(i));
 		}
 	}
 }
