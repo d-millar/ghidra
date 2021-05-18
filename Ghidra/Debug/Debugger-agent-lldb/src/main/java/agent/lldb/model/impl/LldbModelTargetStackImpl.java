@@ -21,12 +21,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import SWIG.SBFrame;
+import SWIG.StateType;
 import agent.lldb.lldb.DebugClient;
-import agent.lldb.model.iface2.LldbModelTargetProcess;
-import agent.lldb.model.iface2.LldbModelTargetStack;
-import agent.lldb.model.iface2.LldbModelTargetStackFrame;
-import agent.lldb.model.iface2.LldbModelTargetThread;
+import agent.lldb.manager.LldbReason;
+import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetObject;
+import ghidra.dbg.target.TargetExecutionStateful.TargetExecutionState;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetElementType;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
@@ -55,6 +55,7 @@ public class LldbModelTargetStackImpl extends LldbModelTargetObjectImpl
 	public LldbModelTargetStackImpl(LldbModelTargetThread thread, LldbModelTargetProcess process) {
 		super(thread.getModel(), thread, NAME, "Stack");
 		this.thread = thread;
+		requestElements(false);
 	}
 
 	@Override
@@ -80,43 +81,15 @@ public class LldbModelTargetStackImpl extends LldbModelTargetObjectImpl
 		});
 	}
 
-	/*
-	public void invalidateRegisterCaches() {
-		setElements(List.of(), Map.of(), "Invalidated");
-		for (LldbModelTargetStackFrameImpl frame : framesByLevel.values()) {
-			frame.invalidateRegisterCaches();
-		}
-	}
-	*/
-
-	@Override
-	public void onRunning() {
-		// NB: We don't want to do this apparently
-		//invalidateRegisterCaches();
-		setAccessible(false);
-	}
-
-	@Override
-	public void onStopped() {
-		setAccessible(true);
-		String id = DebugClient.getThreadId(thread.getThread());
-		String eid =  DebugClient.getThreadId(getManager().getEventThread());
-		if (id.equals(eid)) {
-			update();
+	public void threadStateChangedSpecific(StateType state, LldbReason reason) {
+		if (state.equals(StateType.eStateStopped)) {
+			for (TargetObject element : getCachedElements().values()) {
+				if (element instanceof LldbModelTargetStackFrame) {
+					LldbModelTargetStackFrameImpl frame = (LldbModelTargetStackFrameImpl) element;
+					frame.threadStateChangedSpecific(state, reason);
+				}
+			} 
 		}
 	}
 
-	/**
-	 * Re-fetch the stack frames, generating events for updates
-	 * 
-	 * GDB doesn't produce stack change events, but they should only ever happen by running a
-	 * target. Thus, every time we're STOPPED, this method should be called.
-	 */
-	@Override
-	public void update() {
-		requestElements(true).exceptionally(e -> {
-			Msg.error(this, "Could not update stack " + this + " on STOPPED");
-			return null;
-		});
-	}
 }

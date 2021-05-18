@@ -20,20 +20,11 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import SWIG.SBTarget;
-import SWIG.SBThread;
-import SWIG.StateType;
 import agent.lldb.lldb.DebugClient;
-import agent.lldb.manager.LldbCause;
-import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface1.LldbModelSelectableObject;
 import agent.lldb.model.iface1.LldbModelTargetInterpreter;
-import agent.lldb.model.iface2.LldbModelTargetDebugContainer;
-import agent.lldb.model.iface2.LldbModelTargetModuleContainer;
-import agent.lldb.model.iface2.LldbModelTargetProcessContainer;
-import agent.lldb.model.iface2.LldbModelTargetSession;
-import ghidra.dbg.target.schema.TargetAttributeType;
-import ghidra.dbg.target.schema.TargetElementType;
-import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import agent.lldb.model.iface2.*;
+import ghidra.dbg.target.schema.*;
 import ghidra.dbg.util.PathUtils;
 
 @TargetObjectSchemaInfo(
@@ -77,7 +68,6 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 		return PathUtils.makeKey(indexSession(session));
 	}
 
-	protected SBTarget session;
 	protected final LldbModelTargetDebugContainer debug;
 	protected final LldbModelTargetModuleContainer modules;
 	protected final LldbModelTargetSessionAttributesImpl attributes;
@@ -88,10 +78,9 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 
 	public LldbModelTargetSessionImpl(LldbModelTargetSessionContainerImpl sessions,
 			SBTarget session) {
-		super(sessions.getModel(), sessions, keySession(session), "Session");
+		super(sessions.getModel(), sessions, keySession(session), session, "Session");
 		this.getModel().addModelObject(DebugClient.getSessionId(session), this);
 		getManager().getClient().addBroadcaster(session);
-		this.session = session;
 
 		this.debug = new LldbModelTargetDebugContainerImpl(this);
 		this.attributes = new LldbModelTargetSessionAttributesImpl(this);
@@ -134,14 +123,9 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 	public LldbModelTargetModuleContainer getModules() {
 		return modules;
 	}
-
-	@Override
-	public void threadStateChanged(SBThread thread, StateType state, LldbCause cause,
-			LldbReason reason) {
-		/*
-		TargetExecutionState targetState = convertState(state);
-		setExecutionState(targetState, "ThreadStateChanged");
-		*/
+	
+	public SBTarget getSession() {
+		return (SBTarget) getModelObject();
 	}
 
 }

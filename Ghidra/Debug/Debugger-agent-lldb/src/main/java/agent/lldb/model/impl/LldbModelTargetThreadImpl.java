@@ -70,9 +70,6 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 		return PathUtils.makeKey(indexThread(thread));
 	}
 
-	protected final SBThread thread;
-
-	//protected final LldbModelTargetRegisterContainerImpl registers;
 	protected final LldbModelTargetStackImpl stack;
 
 	private LldbModelTargetProcess process;
@@ -80,56 +77,47 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 
 	public LldbModelTargetThreadImpl(LldbModelTargetThreadContainer threads,
 			LldbModelTargetProcess process, SBThread thread) {
-		super(threads.getModel(), threads, keyThread(thread), "Thread");
+		super(threads.getModel(), threads, keyThread(thread), thread, "Thread");
 		this.getModel().addModelObject(DebugClient.getThreadId(thread), this);
 		this.process = process;
-		this.thread = thread;
 
-		//this.registers = new LldbModelTargetRegisterContainerImpl(this);
 		this.stack = new LldbModelTargetStackImpl(this, process);
 
 		changeAttributes(List.of(), List.of( //
-			//registers, //
 			stack //
 		), Map.of( //
 			ACCESSIBLE_ATTRIBUTE_NAME, accessible = false, //
 			DISPLAY_ATTRIBUTE_NAME, getDisplay(), //
 			SUPPORTED_STEP_KINDS_ATTRIBUTE_NAME, SUPPORTED_KINDS //
 		), "Initialized");
-		//setExecutionState(convertState(thread.getState()), "Initialized");
-		// TODO: Stack (Registers)
 
+		getManager().addStateListener(this);
 		getManager().addEventsListener(this);
 	}
 
 	@Override
 	public String getDisplay() {
 		if (getManager().isKernelMode()) {
-			return "[PR" +  DebugClient.getThreadId(thread) + "]";
+			return "[PR" +  DebugClient.getThreadId(getThread()) + "]";
 		}
-		String tidstr = DebugClient.getThreadId(thread);
+		String tidstr = DebugClient.getThreadId(getThread());
 		return "[" + tidstr + "]";
 	}
 
 	@Override
 	public void threadSelected(SBThread eventThread, SBFrame frame, LldbCause cause) {
-		if (eventThread.equals(thread)) {
+		if (eventThread.equals(getThread())) {
 			((LldbModelTargetFocusScope) searchForSuitable(TargetFocusScope.class)).setFocus(this);
 		}
 	}
 
 	@Override
 	public void threadStateChangedSpecific(StateType state, LldbReason reason) {
-		/*
-		TargetExecutionState targetState = convertState(state);
-		String executionType = thread.getExecutingProcessorType().description;
+		TargetExecutionState targetState = DebugClient.convertState(state);
 		changeAttributes(List.of(), List.of(), Map.of( //
-			STATE_ATTRIBUTE_NAME, targetState, //
-			TargetEnvironment.ARCH_ATTRIBUTE_NAME, executionType //
+			STATE_ATTRIBUTE_NAME, targetState //
 		), reason.desc());
-		*/
-		//setExecutionState(targetState, reason.desc());
-		//registers.threadStateChangedSpecific(state, reason);
+		stack.threadStateChangedSpecific(state, reason);
 	}
 
 	@Override
@@ -152,7 +140,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 	@Override
 	public CompletableFuture<Void> setActive() {
 		LldbManagerImpl manager = getManager();
-		return manager.execute(new LldbSetActiveThreadCommand(manager, thread, null));
+		return manager.execute(new LldbSetActiveThreadCommand(manager, getThread(), null));
 	}
 
 	public LldbModelTargetRegisterContainerAndBank getRegisters() {
@@ -166,7 +154,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public SBThread getThread() {
-		return thread;
+		return (SBThread) getModelObject();
 	}
 
 	public LldbModelTargetProcess getProcess() {
@@ -188,6 +176,11 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 		changeAttributes(List.of(), List.of(), Map.of( //
 			DISPLAY_ATTRIBUTE_NAME, getDisplay()//
 		), "Started");
+	}
+
+	@Override
+	public void stateChanged(StateType state, LldbCause cause) {
+		threadStateChangedSpecific(state, LldbReason.Reasons.UNKNOWN);
 	}
 
 }

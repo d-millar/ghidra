@@ -54,16 +54,14 @@ public class LldbModelTargetModuleImpl extends LldbModelTargetObjectImpl
 	}
 
 	protected final SBTarget session;
-	protected final SBModule module;
 
 	//protected final LldbModelTargetSymbolContainerImpl symbols;
 	protected final LldbModelTargetModuleSectionContainerImpl sections;
 
 	public LldbModelTargetModuleImpl(LldbModelTargetModuleContainerImpl modules, SBModule module) {
-		super(modules.getModel(), modules, keyModule(module), "Module");
+		super(modules.getModel(), modules, keyModule(module), module, "Module");
 		this.getModel().addModelObject(DebugClient.getModuleId(module), this);
 		this.session = modules.session;
-		this.module = module;
 
 		//this.symbols = new LldbModelTargetSymbolContainerImpl(this);
 		this.sections = new LldbModelTargetModuleSectionContainerImpl(this);
@@ -93,7 +91,7 @@ public class LldbModelTargetModuleImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public SBModule getModule() {
-		return module;
+		return (SBModule) getModelObject();
 	}
 
 	public SBTarget getSession() {

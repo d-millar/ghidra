@@ -23,9 +23,7 @@ import java.util.stream.Collectors;
 import SWIG.SBTarget;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
-import agent.lldb.model.iface2.LldbModelTargetRoot;
-import agent.lldb.model.iface2.LldbModelTargetSession;
-import agent.lldb.model.iface2.LldbModelTargetSessionContainer;
+import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetElementType;
@@ -64,9 +62,11 @@ public class LldbModelTargetSessionContainerImpl extends LldbModelTargetObjectIm
 	@Override
 	public synchronized LldbModelTargetSession getTargetSession(SBTarget session) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(DebugClient.getSessionId(session));
-		if (modelObject != null) {
-			return (LldbModelTargetSession) modelObject;
+		TargetObject targetObject = impl.getModelObject(DebugClient.getSessionId(session));
+		if (targetObject != null) {
+			LldbModelTargetSession targetSession = (LldbModelTargetSession) targetObject;
+			targetSession.setModelObject(session);
+			return targetSession;
 		}
 		return new LldbModelTargetSessionImpl(this, session);
 	}

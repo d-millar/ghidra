@@ -55,6 +55,7 @@ public class LldbManagerImpl implements LldbManager {
 	public final Set<DebugStatus> statiAccessible =
 		Collections.unmodifiableSet(EnumSet.of(DebugStatus.NO_DEBUGGEE, DebugStatus.BREAK));
 
+	
 	protected AbstractClientThreadExecutor engThread;
 	protected DebugClientReentrant reentrantClient;
 

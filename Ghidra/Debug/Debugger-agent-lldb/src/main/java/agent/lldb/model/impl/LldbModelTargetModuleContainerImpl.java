@@ -22,8 +22,7 @@ import SWIG.SBModule;
 import SWIG.SBTarget;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.lldb.DebugModuleInfo;
-import agent.lldb.model.iface2.LldbModelTargetModule;
-import agent.lldb.model.iface2.LldbModelTargetModuleContainer;
+import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.*;
 import ghidra.dbg.target.schema.*;
 import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
@@ -46,7 +45,7 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 	public LldbModelTargetModuleContainerImpl(LldbModelTargetSessionImpl session) {
 		super(session.getModel(), session, "Modules", "ModuleContainer");
 		this.targetSession = session;
-		this.session = session.session;
+		this.session = session.getSession();
 		requestElements(false);
 	}
 
@@ -117,9 +116,11 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 
 	public LldbModelTargetModule getTargetModule(SBModule module) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(DebugClient.getModuleId(module));
-		if (modelObject != null) {
-			return (LldbModelTargetModule) modelObject;
+		TargetObject targetObject = impl.getModelObject(DebugClient.getModuleId(module));
+		if (targetObject != null) {
+			LldbModelTargetModule targetModule = (LldbModelTargetModule) targetObject;
+			targetModule.setModelObject(module);
+			return targetModule;
 		}
 		return new LldbModelTargetModuleImpl(this, module);
 	}

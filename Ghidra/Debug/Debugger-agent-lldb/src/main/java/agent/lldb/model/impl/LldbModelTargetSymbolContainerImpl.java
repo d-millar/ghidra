@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import SWIG.SBSymbol;
 import agent.lldb.lldb.DebugClient;
+import agent.lldb.model.iface2.LldbModelTargetRegisterBank;
 import agent.lldb.model.iface2.LldbModelTargetSymbolContainer;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.TargetAttributeType;
@@ -49,7 +50,7 @@ public class LldbModelTargetSymbolContainerImpl extends LldbModelTargetObjectImp
 
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
-		return getManager().listModuleSymbols(module.module).thenAccept(byName -> {
+		return getManager().listModuleSymbols(module.getModule()).thenAccept(byName -> {
 			List<TargetObject> symbols;
 			synchronized (this) {
 				symbols = byName.values()
@@ -64,9 +65,11 @@ public class LldbModelTargetSymbolContainerImpl extends LldbModelTargetObjectImp
 	@Override
 	public synchronized LldbModelTargetSymbolImpl getTargetSymbol(SBSymbol symbol) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(DebugClient.getSymbolId(symbol));
-		if (modelObject != null) {
-			return (LldbModelTargetSymbolImpl) modelObject;
+		TargetObject targetObject = impl.getModelObject(DebugClient.getSymbolId(symbol));
+		if (targetObject != null) {
+			LldbModelTargetSymbolImpl targetSymbol = (LldbModelTargetSymbolImpl) targetObject;
+			targetSymbol.setModelObject(symbol);
+			return targetSymbol;
 		}
 		return new LldbModelTargetSymbolImpl(this, symbol);
 	}

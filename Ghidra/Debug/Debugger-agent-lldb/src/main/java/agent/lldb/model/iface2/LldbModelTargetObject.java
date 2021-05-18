@@ -82,5 +82,9 @@ public interface LldbModelTargetObject extends SpiTargetObject {
 	public void setModified(boolean modified);
 
 	public void resetModified();
+	
+	public Object getModelObject();
+	
+	public void setModelObject(Object modelObject);
 
 }

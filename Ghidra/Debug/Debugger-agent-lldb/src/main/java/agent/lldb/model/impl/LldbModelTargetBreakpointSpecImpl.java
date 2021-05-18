@@ -55,7 +55,6 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetObjectImpl
 	}
 
 	private LldbModelTargetBreakpointContainer breakpoints;
-	protected SBBreakpoint bpt;
 	protected boolean enabled;
 
 	public void changeAttributeSet(String reason) {
@@ -87,9 +86,8 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetObjectImpl
 
 	public LldbModelTargetBreakpointSpecImpl(LldbModelTargetBreakpointContainer breakpoints,
 			SBBreakpoint bpt) {
-		super(breakpoints.getModel(), breakpoints, keyBreakpoint(bpt), "BreakpointSpec");
+		super(breakpoints.getModel(), breakpoints, keyBreakpoint(bpt), bpt, "BreakpointSpec");
 		this.breakpoints = breakpoints;
-		this.bpt = bpt;
 		this.getModel().addModelObject(DebugClient.getBreakpointId(bpt), this);
 		//this.setBreakpointInfo(info);
 
@@ -99,7 +97,7 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetObjectImpl
 	@Override
 	public void updateInfo(SBBreakpoint bpt, String reason) {
 		synchronized (this) {
-			setBreakpointInfo(bpt);
+			setModelObject(bpt);
 		}
 		changeAttributeSet("Refreshed");
 		setEnabled(bpt.IsEnabled(), reason);
@@ -107,17 +105,12 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public SBBreakpoint getBreakpointInfo() {
-		return bpt;
+		return (SBBreakpoint) getModelObject();
 	}
 
 	@Override
 	public void setBreakpointId(String id) {
 		throw new AssertionError();
-	}
-
-	@Override
-	public void setBreakpointInfo(SBBreakpoint bpt) {
-		this.bpt = bpt;
 	}
 
 	/**
@@ -163,7 +156,7 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetObjectImpl
 	public CompletableFuture<Void> requestElements(boolean refresh) {
 		return getInfo().thenAccept(i -> {
 			synchronized (this) {
-				setBreakpointInfo(i);
+				setModelObject(i);
 			}
 			changeAttributeSet("Initialized");
 		});

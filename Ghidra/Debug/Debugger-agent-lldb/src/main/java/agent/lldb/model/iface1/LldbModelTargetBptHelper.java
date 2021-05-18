@@ -33,8 +33,6 @@ public interface LldbModelTargetBptHelper extends LldbModelTargetObject {
 
 	public void setBreakpointId(String id);
 
-	public void setBreakpointInfo(SBBreakpoint info);
-
 	public boolean isBreakpointEnabled();
 
 	public void setBreakpointEnabled(boolean enabled);

@@ -22,6 +22,7 @@ import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.LldbManager;
 import ghidra.comm.util.BitmaskSet;
 import ghidra.comm.util.BitmaskUniverse;
+import ghidra.dbg.target.TargetExecutionStateful.TargetExecutionState;
 
 /**
  * A wrapper for {@code IDebugClient} and its newer variants.
@@ -356,6 +357,31 @@ public interface DebugClient extends DebugClientReentrant {
 
 	public static String getBreakpointLocationId(SBBreakpointLocation loc) {
 		return Long.toHexString(loc.GetAddress().GetOffset().longValue());
+	}
+
+	public static TargetExecutionState convertState(StateType state) {
+		switch (state.swigValue()) {
+			case 0:	// eStateInvalid
+				return TargetExecutionState.RUNNING;
+			case 1: // eStateUnloaded
+				return TargetExecutionState.INACTIVE;
+			case 2: // eStateConnected
+			case 3: // eStateAttaching
+			case 4: // eStateLaunching
+				return TargetExecutionState.ALIVE;
+			case 5: // eStateStopped
+				return TargetExecutionState.STOPPED;
+			case 6: // eStateRunning
+			case 7: // eStateStepping
+				return TargetExecutionState.RUNNING;
+			case 8:  // eStateCrashed
+			case 9:  // eStateDetached
+			case 10: // eStateExited
+			case 11: // eStateSuspended
+				return TargetExecutionState.TERMINATED;
+			default:
+				return TargetExecutionState.STOPPED;
+		}
 	}
 
 	public SBListener getListener();

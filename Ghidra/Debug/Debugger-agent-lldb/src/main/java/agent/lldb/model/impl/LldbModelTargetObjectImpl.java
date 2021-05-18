@@ -43,16 +43,26 @@ public class LldbModelTargetObjectImpl extends DefaultTargetObject<TargetObject,
 	protected boolean accessible = true;
 	protected final LldbStateListener accessListener = this::checkExited;
 	private boolean modified;
+	private Object modelObject;
 
 	public LldbModelTargetObjectImpl(AbstractLldbModel impl, TargetObject parent, String name,
 			String typeHint) {
 		super(impl, parent, name, typeHint);
+		this.setModelObject(((LldbModelTargetObject) parent).getModelObject());
+		getManager().addStateListener(accessListener);
+	}
+	
+	public LldbModelTargetObjectImpl(AbstractLldbModel impl, TargetObject parent, String name, Object modelObject,
+			String typeHint) {
+		super(impl, parent, name, typeHint);
+		this.setModelObject(modelObject);
 		getManager().addStateListener(accessListener);
 	}
 
-	public LldbModelTargetObjectImpl(AbstractLldbModel impl, TargetObject parent, String name,
+	public LldbModelTargetObjectImpl(AbstractLldbModel impl, TargetObject parent, String name, Object modelObject,
 			String typeHint, TargetObjectSchema schema) {
 		super(impl, parent, name, typeHint, schema);
+		this.setModelObject(modelObject);
 		getManager().addStateListener(accessListener);
 	}
 
@@ -92,20 +102,10 @@ public class LldbModelTargetObjectImpl extends DefaultTargetObject<TargetObject,
 
 	public void onStopped() {
 		setAccessible(true);
-		update();
 	}
 
 	public void onExit() {
 		setAccessible(true);
-	}
-
-	protected void update() {
-		Map<String, ?> existingAttributes = getCachedAttributes();
-		Boolean autoupdate = (Boolean) existingAttributes.get("autoupdate");
-		if (autoupdate != null && autoupdate) {
-			requestAttributes(true);
-			requestElements(true);
-		}
 	}
 
 	protected void checkExited(StateType state, LldbCause cause) {
@@ -221,6 +221,16 @@ public class LldbModelTargetObjectImpl extends DefaultTargetObject<TargetObject,
 	public TargetObject searchForSuitable(Class<? extends TargetObject> type) {
 		List<String> pathToClass = model.getRootSchema().searchForSuitable(type, path);
 		return model.getModelObject(pathToClass);
+	}
+
+	@Override
+	public Object getModelObject() {
+		return modelObject;
+	}
+
+	@Override
+	public void setModelObject(Object modelObject) {
+		this.modelObject = modelObject;
 	}
 
 }

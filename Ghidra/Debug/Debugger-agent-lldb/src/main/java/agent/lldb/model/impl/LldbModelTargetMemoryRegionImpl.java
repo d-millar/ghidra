@@ -51,7 +51,6 @@ public class LldbModelTargetMemoryRegionImpl extends LldbModelTargetObjectImpl
 		return PathUtils.makeKey(region.GetRegionBase().toString(16));
 	}
 
-	protected final SBMemoryRegionInfo region;
 	protected AddressRange range;
 	protected List<String> protect;
 	protected List<String> allocProtect;
@@ -61,9 +60,8 @@ public class LldbModelTargetMemoryRegionImpl extends LldbModelTargetObjectImpl
 
 	public LldbModelTargetMemoryRegionImpl(LldbModelTargetMemoryContainer memory,
 			SBMemoryRegionInfo region) {
-		super(memory.getModel(), memory, keySection(region), "Region");
+		super(memory.getModel(), memory, keySection(region), region, "Region");
 		this.getModel().addModelObject(DebugClient.getRegionId(region), this);
-		this.region = region;
 
 		this.changeAttributes(List.of(), List.of(), Map.of( //
 			MEMORY_ATTRIBUTE_NAME, memory, //
@@ -73,7 +71,6 @@ public class LldbModelTargetMemoryRegionImpl extends LldbModelTargetObjectImpl
 			//EXECUTABLE_ATTRIBUTE_NAME, isExecutable() //
 		), "Initialized");
 
-		AddressSpace space = getModel().getAddressSpace("ram");
 		this.changeAttributes(List.of(), List.of(), Map.of( //
 			"BaseAddress", range.getMinAddress(), //
 			"EndAddress", range.getMaxAddress(), //

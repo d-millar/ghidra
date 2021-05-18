@@ -24,8 +24,7 @@ import SWIG.SBValue;
 import SWIG.StateType;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbReason;
-import agent.lldb.model.iface2.LldbModelTargetRegisterBank;
-import agent.lldb.model.iface2.LldbModelTargetStackFrameRegisterContainer;
+import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
@@ -55,7 +54,7 @@ public class LldbModelTargetStackFrameRegisterContainerImpl
 	 */
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
-		return getManager().listStackFrameRegisterBanks(frame.frame).thenAccept(banks -> {
+		return getManager().listStackFrameRegisterBanks(frame.getFrame()).thenAccept(banks -> {
 			List<TargetObject> targetBanks;
 			synchronized (this) {
 				targetBanks = banks.values().stream().map(this::getTargetRegisterBank).collect(Collectors.toList());
@@ -68,16 +67,18 @@ public class LldbModelTargetStackFrameRegisterContainerImpl
 	@Override
 	public LldbModelTargetRegisterBank getTargetRegisterBank(SBValue val) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(DebugClient.getBankId(frame.frame, val));
-		if (modelObject != null) {
-			return (LldbModelTargetRegisterBank) modelObject;
+		TargetObject targetObject = impl.getModelObject(DebugClient.getBankId(frame.getFrame(), val));
+		if (targetObject != null) {
+			LldbModelTargetRegisterBank targetBank = (LldbModelTargetRegisterBank) targetObject;
+			targetBank.setModelObject(val);
+			return targetBank;
 		}
 		return new LldbModelTargetStackFrameRegisterBankImpl(this, val);
 	}
 
 	public void threadStateChangedSpecific(StateType state, LldbReason reason) {
 		if (state.equals(StateType.eStateStopped)) {
-			for (TargetObject element : getCallbackElements().values()) {
+			for (TargetObject element : getCachedElements().values()) {
 				if (element instanceof LldbModelTargetRegisterBank) {
 					LldbModelTargetRegisterBank bank = (LldbModelTargetRegisterBank) element;
 					bank.threadStateChangedSpecific(state, reason);
