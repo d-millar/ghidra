@@ -43,7 +43,7 @@ public class LldbModelTargetAvailableImpl extends LldbModelTargetObjectImpl
 		this.pid = pid;
 
 		this.changeAttributes(List.of(), List.of(), Map.of(//
-			PID_ATTRIBUTE_NAME, pid, //
+			PID_ATTRIBUTE_NAME, Long.parseLong(pid, 16), //
 			DISPLAY_ATTRIBUTE_NAME, keyAttachable(pid) + " : " + name.trim() //
 		), "Initialized");
 	}
@@ -53,15 +53,15 @@ public class LldbModelTargetAvailableImpl extends LldbModelTargetObjectImpl
 		this.pid = pid;
 
 		this.changeAttributes(List.of(), List.of(), Map.of(//
-			PID_ATTRIBUTE_NAME, pid, //
+			PID_ATTRIBUTE_NAME, Long.parseLong(pid, 16), //
 			DISPLAY_ATTRIBUTE_NAME, keyAttachable(pid) //
 		), "Initialized");
 	}
 
 	@TargetAttributeType(name = PID_ATTRIBUTE_NAME, hidden = true)
 	@Override
-	public String getPid() {
-		return pid;
+	public Long getPid() {
+		return Long.parseLong(pid);
 	}
 
 	public void setBase(Object value) {

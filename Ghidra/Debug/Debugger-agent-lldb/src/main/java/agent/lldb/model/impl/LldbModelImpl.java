@@ -160,18 +160,24 @@ public class LldbModelImpl extends AbstractLldbModel implements DebuggerObjectMo
 
 	@Override
 	public void addModelObject(Object object, TargetObject targetObject) {
-		assert(object instanceof String);
+		if (!(object instanceof String)) {
+			throw new RuntimeException("addModelObject requires String: "+object);
+		}
 		objectMap.put(object, targetObject);
 	}
 
 	@Override
 	public TargetObject getModelObject(Object object) {
-		assert(object instanceof String);
+		if (!(object instanceof String)) {
+			throw new RuntimeException("getModelObject requires String: "+object);
+		}
 		return objectMap.get(object);
 	}
 
 	public void deleteModelObject(Object object) {
-		assert(object instanceof String);
+		if (!(object instanceof String)) {
+			throw new RuntimeException("deleteModeOject requires String: "+object);
+		}
 		objectMap.remove(object);
 	}
 

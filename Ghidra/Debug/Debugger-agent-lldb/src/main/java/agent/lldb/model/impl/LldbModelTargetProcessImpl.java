@@ -79,7 +79,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 
 	public LldbModelTargetProcessImpl(LldbModelTargetProcessContainer processes, SBProcess process) {
 		super(processes.getModel(), processes, keyProcess(process), "Process");
-		this.getModel().addModelObject(process, this);
+		this.getModel().addModelObject(DebugClient.getProcessId(process), this);
 		getManager().getClient().addBroadcaster(process);
 		this.process = process;
 
@@ -188,7 +188,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 	public void processStarted(SBProcess proc) {
 		if (proc != null) {
 			changeAttributes(List.of(), List.of(), Map.of( //
-				PID_ATTRIBUTE_NAME, Long.valueOf(DebugClient.getProcessId(process)), //
+				PID_ATTRIBUTE_NAME, process.GetProcessID().longValue(), //
 				DISPLAY_ATTRIBUTE_NAME, getDisplay()//
 			), "Started");
 		}

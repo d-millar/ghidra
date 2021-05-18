@@ -326,8 +326,8 @@ public interface DebugClient extends DebugClientReentrant {
 		return Long.toHexString(frame.GetFrameID());
 	}
 
-	public static String getBankId(SBValue bank) {
-		return Long.toHexString(bank.GetID().longValue());
+	public static String getBankId(SBFrame frame, SBValue bank) {
+		return getFrameId(frame)+":"+Long.toHexString(bank.GetID().longValue());
 	}
 
 	public static String getRegisterId(SBValue register) {
@@ -338,8 +338,8 @@ public interface DebugClient extends DebugClientReentrant {
 		return module.GetFileSpec().GetFilename();
 	}
 	
-	public static String getModuleSectionId(SBSection section) {
-		return section.GetName();
+	public static String getModuleSectionId(SBModule module, SBSection section) {
+		return getModuleId(module)+":"+section.GetName();
 	}
 
 	public static String getRegionId(SBMemoryRegionInfo region) {

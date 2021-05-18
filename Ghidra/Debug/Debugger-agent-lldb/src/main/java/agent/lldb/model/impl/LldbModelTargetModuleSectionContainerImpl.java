@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import SWIG.SBModule;
 import SWIG.SBSection;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.*;
@@ -39,7 +40,7 @@ public class LldbModelTargetModuleSectionContainerImpl extends LldbModelTargetOb
 	public LldbModelTargetModuleSectionContainerImpl(LldbModelTargetModule module) {
 		super(module.getModel(), module, "Sections", "ModuleSections");
 		this.module = module;
-
+		requestElements(false);
 	}
 
 	@Override
@@ -59,7 +60,7 @@ public class LldbModelTargetModuleSectionContainerImpl extends LldbModelTargetOb
 
 	protected synchronized LldbModelTargetModuleSection getModuleSection(SBSection section) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(DebugClient.getModuleSectionId(section));
+		TargetObject modelObject = impl.getModelObject(DebugClient.getModuleSectionId(module.getModule(), section));
 		if (modelObject != null) {
 			return (LldbModelTargetModuleSection) modelObject;
 		}
@@ -73,15 +74,23 @@ public class LldbModelTargetModuleSectionContainerImpl extends LldbModelTargetOb
 		for (TargetObject element : elements.values()) {
 			LldbModelTargetModuleSectionImpl section = (LldbModelTargetModuleSectionImpl) element;
 			Address start = section.getStart();
-			if (min == null || min.getOffset() > start.getOffset()) {
-				min = start;
+			if (start.getOffset() != 0) {
+				if (min == null || min.getOffset() > start.getOffset()) {
+					min = start;
+				}
 			}
 			Address stop = section.getEnd();
-			if (max == null || max.getOffset() < stop.getOffset()) {
-				max = stop;
+			if (stop.getOffset() != 0) {
+				if (max == null || max.getOffset() < stop.getOffset()) {
+					max = stop;
+				}
 			}
 		}
 		module.setRange(new AddressRangeImpl(min, max));
+	}
+
+	public SBModule getModule() {
+		return module.getModule();
 	}
 
 }

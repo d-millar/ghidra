@@ -135,7 +135,7 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 	@Override
 	public synchronized LldbModelTargetThread getTargetThread(SBThread thread) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(thread);
+		TargetObject modelObject = impl.getModelObject(DebugClient.getThreadId(thread));
 		if (modelObject != null) {
 			return (LldbModelTargetThread) modelObject;
 		}

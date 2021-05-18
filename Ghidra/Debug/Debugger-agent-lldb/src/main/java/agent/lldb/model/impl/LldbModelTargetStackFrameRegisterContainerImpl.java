@@ -47,6 +47,7 @@ public class LldbModelTargetStackFrameRegisterContainerImpl
 	public LldbModelTargetStackFrameRegisterContainerImpl(LldbModelTargetStackFrameImpl frame) {
 		super(frame.getModel(), frame, NAME, "StackFrameRegisterContainer");
 		this.frame = frame;
+		requestElements(false);
 	}
 
 	/**
@@ -67,7 +68,7 @@ public class LldbModelTargetStackFrameRegisterContainerImpl
 	@Override
 	public LldbModelTargetRegisterBank getTargetRegisterBank(SBValue val) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(DebugClient.getBankId(val));
+		TargetObject modelObject = impl.getModelObject(DebugClient.getBankId(frame.frame, val));
 		if (modelObject != null) {
 			return (LldbModelTargetRegisterBank) modelObject;
 		}
