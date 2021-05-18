@@ -16,18 +16,16 @@
 package agent.lldb.model.impl;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import SWIG.SBModule;
 import SWIG.SBSection;
-import agent.lldb.model.iface2.LldbModelTargetModule;
-import agent.lldb.model.iface2.LldbModelTargetModuleSection;
-import agent.lldb.model.iface2.LldbModelTargetModuleSectionContainer;
+import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetObject;
-import ghidra.dbg.target.schema.TargetAttributeType;
-import ghidra.dbg.target.schema.TargetElementType;
-import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.target.schema.*;
+import ghidra.program.model.address.Address;
+import ghidra.program.model.address.AddressRangeImpl;
 
 @TargetObjectSchemaInfo(name = "SectionContainer", elements = {
 	@TargetElementType(type = LldbModelTargetModuleSectionImpl.class) }, attributes = {
@@ -35,17 +33,17 @@ import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 public class LldbModelTargetModuleSectionContainerImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetModuleSectionContainer {
 
-	protected final SBModule module;
+	protected final LldbModelTargetModule module;
 
 	public LldbModelTargetModuleSectionContainerImpl(LldbModelTargetModule module) {
 		super(module.getModel(), module, "Sections", "ModuleSections");
-		this.module = module.getModule();
+		this.module = module;
 
 	}
 
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
-		return getManager().listModuleSections(module).thenAccept(byStart -> {
+		return getManager().listModuleSections(module.getModule()).thenAccept(byStart -> {
 			List<TargetObject> sections;
 			synchronized (this) {
 				sections = byStart.values()
@@ -53,6 +51,7 @@ public class LldbModelTargetModuleSectionContainerImpl extends LldbModelTargetOb
 						.map(this::getModuleSection)
 						.collect(Collectors.toList());
 				setElements(sections, "Refreshed");
+				updateRange();
 			}
 		});
 	}
@@ -64,6 +63,24 @@ public class LldbModelTargetModuleSectionContainerImpl extends LldbModelTargetOb
 			return (LldbModelTargetModuleSection) modelObject;
 		}
 		return new LldbModelTargetModuleSectionImpl(this, section);
+	}
+
+	public void updateRange() {
+		Map<String, TargetObject> elements = getCachedElements();
+		Address min = null;
+		Address max = null;
+		for (TargetObject element : elements.values()) {
+			LldbModelTargetModuleSectionImpl section = (LldbModelTargetModuleSectionImpl) element;
+			Address start = section.getStart();
+			if (min == null || min.getOffset() > start.getOffset()) {
+				min = start;
+			}
+			Address stop = section.getEnd();
+			if (max == null || max.getOffset() < stop.getOffset()) {
+				max = stop;
+			}
+		}
+		module.setRange(new AddressRangeImpl(min, max));
 	}
 
 }
