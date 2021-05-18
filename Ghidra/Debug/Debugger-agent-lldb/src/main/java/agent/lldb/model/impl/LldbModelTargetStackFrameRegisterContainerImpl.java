@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import SWIG.SBValue;
 import SWIG.StateType;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface2.LldbModelTargetRegisterBank;
 import agent.lldb.model.iface2.LldbModelTargetStackFrameRegisterContainer;
@@ -66,7 +67,7 @@ public class LldbModelTargetStackFrameRegisterContainerImpl
 	@Override
 	public LldbModelTargetRegisterBank getTargetRegisterBank(SBValue val) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(val);
+		TargetObject modelObject = impl.getModelObject(DebugClient.getBankId(val));
 		if (modelObject != null) {
 			return (LldbModelTargetRegisterBank) modelObject;
 		}

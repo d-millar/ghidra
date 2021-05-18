@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import SWIG.SBSection;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.*;
@@ -58,7 +59,7 @@ public class LldbModelTargetModuleSectionContainerImpl extends LldbModelTargetOb
 
 	protected synchronized LldbModelTargetModuleSection getModuleSection(SBSection section) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(section);
+		TargetObject modelObject = impl.getModelObject(DebugClient.getModuleSectionId(section));
 		if (modelObject != null) {
 			return (LldbModelTargetModuleSection) modelObject;
 		}

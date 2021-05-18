@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import SWIG.SBBreakpoint;
 import SWIG.SBTarget;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.model.iface2.LldbModelTargetBreakpointContainer;
 import agent.lldb.model.iface2.LldbModelTargetBreakpointSpec;
@@ -88,7 +89,7 @@ public class LldbModelTargetBreakpointContainerImpl extends LldbModelTargetObjec
 
 	public LldbModelTargetBreakpointSpec getTargetBreakpointSpec(SBBreakpoint bpt) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(bpt);
+		TargetObject modelObject = impl.getModelObject(DebugClient.getBreakpointId(bpt));
 		if (modelObject != null) {
 			return (LldbModelTargetBreakpointSpec) modelObject;
 		}

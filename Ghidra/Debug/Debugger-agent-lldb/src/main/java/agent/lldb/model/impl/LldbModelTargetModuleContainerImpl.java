@@ -15,23 +15,18 @@
  */
 package agent.lldb.model.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import SWIG.SBModule;
 import SWIG.SBTarget;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.lldb.DebugModuleInfo;
 import agent.lldb.model.iface2.LldbModelTargetModule;
 import agent.lldb.model.iface2.LldbModelTargetModuleContainer;
-import ghidra.dbg.target.TargetModule;
-import ghidra.dbg.target.TargetObject;
-import ghidra.dbg.target.TargetThread;
-import ghidra.dbg.target.schema.TargetAttributeType;
-import ghidra.dbg.target.schema.TargetElementType;
+import ghidra.dbg.target.*;
+import ghidra.dbg.target.schema.*;
 import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
-import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 import ghidra.lifecycle.Internal;
 
 @TargetObjectSchemaInfo(name = "ModuleContainer", elements = { //
@@ -73,8 +68,9 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 			System.err.println("Module "+info.getModuleName(index)+" not found!");
 			return;
 		}
+		String tid = DebugClient.getThreadId(getManager().getEventThread());
 		TargetThread eventThread =
-			(TargetThread) getModel().getModelObject(getManager().getEventThread());
+			(TargetThread) getModel().getModelObject(tid);
 		changeElements(List.of(), List.of(targetModule), Map.of(), "Loaded");
 		getListeners().fire.event(getProxy(), eventThread, TargetEventType.MODULE_LOADED,
 			"Library " + info.getModuleName(index) + " loaded", List.of(targetModule));
@@ -85,12 +81,13 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 	public void libraryUnloaded(DebugModuleInfo info, int index) {
 		LldbModelTargetModule targetModule = getTargetModule(info.getModule(index));
 		if (targetModule != null) {
+			String tid = DebugClient.getThreadId(getManager().getEventThread());
 			TargetThread eventThread =
-				(TargetThread) getModel().getModelObject(getManager().getEventThread());
+				(TargetThread) getModel().getModelObject(tid);
 			getListeners().fire.event(getProxy(), eventThread, TargetEventType.MODULE_UNLOADED,
 				"Library " + info.getModuleName(index) + " unloaded", List.of(targetModule));
 			LldbModelImpl impl = (LldbModelImpl) model;
-			impl.deleteModelObject(targetModule.getModule());
+			impl.deleteModelObject(DebugClient.getModuleId(targetModule.getModule()));
 		}
 		changeElements(List.of(info.getModuleName(index)), List.of(), Map.of(), "Unloaded");
 	}
@@ -120,7 +117,7 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 
 	public LldbModelTargetModule getTargetModule(SBModule module) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(module);
+		TargetObject modelObject = impl.getModelObject(DebugClient.getModuleId(module));
 		if (modelObject != null) {
 			return (LldbModelTargetModule) modelObject;
 		}
