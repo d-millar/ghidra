@@ -15,27 +15,28 @@
  */
 package agent.lldb.manager.cmd;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
-import com.google.common.collect.Range;
-import com.google.common.collect.RangeSet;
-import com.google.common.collect.TreeRangeSet;
+import com.google.common.collect.*;
 
+import SWIG.*;
 import agent.lldb.manager.impl.LldbManagerImpl;
+import ghidra.program.model.address.Address;
 
 /**
  * Implementation of {@link DbgThread#readMemory(long, ByteBuffer, int)}
  */
 public class LldbReadMemoryCommand extends AbstractLldbCommand<RangeSet<Long>> {
 
-	private final long addr;
+	private final SBProcess process;
+	private final Address addr;
 	private final ByteBuffer buf;
 	private final int len;
 
-	private int readLen;
-
-	public LldbReadMemoryCommand(LldbManagerImpl manager, long addr, ByteBuffer buf, int len) {
+	public LldbReadMemoryCommand(LldbManagerImpl manager, SBProcess process, Address addr, ByteBuffer buf, int len) {
 		super(manager);
+		this.process = process;
 		this.addr = addr;
 		this.buf = buf;
 		this.len = len;
@@ -44,12 +45,27 @@ public class LldbReadMemoryCommand extends AbstractLldbCommand<RangeSet<Long>> {
 	@Override
 	public RangeSet<Long> complete(LldbPendingCommand<?> pending) {
 		RangeSet<Long> rangeSet = TreeRangeSet.create();
-		rangeSet.add(Range.closedOpen(addr, addr + readLen));
+		rangeSet.add(Range.closedOpen(addr.getOffset(), addr.getOffset()+len));
 		return rangeSet;
 	}
 
 	@Override
 	public void invoke() {
-		//readLen = manager.getDataSpaces().readVirtual(addr, buf, len);
+		BigInteger offset = addr.getOffsetAsBigInteger();
+		SWIGTYPE_p_void buffer = null;
+		SBError error = new SBError();
+		long read = process.ReadMemory(offset, buffer, len, error);
+		System.err.println("HIMOM");
+		/*
+		for (int i = 0; i < len; i += 8) {
+			Long sz = 8L;
+			BigInteger increment = new BigInteger(Integer.toString(i));
+			BigInteger res = process.ReadPointerFromMemory(offset.add(increment), error);
+			byte[] bytes = res.toByteArray();
+			for (int j = 0; j < bytes.length; j++) {	
+				buf.put(i + j, bytes[bytes.length - j - 1]);
+			}
+		}
+		*/
 	}
 }

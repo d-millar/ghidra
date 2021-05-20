@@ -15,6 +15,7 @@
  */
 package agent.lldb.model.impl;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 
-import SWIG.SBMemoryRegionInfo;
+import SWIG.*;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.cmd.*;
 import agent.lldb.manager.impl.LldbManagerImpl;
@@ -33,6 +34,7 @@ import ghidra.dbg.error.DebuggerModelAccessException;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.*;
 import ghidra.program.model.address.Address;
+import ghidra.util.NumericUtilities;
 import ghidra.util.datastruct.WeakValueHashMap;
 
 @TargetObjectSchemaInfo(name = "Memory", elements = {
@@ -81,14 +83,19 @@ public class LldbModelTargetMemoryContainerImpl extends LldbModelTargetObjectImp
 			throw new DebuggerModelAccessException(
 				"Cannot process command readMemory while engine is waiting for events");
 		}
-		ByteBuffer buf = ByteBuffer.allocate(length);
-		long offset = address.getOffset();
-		return null;
-		/*
-		return process.getProcess().readMemory(offset, buf).thenApply(set -> {
-			return readAssist(address, buf, offset, set);
-		});
-		*/
+		byte [] bytes = new byte[length];
+		BigInteger offset = address.getOffsetAsBigInteger();
+		SBError error = new SBError();
+		for (int i = 0; i < length; i += 8) {
+			Long val = 0L;
+			BigInteger increment = new BigInteger(Integer.toString(i));
+			process.getProcess().ReadUnsignedFromMemory(offset.add(increment), val, error);
+			bytes[i] = (byte) (val & 0xFF);
+			bytes[i+1] = (byte) (val>>4 & 0xFF);
+			bytes[i+2] = (byte) (val>>8 & 0xFF);
+			bytes[i+3] = (byte) (val>>12 & 0xFF);
+		}
+		return CompletableFuture.completedFuture(bytes);
 	}
 
 	private byte[] readAssist(Address address, ByteBuffer buf, long offset, RangeSet<Long> set) {
@@ -136,7 +143,7 @@ public class LldbModelTargetMemoryContainerImpl extends LldbModelTargetObjectImp
 		ByteBuffer buf = ByteBuffer.allocate(length);
 		long offset = address.getOffset();
 		if (!manager.isKernelMode() || address.getAddressSpace().getName().equals("ram")) {
-			return manager.execute(new LldbReadMemoryCommand(manager, offset, buf, buf.remaining()))
+			return manager.execute(new LldbReadMemoryCommand(manager, process.getProcess(), address, buf, buf.remaining()))
 					.thenApply(set -> {
 						return readAssist(address, buf, offset, set);
 					});

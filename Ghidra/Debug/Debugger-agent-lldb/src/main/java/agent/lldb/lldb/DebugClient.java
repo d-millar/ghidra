@@ -312,51 +312,51 @@ public interface DebugClient extends DebugClientReentrant {
 	}
 	
 	public static String getSessionId(SBTarget session) {
-		return Long.toHexString(session.GetProcess().GetUniqueID());
+		return "Session:"+Long.toHexString(session.GetProcess().GetUniqueID());
 	}
 
 	public static String getProcessId(SBProcess process) {
-		return Integer.toHexString(process.GetProcessID().intValue());
+		return "Process:"+Integer.toHexString(process.GetProcessID().intValue());
 	}
 
 	public static String getThreadId(SBThread thread) {
-		return Integer.toHexString(thread.GetThreadID().intValue());
+		return "Thread:"+Integer.toHexString(thread.GetThreadID().intValue());
 	}
 
 	public static String getFrameId(SBFrame frame) {
-		return Long.toHexString(frame.GetFrameID());
+		return "Frame:"+Long.toHexString(frame.GetFrameID());
 	}
 
 	public static String getBankId(SBFrame frame, SBValue bank) {
-		return getFrameId(frame)+":"+Long.toHexString(bank.GetID().longValue());
+		return "Bank:"+getFrameId(frame)+":"+Long.toHexString(bank.GetID().longValue());
 	}
 
 	public static String getRegisterId(SBValue register) {
-		return Long.toHexString(register.GetID().longValue());
+		return "Register:"+Long.toHexString(register.GetID().longValue());
 	}
 
 	public static String getModuleId(SBModule module) {
-		return module.GetFileSpec().GetFilename();
+		return "Module:"+module.GetFileSpec().GetFilename();
 	}
 	
 	public static String getModuleSectionId(SBModule module, SBSection section) {
-		return getModuleId(module)+":"+section.GetName();
+		return "Section:"+getModuleId(module)+":"+section.GetName();
 	}
 
 	public static String getRegionId(SBMemoryRegionInfo region) {
-		return Long.toHexString(region.GetRegionBase().longValue());
+		return "Region:"+Long.toHexString(region.GetRegionBase().longValue());
 	}
 
 	public static String getSymbolId(SBSymbol sym) {
-		return sym.GetName();
+		return "Symbol:"+sym.GetName();
 	}
 	
 	public static String getBreakpointId(SBBreakpoint spec) {
-		return Integer.toHexString(spec.GetID());
+		return "Breakpoint:"+Integer.toHexString(spec.GetID());
 	}
 
 	public static String getBreakpointLocationId(SBBreakpointLocation loc) {
-		return Long.toHexString(loc.GetAddress().GetOffset().longValue());
+		return "Location:"+Long.toHexString(loc.GetAddress().GetOffset().longValue());
 	}
 
 	public static TargetExecutionState convertState(StateType state) {
