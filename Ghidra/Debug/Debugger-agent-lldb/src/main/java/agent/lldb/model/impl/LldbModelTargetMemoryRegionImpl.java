@@ -61,7 +61,6 @@ public class LldbModelTargetMemoryRegionImpl extends LldbModelTargetObjectImpl
 	public LldbModelTargetMemoryRegionImpl(LldbModelTargetMemoryContainer memory,
 			SBMemoryRegionInfo region) {
 		super(memory.getModel(), memory, keySection(region), region, "Region");
-		this.getModel().addModelObject(DebugClient.getRegionId(region), this);
 
 		this.changeAttributes(List.of(), List.of(), Map.of( //
 			MEMORY_ATTRIBUTE_NAME, memory, //

@@ -50,7 +50,7 @@ public class LldbListThreadsCommand extends AbstractLldbCommand<Map<String, SBTh
 			if (updatedThreadIds.containsKey(id)) {
 				continue; // Do nothing, we're in sync
 			}
-			manager.removeThread(DebugClient.getProcessId(process), id);
+			manager.removeThread(DebugClient.getId(process), id);
 		}
 		return manager.getKnownThreads(process);
 	}
@@ -61,7 +61,7 @@ public class LldbListThreadsCommand extends AbstractLldbCommand<Map<String, SBTh
 		long n = process.GetNumThreads();
 		for (int i = 0; i < n; i++) {
 			SBThread thread = process.GetThreadAtIndex(i);
-			updatedThreadIds.put(DebugClient.getThreadId(thread), thread);
+			updatedThreadIds.put(DebugClient.getId(thread), thread);
 		}
 	}
 

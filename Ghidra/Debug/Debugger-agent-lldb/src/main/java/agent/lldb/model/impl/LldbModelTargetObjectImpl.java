@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import SWIG.StateType;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbStateListener;
 import agent.lldb.model.AbstractLldbModel;
@@ -55,6 +56,7 @@ public class LldbModelTargetObjectImpl extends DefaultTargetObject<TargetObject,
 	public LldbModelTargetObjectImpl(AbstractLldbModel impl, TargetObject parent, String name, Object modelObject,
 			String typeHint) {
 		super(impl, parent, name, typeHint);
+		getModel().addModelObject(modelObject, this);
 		this.setModelObject(modelObject);
 		getManager().addStateListener(accessListener);
 	}

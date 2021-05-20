@@ -51,7 +51,7 @@ public class LldbListProcessesCommand extends AbstractLldbCommand<Map<String, SB
 			}
 			manager.addProcessIfAbsent(session, updatedProcesses.get(id));
 		}
-		String sessionId = DebugClient.getSessionId(session);
+		String sessionId = DebugClient.getId(session);
 		for (String id : new ArrayList<>(cur)) {
 			if (updatedProcesses.containsKey(id)) {
 				continue; // Do nothing, we're in sync
@@ -65,6 +65,6 @@ public class LldbListProcessesCommand extends AbstractLldbCommand<Map<String, SB
 	public void invoke() {	
 		SBProcess p = session.GetProcess();
 		updatedProcesses = new HashMap<>();
-		updatedProcesses.put(DebugClient.getProcessId(p), p);
+		updatedProcesses.put(DebugClient.getId(p), p);
 	}
 }

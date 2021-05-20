@@ -45,7 +45,7 @@ public class LldbListStackFrameRegisterBanksCommand extends AbstractLldbCommand<
 		long n = registers.GetSize();
 		for (int i = 0; i < n; i++) {
 			SBValue bank = registers.GetValueAtIndex(i);
-			result.put(DebugClient.getBankId(frame, bank), bank);
+			result.put(DebugClient.getId(bank), bank);
 		}
 	}
 }

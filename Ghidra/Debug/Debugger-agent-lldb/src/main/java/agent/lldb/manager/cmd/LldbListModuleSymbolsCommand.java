@@ -43,7 +43,7 @@ public class LldbListModuleSymbolsCommand extends AbstractLldbCommand<Map<String
 		long n = module.GetNumSymbols();
 		for (int i = 0; i < n; i++) {
 			SBSymbol sym = module.GetSymbolAtIndex(i);
-			result.put(DebugClient.getSymbolId(sym), sym);
+			result.put(DebugClient.getId(sym), sym);
 		}
 	}
 }

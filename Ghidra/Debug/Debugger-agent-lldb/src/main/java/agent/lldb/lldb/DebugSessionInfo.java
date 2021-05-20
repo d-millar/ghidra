@@ -31,7 +31,7 @@ public class DebugSessionInfo {
 
 	public DebugSessionInfo(SBTarget session) {
 		this.session = session;
-		this.id = DebugClient.getSessionId(session);
+		this.id = DebugClient.getId(session);
 	}
 
 	public String toString() {

@@ -31,9 +31,9 @@ public class LldbProcessSelectedEvent extends AbstractLldbEvent<String> {
 	 * @param id dbgeng-defined id
 	 */
 	public LldbProcessSelectedEvent(SBProcess process) {
-		super(DebugClient.getProcessId(process));
+		super(DebugClient.getId(process));
 		this.process = process;
-		this.id = DebugClient.getProcessId(process);
+		this.id = DebugClient.getId(process);
 	}
 
 	/**

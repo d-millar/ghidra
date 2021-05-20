@@ -46,7 +46,7 @@ public class LldbModelTargetModuleImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetModule {
 	
 	protected static String indexModule(SBModule module) {
-		return DebugClient.getModuleId(module);
+		return DebugClient.getId(module);
 	}
 
 	protected static String keyModule(SBModule module) {
@@ -60,7 +60,6 @@ public class LldbModelTargetModuleImpl extends LldbModelTargetObjectImpl
 
 	public LldbModelTargetModuleImpl(LldbModelTargetModuleContainerImpl modules, SBModule module) {
 		super(modules.getModel(), modules, keyModule(module), module, "Module");
-		this.getModel().addModelObject(DebugClient.getModuleId(module), this);
 		this.session = modules.session;
 
 		//this.symbols = new LldbModelTargetSymbolContainerImpl(this);

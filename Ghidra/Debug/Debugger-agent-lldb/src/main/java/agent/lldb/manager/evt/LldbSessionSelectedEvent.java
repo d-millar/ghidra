@@ -31,9 +31,9 @@ public class LldbSessionSelectedEvent extends AbstractLldbEvent<String> {
 	 * @param session dbgeng-defined session
 	 */
 	public LldbSessionSelectedEvent(SBTarget session) {
-		super(DebugClient.getSessionId(session));
+		super(DebugClient.getId(session));
 		this.session = session;
-		this.id = DebugClient.getSessionId(session);
+		this.id = DebugClient.getId(session);
 	}
 
 	/**

@@ -65,7 +65,7 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 		changeElements(List.of(), List.of(targetThread), Map.of(), "Created");
 		targetThread.threadStateChangedSpecific(StateType.eStateConnected, LldbReason.getReason(null));
 		getListeners().fire.event(getProxy(), targetThread, TargetEventType.THREAD_CREATED,
-			"Thread " +  DebugClient.getThreadId(thread) + " started", List.of(targetThread));
+			"Thread " +  DebugClient.getId(thread) + " started", List.of(targetThread));
 	}
 
 	@Override
@@ -135,7 +135,7 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 	@Override
 	public synchronized LldbModelTargetThread getTargetThread(SBThread thread) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(DebugClient.getThreadId(thread));
+		TargetObject modelObject = impl.getModelObject(thread);
 		if (modelObject != null) {
 			return (LldbModelTargetThread) modelObject;
 		}

@@ -88,7 +88,6 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetObjectImpl
 			SBBreakpoint bpt) {
 		super(breakpoints.getModel(), breakpoints, keyBreakpoint(bpt), bpt, "BreakpointSpec");
 		this.breakpoints = breakpoints;
-		this.getModel().addModelObject(DebugClient.getBreakpointId(bpt), this);
 		//this.setBreakpointInfo(info);
 
 		updateInfo(bpt, "Created");

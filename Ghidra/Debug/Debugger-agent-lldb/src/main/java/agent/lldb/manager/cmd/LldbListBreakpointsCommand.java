@@ -64,7 +64,7 @@ public class LldbListBreakpointsCommand extends AbstractLldbCommand<Map<String, 
 		long n = session.GetNumBreakpoints();
 		for (int i = 0; i < n; i++) {
 			SBBreakpoint bpt = session.GetBreakpointAtIndex(i);
-			updatedBreakpoints.put(DebugClient.getBreakpointId(bpt), bpt);
+			updatedBreakpoints.put(DebugClient.getId(bpt), bpt);
 		}
 	}
 }

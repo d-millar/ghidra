@@ -23,6 +23,7 @@ import java.util.concurrent.RejectedExecutionException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbManager;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import agent.lldb.model.AbstractLldbModel;
@@ -160,25 +161,16 @@ public class LldbModelImpl extends AbstractLldbModel implements DebuggerObjectMo
 
 	@Override
 	public void addModelObject(Object object, TargetObject targetObject) {
-		if (!(object instanceof String)) {
-			throw new RuntimeException("addModelObject requires String: "+object);
-		}
-		objectMap.put(object, targetObject);
+		objectMap.put(DebugClient.getModelKey(object), targetObject);
 	}
 
 	@Override
 	public TargetObject getModelObject(Object object) {
-		if (!(object instanceof String)) {
-			throw new RuntimeException("getModelObject requires String: "+object);
-		}
-		return objectMap.get(object);
+		return objectMap.get(DebugClient.getModelKey(object));
 	}
 
 	public void deleteModelObject(Object object) {
-		if (!(object instanceof String)) {
-			throw new RuntimeException("deleteModeOject requires String: "+object);
-		}
-		objectMap.remove(object);
+		objectMap.remove(DebugClient.getModelKey(object));
 	}
 
 	@Override

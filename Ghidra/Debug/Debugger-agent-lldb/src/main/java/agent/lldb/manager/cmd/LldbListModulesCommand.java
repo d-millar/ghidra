@@ -60,7 +60,7 @@ public class LldbListModulesCommand extends AbstractLldbCommand<Map<String, SBMo
 		long n = session.GetNumModules();
 		for (int i = 0; i < n; i++) {
 			SBModule module = session.GetModuleAtIndex(i);
-			updatedModules.put(DebugClient.getModuleId(module), module);
+			updatedModules.put(DebugClient.getId(module), module);
 		}
 	}
 

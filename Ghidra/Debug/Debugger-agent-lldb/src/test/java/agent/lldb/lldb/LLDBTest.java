@@ -120,12 +120,12 @@ public class LLDBTest extends AbstractGhidraHeadlessIntegrationTest {
 			SBTarget target = sbd.CreateTarget(cmdLine);
 			process = target.LaunchSimple(null, null, null);
 			assertNotNull(process);
-			System.out.println(DebugClient.getProcessId(process)+":"+process.GetUniqueID());
+			System.out.println(DebugClient.getId(process)+":"+process.GetUniqueID());
 			SBProcessInfo pi = process.GetProcessInfo();
 			assertNotNull(pi);
 			SBThread thread = process.GetThreadAtIndex(0);
 			assertNotNull(thread);
-			System.out.println(DebugClient.getThreadId(thread)+":"+process.GetUniqueID());
+			System.out.println(DebugClient.getId(thread)+":"+process.GetUniqueID());
 			thread.Resume();
 		}
 

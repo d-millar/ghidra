@@ -67,7 +67,7 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 			System.err.println("Module "+info.getModuleName(index)+" not found!");
 			return;
 		}
-		String tid = DebugClient.getThreadId(getManager().getEventThread());
+		String tid = DebugClient.getId(getManager().getEventThread());
 		TargetThread eventThread =
 			(TargetThread) getModel().getModelObject(tid);
 		changeElements(List.of(), List.of(targetModule), Map.of(), "Loaded");
@@ -80,13 +80,13 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 	public void libraryUnloaded(DebugModuleInfo info, int index) {
 		LldbModelTargetModule targetModule = getTargetModule(info.getModule(index));
 		if (targetModule != null) {
-			String tid = DebugClient.getThreadId(getManager().getEventThread());
+			String tid = DebugClient.getId(getManager().getEventThread());
 			TargetThread eventThread =
 				(TargetThread) getModel().getModelObject(tid);
 			getListeners().fire.event(getProxy(), eventThread, TargetEventType.MODULE_UNLOADED,
 				"Library " + info.getModuleName(index) + " unloaded", List.of(targetModule));
 			LldbModelImpl impl = (LldbModelImpl) model;
-			impl.deleteModelObject(DebugClient.getModuleId(targetModule.getModule()));
+			impl.deleteModelObject(targetModule.getModule());
 		}
 		changeElements(List.of(info.getModuleName(index)), List.of(), Map.of(), "Unloaded");
 	}
@@ -116,7 +116,7 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 
 	public LldbModelTargetModule getTargetModule(SBModule module) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject targetObject = impl.getModelObject(DebugClient.getModuleId(module));
+		TargetObject targetObject = impl.getModelObject(module);
 		if (targetObject != null) {
 			LldbModelTargetModule targetModule = (LldbModelTargetModule) targetObject;
 			targetModule.setModelObject(module);
