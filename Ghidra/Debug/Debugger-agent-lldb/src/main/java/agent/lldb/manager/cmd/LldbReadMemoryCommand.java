@@ -52,13 +52,9 @@ public class LldbReadMemoryCommand extends AbstractLldbCommand<RangeSet<Long>> {
 	@Override
 	public void invoke() {
 		BigInteger offset = addr.getOffsetAsBigInteger();
-		SWIGTYPE_p_void buffer = null;
 		SBError error = new SBError();
-		long read = process.ReadMemory(offset, buffer, len, error);
-		System.err.println("HIMOM");
-		/*
+		//long read = process.ReadMemory(offset, buffer, len, error);
 		for (int i = 0; i < len; i += 8) {
-			Long sz = 8L;
 			BigInteger increment = new BigInteger(Integer.toString(i));
 			BigInteger res = process.ReadPointerFromMemory(offset.add(increment), error);
 			byte[] bytes = res.toByteArray();
@@ -66,6 +62,5 @@ public class LldbReadMemoryCommand extends AbstractLldbCommand<RangeSet<Long>> {
 				buf.put(i + j, bytes[bytes.length - j - 1]);
 			}
 		}
-		*/
 	}
 }
