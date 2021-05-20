@@ -28,6 +28,6 @@ public interface LldbModelTargetThreadContainer extends //
 
 	public void threadCreated(SBThread thread);
 
-	public void threadExited(String threadId);
+	public void threadExited(SBThread thread);
 
 }

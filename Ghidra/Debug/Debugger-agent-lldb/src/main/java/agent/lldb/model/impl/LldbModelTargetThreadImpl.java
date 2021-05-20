@@ -29,10 +29,7 @@ import agent.lldb.manager.cmd.LldbSetActiveThreadCommand;
 import agent.lldb.manager.cmd.LldbStepCommand;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import agent.lldb.model.iface1.LldbModelTargetFocusScope;
-import agent.lldb.model.iface2.LldbModelTargetProcess;
-import agent.lldb.model.iface2.LldbModelTargetRegisterContainerAndBank;
-import agent.lldb.model.iface2.LldbModelTargetThread;
-import agent.lldb.model.iface2.LldbModelTargetThreadContainer;
+import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetEnvironment;
 import ghidra.dbg.target.TargetFocusScope;
 import ghidra.dbg.target.schema.TargetAttributeType;
@@ -78,6 +75,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 	public LldbModelTargetThreadImpl(LldbModelTargetThreadContainer threads,
 			LldbModelTargetProcess process, SBThread thread) {
 		super(threads.getModel(), threads, keyThread(thread), thread, "Thread");
+		getModel().addModelObject(thread, this);
 		this.process = process;
 
 		this.stack = new LldbModelTargetStackImpl(this, process);

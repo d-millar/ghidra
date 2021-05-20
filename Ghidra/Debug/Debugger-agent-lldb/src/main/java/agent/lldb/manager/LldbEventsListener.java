@@ -119,7 +119,7 @@ public interface LldbEventsListener {
 	 * @param process a handle to the process to which the thread belonged
 	 * @param cause the cause of this event
 	 */
-	void threadExited(String threadId, SBProcess process, LldbCause cause);
+	void threadExited(SBThread thread, SBProcess process, LldbCause cause);
 
 	/**
 	 * A different thread has been selected (gained focus)

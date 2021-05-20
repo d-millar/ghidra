@@ -1629,10 +1629,6 @@ public class LldbManagerImpl implements LldbManager {
 			new LldbConsoleExecCommand(this, command, LldbConsoleExecCommand.Output.CAPTURE));
 	}
 
-	public void fireThreadExited(String id, SBProcess process, LldbCause cause) {
-		getEventListeners().fire.threadExited(id, process, cause);
-	}
-
 	@Override
 	public StateType getState() {
 		if (currentProcess == null) {

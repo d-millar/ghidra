@@ -45,11 +45,13 @@ public class LldbModelTargetStackFrameRegisterImpl
 	protected static String keyRegister(SBValue register) {
 		return PathUtils.makeKey(indexRegister(register));
 	}
+	
+	String value = "";
 
 	public LldbModelTargetStackFrameRegisterImpl(LldbModelTargetStackFrameRegisterBankImpl bank,
 			SBValue register) {
 		super(bank.getModel(), bank, keyRegister(register), register, "Register");
-		String value = register.GetValue();
+		value = register.GetValue();
 		
 		changeAttributes(List.of(), Map.of( //
 			CONTAINER_ATTRIBUTE_NAME, bank, //
@@ -76,12 +78,23 @@ public class LldbModelTargetStackFrameRegisterImpl
 	}
 	
 	public byte [] getBytes() {
-		String value = getValue();
+		String oldValue = value;
+		value = getValue();
 		if (value == null) {
 			return new byte[0];
 		}
-		BigInteger val = new BigInteger(value);
+		BigInteger val = new BigInteger(value.substring(2), 16);
 		byte[] bytes = ConversionUtils.bigIntegerToBytes((int) getRegister().GetByteSize(), val);
+		changeAttributes(List.of(), Map.of( //
+			VALUE_ATTRIBUTE_NAME, value //
+		), "Refreshed");
+		if (val.longValue() != 0) {
+			String newval = getDisplay();
+			changeAttributes(List.of(), Map.of( //
+				DISPLAY_ATTRIBUTE_NAME, newval //
+			), "Refreshed");
+			setModified(!value.equals(oldValue));
+		}
 		return bytes;
 	}
 	

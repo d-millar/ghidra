@@ -81,9 +81,10 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 	}
 
 	@Override
-	public void threadExited(String threadId) {
+	public void threadExited(SBThread thread) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		LldbModelTargetThread targetThread = (LldbModelTargetThread) impl.getModelObject(threadId);
+		String threadId = LldbModelTargetThreadImpl.indexThread(thread);
+		LldbModelTargetThread targetThread = (LldbModelTargetThread) getMapObject(thread);
 		if (targetThread != null) {
 			getListeners().fire.event(getProxy(), targetThread, TargetEventType.THREAD_EXITED,
 				"Thread " + threadId + " exited", List.of(targetThread));
@@ -134,10 +135,11 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 
 	@Override
 	public synchronized LldbModelTargetThread getTargetThread(SBThread thread) {
-		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject modelObject = impl.getModelObject(thread);
-		if (modelObject != null) {
-			return (LldbModelTargetThread) modelObject;
+		TargetObject targetObject = getMapObject(thread);
+		if (targetObject != null) {
+			LldbModelTargetThread targetThread = (LldbModelTargetThread) targetObject;
+			targetThread.setModelObject(thread);
+			return targetThread;
 		}
 		return new LldbModelTargetThreadImpl(this, (LldbModelTargetProcess) parent, thread);
 	}

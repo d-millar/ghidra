@@ -26,15 +26,18 @@ import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetObject;
-import ghidra.dbg.target.schema.TargetAttributeType;
+import ghidra.dbg.target.schema.*;
 import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
-import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 
 @TargetObjectSchemaInfo(
 	name = "RegisterValueContainer",
-	elementResync = ResyncMode.ONCE,
+	elementResync = ResyncMode.ALWAYS,
+	elements = {
+		@TargetElementType(type = LldbModelTargetStackFrameRegisterBankImpl.class)
+	},
 	attributes = {
-		@TargetAttributeType(type = Void.class) },
+		@TargetAttributeType(type = Void.class) 
+	},
 	canonicalContainer = true)
 public class LldbModelTargetStackFrameRegisterContainerImpl
 		extends LldbModelTargetObjectImpl
@@ -66,8 +69,7 @@ public class LldbModelTargetStackFrameRegisterContainerImpl
 
 	@Override
 	public LldbModelTargetRegisterBank getTargetRegisterBank(SBValue val) {
-		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject targetObject = impl.getModelObject(val);
+		TargetObject targetObject = getMapObject(val);
 		if (targetObject != null) {
 			LldbModelTargetRegisterBank targetBank = (LldbModelTargetRegisterBank) targetObject;
 			targetBank.setModelObject(val);
@@ -78,12 +80,14 @@ public class LldbModelTargetStackFrameRegisterContainerImpl
 
 	public void threadStateChangedSpecific(StateType state, LldbReason reason) {
 		if (state.equals(StateType.eStateStopped)) {
-			for (TargetObject element : getCachedElements().values()) {
-				if (element instanceof LldbModelTargetRegisterBank) {
-					LldbModelTargetRegisterBank bank = (LldbModelTargetRegisterBank) element;
-					bank.threadStateChangedSpecific(state, reason);
-				}
-			} 
+			requestElements(false).thenAccept(__ -> {
+				for (TargetObject element : getCachedElements().values()) {
+					if (element instanceof LldbModelTargetRegisterBank) {
+						LldbModelTargetRegisterBank bank = (LldbModelTargetRegisterBank) element;
+						bank.threadStateChangedSpecific(state, reason);
+					}
+				} 
+			});
 		}
 	}
 
