@@ -2,15 +2,7 @@ package agent.lldb.lldb;
 
 import static org.junit.Assume.assumeTrue;
 
-import SWIG.SBCommandInterpreter;
-import SWIG.SBCommandReturnObject;
-import SWIG.SBDebugger;
-import SWIG.SBEvent;
-import SWIG.SBListener;
-import SWIG.SBProcess;
-import SWIG.SBTarget;
-import SWIG.SBThread;
-import SWIG.StateType;
+import SWIG.*;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.LldbManager;
 import agent.lldb.manager.evt.LldbBreakpointModifiedEvent;
@@ -113,7 +105,10 @@ public class DebugClientImpl implements DebugClient {
 	@Override
 	public void createProcess(DebugServerId si, String commandLine, BitmaskSet<DebugCreateFlags> createFlags) {
 		session = connectSession("/opt/X11/bin/xclock-x86_64");
-		SBProcess process = session.LaunchSimple(null, null, null);
+		SBListener listener = new SBListener();
+		SBError error = new SBError();
+		SBProcess process = session.Launch(listener, null, null, "", "", "", "", 0, true, error);
+		//SBProcess process = session.LaunchSimple(null, null, null);
 		/*
 		listener = new SBListener(process.GetProcessID().toString());
 		broadcaster = process.GetBroadcaster();

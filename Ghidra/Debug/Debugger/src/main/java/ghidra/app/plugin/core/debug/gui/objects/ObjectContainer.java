@@ -147,7 +147,7 @@ public class ObjectContainer implements Comparable<ObjectContainer> {
 		if (targetObject == null) {
 			return CompletableFuture.completedFuture(null);
 		}
-		return targetObject.resync(true, true).thenApply(__ -> {
+		return targetObject.resync(false, false).thenApply(__ -> {
 			rebuildContainers(targetObject.getCachedElements(), targetObject.getCachedAttributes());
 			propagateProvider(provider);
 			return this;
