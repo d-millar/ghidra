@@ -310,53 +310,61 @@ public interface DebugClient extends DebugClientReentrant {
 			return value;
 		}
 	}
-	
-	public static String getSessionId(SBTarget session) {
-		return "Session:"+Long.toHexString(session.GetProcess().GetUniqueID());
+
+	public static String getModelKey(Object modelObject) {
+		return modelObject.getClass()+":"+getId(modelObject);
 	}
 
-	public static String getProcessId(SBProcess process) {
-		return "Process:"+Integer.toHexString(process.GetProcessID().intValue());
-	}
-
-	public static String getThreadId(SBThread thread) {
-		return "Thread:"+Integer.toHexString(thread.GetThreadID().intValue());
-	}
-
-	public static String getFrameId(SBFrame frame) {
-		return "Frame:"+Long.toHexString(frame.GetFrameID());
-	}
-
-	public static String getBankId(SBFrame frame, SBValue bank) {
-		return "Bank:"+getFrameId(frame)+":"+Long.toHexString(bank.GetID().longValue());
-	}
-
-	public static String getRegisterId(SBValue register) {
-		return "Register:"+Long.toHexString(register.GetID().longValue());
-	}
-
-	public static String getModuleId(SBModule module) {
-		return "Module:"+module.GetFileSpec().GetFilename();
-	}
-	
-	public static String getModuleSectionId(SBModule module, SBSection section) {
-		return "Section:"+getModuleId(module)+":"+section.GetName();
-	}
-
-	public static String getRegionId(SBMemoryRegionInfo region) {
-		return "Region:"+Long.toHexString(region.GetRegionBase().longValue());
-	}
-
-	public static String getSymbolId(SBSymbol sym) {
-		return "Symbol:"+sym.GetName();
-	}
-	
-	public static String getBreakpointId(SBBreakpoint spec) {
-		return "Breakpoint:"+Integer.toHexString(spec.GetID());
-	}
-
-	public static String getBreakpointLocationId(SBBreakpointLocation loc) {
-		return "Location:"+Long.toHexString(loc.GetAddress().GetOffset().longValue());
+	public static String getId(Object modelObject) {
+		if (modelObject instanceof SBTarget) {
+			SBTarget session = (SBTarget) modelObject;
+			return Long.toHexString(session.GetProcess().GetUniqueID());
+		}
+		if (modelObject instanceof SBProcess) {
+			SBProcess process = (SBProcess) modelObject;
+			return Integer.toHexString(process.GetProcessID().intValue());
+		}
+		if (modelObject instanceof SBThread) {
+			SBThread thread = (SBThread) modelObject;
+			return Integer.toHexString(thread.GetThreadID().intValue());
+		}
+		if (modelObject instanceof SBFrame) {
+			SBFrame frame = (SBFrame) modelObject;
+			return Long.toHexString(frame.GetFrameID());
+		}
+		if (modelObject instanceof SBValue) {
+			SBValue val = (SBValue) modelObject;
+			if (val.GetName().contains("Registers")) {
+				return getId(val.GetFrame())+":"+Long.toHexString(val.GetID().longValue());
+			} else {
+				return Long.toHexString(val.GetID().longValue());
+			}
+		}
+		if (modelObject instanceof SBModule) {
+			SBModule module = (SBModule) modelObject;
+			return module.GetFileSpec().GetFilename();
+		}
+		if (modelObject instanceof SBSection) {
+			SBSection section = (SBSection) modelObject;
+			return section.GetName()+":"+section.GetFileAddress();
+		}
+		if (modelObject instanceof SBMemoryRegionInfo) {
+			SBMemoryRegionInfo region = (SBMemoryRegionInfo) modelObject;
+			return Long.toHexString(region.GetRegionBase().longValue());
+		}
+		if (modelObject instanceof SBSymbol) {
+			SBSymbol sym = (SBSymbol) modelObject;
+			return sym.GetName();
+		}
+		if (modelObject instanceof SBBreakpoint) {
+			SBBreakpoint spec = (SBBreakpoint) modelObject;
+			return Integer.toHexString(spec.GetID());
+		}
+		if (modelObject instanceof SBBreakpointLocation) {
+			SBBreakpointLocation loc= (SBBreakpointLocation) modelObject;
+			return Long.toHexString(loc.GetAddress().GetOffset().longValue());
+		}
+		throw new RuntimeException("Unknown object "+modelObject.getClass());
 	}
 
 	public static TargetExecutionState convertState(StateType state) {

@@ -89,7 +89,7 @@ public class LldbModelTargetBreakpointContainerImpl extends LldbModelTargetObjec
 
 	public LldbModelTargetBreakpointSpec getTargetBreakpointSpec(SBBreakpoint bpt) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject targetObject = impl.getModelObject(DebugClient.getBreakpointId(bpt));
+		TargetObject targetObject = impl.getModelObject(bpt);
 		if (targetObject != null) {
 			LldbModelTargetBreakpointSpec spec = (LldbModelTargetBreakpointSpec) targetObject;
 			spec.setModelObject(bpt);

@@ -65,7 +65,7 @@ public class LldbModelTargetSymbolContainerImpl extends LldbModelTargetObjectImp
 	@Override
 	public synchronized LldbModelTargetSymbolImpl getTargetSymbol(SBSymbol symbol) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject targetObject = impl.getModelObject(DebugClient.getSymbolId(symbol));
+		TargetObject targetObject = impl.getModelObject(symbol);
 		if (targetObject != null) {
 			LldbModelTargetSymbolImpl targetSymbol = (LldbModelTargetSymbolImpl) targetObject;
 			targetSymbol.setModelObject(symbol);

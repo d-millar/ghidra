@@ -43,7 +43,7 @@ public class LldbListStackFrameRegistersCommand extends AbstractLldbCommand<Map<
 		long n = bank.GetNumChildren();
 		for (int i = 0; i < n; i++) {
 			SBValue child = bank.GetChildAtIndex(i, DynamicValueType.eDynamicCanRunTarget, true);
-			result.put(DebugClient.getRegisterId(child), child);
+			result.put(DebugClient.getId(child), child);
 		}
 	}
 }

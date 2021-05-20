@@ -64,7 +64,7 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 		changeElements(List.of(), List.of(process), Map.of(), "Added");
 		process.processStarted(proc);
 		getListeners().fire.event(getProxy(), null, TargetEventType.PROCESS_CREATED,
-			"Process " + DebugClient.getProcessId(proc) + " started " + process.getName(),
+			"Process " + DebugClient.getId(proc) + " started " + process.getName(),
 			List.of(process));
 	}
 
@@ -135,7 +135,7 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 	@Override
 	public synchronized LldbModelTargetProcess getTargetProcess(SBProcess process) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject targetObject = impl.getModelObject(DebugClient.getProcessId(process));
+		TargetObject targetObject = impl.getModelObject(process);
 		if (targetObject != null) {
 			LldbModelTargetProcess targetProcess = (LldbModelTargetProcess) targetObject;
 			targetProcess.setModelObject(process);

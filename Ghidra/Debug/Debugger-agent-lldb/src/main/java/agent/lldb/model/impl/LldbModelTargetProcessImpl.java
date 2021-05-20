@@ -48,7 +48,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 		TargetAttachKind.BY_OBJECT_REF, TargetAttachKind.BY_ID);
 
 	protected static String indexProcess(SBProcess process) {
-		return DebugClient.getProcessId(process);
+		return DebugClient.getId(process);
 	}
 
 	protected static String keyProcess(SBProcess process) {
@@ -64,7 +64,6 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 
 	public LldbModelTargetProcessImpl(LldbModelTargetProcessContainer processes, SBProcess process) {
 		super(processes.getModel(), processes, keyProcess(process), process, "Process");
-		this.getModel().addModelObject(DebugClient.getProcessId(process), this);
 		getManager().getClient().addBroadcaster(process);
 
 		this.memory = new LldbModelTargetMemoryContainerImpl(this);
@@ -93,7 +92,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 			return "[kernel]";
 		}
 
-		String pidstr = DebugClient.getProcessId(getProcess());
+		String pidstr = DebugClient.getId(getProcess());
 		if (base == 16) {
 			pidstr = "0x" + pidstr;
 		}
@@ -187,7 +186,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 				EXIT_CODE_ATTRIBUTE_NAME, proc.GetExitDescription() //
 			), "Exited");
 			getListeners().fire.event(getProxy(), null, TargetEventType.PROCESS_EXITED,
-				"Process " + DebugClient.getProcessId(getProcess()) + " exited code=" + proc.GetExitDescription(),
+				"Process " + DebugClient.getId(getProcess()) + " exited code=" + proc.GetExitDescription(),
 				List.of(getProxy()));
 		}
 	}

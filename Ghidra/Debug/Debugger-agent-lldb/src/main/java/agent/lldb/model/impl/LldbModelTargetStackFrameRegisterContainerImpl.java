@@ -67,7 +67,7 @@ public class LldbModelTargetStackFrameRegisterContainerImpl
 	@Override
 	public LldbModelTargetRegisterBank getTargetRegisterBank(SBValue val) {
 		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject targetObject = impl.getModelObject(DebugClient.getBankId(frame.getFrame(), val));
+		TargetObject targetObject = impl.getModelObject(val);
 		if (targetObject != null) {
 			LldbModelTargetRegisterBank targetBank = (LldbModelTargetRegisterBank) targetObject;
 			targetBank.setModelObject(val);

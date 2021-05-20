@@ -118,7 +118,7 @@ public class LldbManagerImpl implements LldbManager {
 	@Override
 	public SBThread getThread(SBProcess process, String tid) {
 		synchronized (threads) {
-			return threads.get(DebugClient.getProcessId(process)).get(tid);
+			return threads.get(DebugClient.getId(process)).get(tid);
 		}
 	}
 
@@ -128,9 +128,9 @@ public class LldbManagerImpl implements LldbManager {
 			Map<String, SBThread> map = threads.get(process);
 			if (map == null) {
 				map = new HashMap<>();
-				threads.put(DebugClient.getProcessId(process), map);
+				threads.put(DebugClient.getId(process), map);
 			}
-			String id = DebugClient.getThreadId(thread);
+			String id = DebugClient.getId(thread);
 			if (!map.containsKey(id)) {
 				map.put(id, thread);
 				getClient().processEvent(new LldbThreadCreatedEvent(new DebugThreadInfo(thread)));
@@ -152,10 +152,10 @@ public class LldbManagerImpl implements LldbManager {
 				throw new IllegalArgumentException("There is no process with id " + id);
 			}
 			Set<String> toRemove = new HashSet<>();
-			String processId = DebugClient.getProcessId(proc);
+			String processId = DebugClient.getId(proc);
 			for (String tid : threads.get(processId).keySet()) {
 				SBThread thread = threads.get(processId).get(tid);
-				String pid = DebugClient.getProcessId(thread.GetProcess());
+				String pid = DebugClient.getId(thread.GetProcess());
 				if (pid.equals(id)) {
 					toRemove.add(tid);
 				}
@@ -178,7 +178,7 @@ public class LldbManagerImpl implements LldbManager {
 	@Override
 	public SBProcess getProcess(SBTarget session, String id) {
 		synchronized (processes) {
-			String sessionId = DebugClient.getSessionId(session);
+			String sessionId = DebugClient.getId(session);
 			SBProcess result = processes.get(sessionId).get(id);
 			if (result == null) {
 				throw new IllegalArgumentException("There is no process with id " + id);
@@ -190,13 +190,13 @@ public class LldbManagerImpl implements LldbManager {
 	public void addProcessIfAbsent(SBTarget session, SBProcess process) {
 		synchronized (processes) {
 			if (!session.IsValid()) return;
-			String sessionId = DebugClient.getSessionId(session);
+			String sessionId = DebugClient.getId(session);
 			Map<String, SBProcess> map = processes.get(sessionId);
 			if (map == null) {
 				map = new HashMap<>();
 				processes.put(sessionId, map);
 			}
-			String id = DebugClient.getProcessId(process);
+			String id = DebugClient.getId(process);
 			if (!map.containsKey(id) && process.IsValid()) {
 				map.put(id, process);
 				getClient().processEvent(new LldbProcessCreatedEvent(new DebugProcessInfo(process)));
@@ -233,7 +233,7 @@ public class LldbManagerImpl implements LldbManager {
 
 	public void addSessionIfAbsent(SBTarget session) {
 		synchronized (sessions) {
-			String id = DebugClient.getSessionId(session);
+			String id = DebugClient.getId(session);
 			if (!sessions.containsKey(id) || !session.equals(sessions.get(id))) {
 				if (sessions.containsKey(id)) {
 					removeSession(sessions.get(id));
@@ -252,7 +252,7 @@ public class LldbManagerImpl implements LldbManager {
 	 */
 	public void removeModule(SBTarget session, String id) {
 		synchronized (modules) {
-			if (modules.get(DebugClient.getSessionId(session)).remove(id) == null) {
+			if (modules.get(DebugClient.getId(session)).remove(id) == null) {
 				throw new IllegalArgumentException("There is no module with id " + id);
 			}
 		}
@@ -261,20 +261,20 @@ public class LldbManagerImpl implements LldbManager {
 	@Override
 	public SBModule getModule(SBTarget session, String id) {
 		synchronized (modules) {
-			return modules.get(DebugClient.getSessionId(session)).get(id);
+			return modules.get(DebugClient.getId(session)).get(id);
 		}
 	}
 
 	public void addModuleIfAbsent(SBTarget session, SBModule module) {
 		synchronized (modules) {
 			if (!session.IsValid()) return;
-			String sessionId = DebugClient.getSessionId(session);
+			String sessionId = DebugClient.getId(session);
 			Map<String, SBModule> map = modules.get(sessionId);
 			if (map == null) {
 				map = new HashMap<>();
 				modules.put(sessionId, map);
 			}
-			String id = DebugClient.getModuleId(module);
+			String id = DebugClient.getId(module);
 			if (!map.containsKey(id)) {
 				map.put(id, module);
 				getClient().processEvent(new LldbModuleLoadedEvent(new DebugModuleInfo(eventProcess, module)));
@@ -287,7 +287,7 @@ public class LldbManagerImpl implements LldbManager {
 	 */
 	public void removeBreakpoint(SBTarget session, String id) {
 		synchronized (breakpoints) {
-			String sessionId = DebugClient.getSessionId(session);
+			String sessionId = DebugClient.getId(session);
 			if (breakpoints.get(sessionId).remove(id) == null) {
 				throw new IllegalArgumentException("There is no module with id " + id);
 			}
@@ -296,7 +296,7 @@ public class LldbManagerImpl implements LldbManager {
 	
 	public SBBreakpoint getBreakpoint(SBTarget session, String id) {
 		synchronized (breakpoints) {
-			String sessionId = DebugClient.getSessionId(session);
+			String sessionId = DebugClient.getId(session);
 			return breakpoints.get(sessionId).get(id);
 		}
 	}
@@ -304,13 +304,13 @@ public class LldbManagerImpl implements LldbManager {
 	public void addBreakpointIfAbsent(SBTarget session, SBBreakpoint bpt) {
 		synchronized (breakpoints) {
 			if (!session.IsValid()) return;
-			String sessionId = DebugClient.getSessionId(session);
+			String sessionId = DebugClient.getId(session);
 			Map<String, SBBreakpoint> map = breakpoints.get(sessionId);
 			if (map == null) {
 				map = new HashMap<>();
 				breakpoints.put(sessionId, map);
 			}
-			String id = DebugClient.getBreakpointId(bpt);
+			String id = DebugClient.getId(bpt);
 			if (!map.containsKey(id)) {
 				map.put(id, bpt);
 				getClient().processEvent(new LldbBreakpointCreatedEvent(new DebugBreakpointInfo(bpt)));
@@ -320,18 +320,18 @@ public class LldbManagerImpl implements LldbManager {
 		
 	@Override
 	public Map<String, SBThread> getKnownThreads(SBProcess process) {
-		String processId = DebugClient.getProcessId(process);
+		String processId = DebugClient.getId(process);
 		Map<String, SBThread> map = threads.get(processId);
 		if (map == null) {
 			map = new HashMap<>();
-			threads.put(DebugClient.getProcessId(process), map);
+			threads.put(DebugClient.getId(process), map);
 		}
 		return map;
 	}
 
 	@Override
 	public Map<String, SBProcess> getKnownProcesses(SBTarget session) {
-		String sessionId = DebugClient.getSessionId(session);
+		String sessionId = DebugClient.getId(session);
 		Map<String, SBProcess> map = processes.get(sessionId);
 		if (map == null) {
 			map = new HashMap<>();
@@ -347,7 +347,7 @@ public class LldbManagerImpl implements LldbManager {
 
 	@Override
 	public Map<String, SBModule> getKnownModules(SBTarget session) {
-		String sessionId = DebugClient.getSessionId(session);
+		String sessionId = DebugClient.getId(session);
 		Map<String, SBModule> map = modules.get(sessionId);
 		if (map == null) {
 			map = new HashMap<>();
@@ -358,7 +358,7 @@ public class LldbManagerImpl implements LldbManager {
 
 	@Override
 	public Map<String, SBBreakpoint> getKnownBreakpoints(SBTarget session) {
-		String sessionId = DebugClient.getSessionId(session);
+		String sessionId = DebugClient.getId(session);
 		Map<String, SBBreakpoint> map = breakpoints.get(sessionId);
 		if (map == null) {
 			map = new HashMap<>();
@@ -368,8 +368,8 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	private SBBreakpoint addKnownBreakpoint(SBTarget session, SBBreakpoint bpt, boolean expectExisting) {
-		String sessionId = DebugClient.getSessionId(session);
-		String bptId = DebugClient.getBreakpointId(bpt);
+		String sessionId = DebugClient.getId(session);
+		String bptId = DebugClient.getId(bpt);
 		SBBreakpoint old = breakpoints.get(sessionId).put(bptId, bpt);
 		if (expectExisting && old == null) {
 			Msg.warn(this, "Breakpoint " + bptId + " is not known");
@@ -381,7 +381,7 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	private SBBreakpoint getKnownBreakpoint(SBTarget session, String id) {
-		String sessionId = DebugClient.getSessionId(session);
+		String sessionId = DebugClient.getId(session);
 		SBBreakpoint info = breakpoints.get(sessionId).get(id);
 		if (info == null) {
 			Msg.warn(this, "Breakpoint " + id + " is not known");
@@ -390,7 +390,7 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	private SBBreakpoint removeKnownBreakpoint(SBTarget session, String id) {
-		String sessionId = DebugClient.getSessionId(session);
+		String sessionId = DebugClient.getId(session);
 		SBBreakpoint del = breakpoints.get(sessionId).remove(id);
 		if (del == null) {
 			Msg.warn(this, "Breakpoint " + id + " is not known");
@@ -1096,7 +1096,7 @@ public class LldbManagerImpl implements LldbManager {
 			*/
 			if (status.equals(DebugStatus.BREAK)) {
 				waiting = false;
-				processEvent(new LldbStoppedEvent(DebugClient.getThreadId(eventThread)));
+				processEvent(new LldbStoppedEvent(DebugClient.getId(eventThread)));
 				SBProcess process = getCurrentProcess();
 				if (process != null) {
 					processEvent(new LldbProcessSelectedEvent(process));
@@ -1105,7 +1105,7 @@ public class LldbManagerImpl implements LldbManager {
 			}
 			if (status.equals(DebugStatus.GO)) {
 				waiting = true;
-				processEvent(new LldbRunningEvent(DebugClient.getThreadId(eventThread)));
+				processEvent(new LldbRunningEvent(DebugClient.getId(eventThread)));
 				return DebugStatus.GO;
 			}
 			waiting = false;

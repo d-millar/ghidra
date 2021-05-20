@@ -85,7 +85,6 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 	public LldbModelTargetStackFrameImpl(LldbModelTargetStack stack, LldbModelTargetThread thread,
 			SBFrame frame) {
 		super(stack.getModel(), stack, keyFrame(frame), frame, "StackFrame");
-		this.getModel().addModelObject(DebugClient.getFrameId(frame), this);
 		this.thread = thread;
 		this.pc = getModel().getAddressSpace("ram").getAddress(-1);
 

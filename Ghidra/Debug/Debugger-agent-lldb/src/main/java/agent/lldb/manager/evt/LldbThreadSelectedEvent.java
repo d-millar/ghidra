@@ -36,8 +36,8 @@ public class LldbThreadSelectedEvent extends AbstractLldbEvent<String> {
 	 * @param id dbgeng-provided id
 	 */
 	public LldbThreadSelectedEvent(StateType state, SBThread thread, SBFrame frame) {
-		super(DebugClient.getThreadId(thread));
-		this.id = DebugClient.getThreadId(thread);
+		super(DebugClient.getId(thread));
+		this.id = DebugClient.getId(thread);
 		this.state = state;
 		this.thread = thread;
 		this.frame = frame;

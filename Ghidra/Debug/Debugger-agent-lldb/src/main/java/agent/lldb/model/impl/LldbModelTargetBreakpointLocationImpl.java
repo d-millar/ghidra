@@ -47,10 +47,9 @@ public class LldbModelTargetBreakpointLocationImpl extends LldbModelTargetObject
 
 	public LldbModelTargetBreakpointLocationImpl(LldbModelTargetBreakpointLocationContainerImpl locs,
 			SBBreakpointLocation loc) {
-		super(locs.getModel(), locs, keyLocation(loc), "BreakpointLocation");
+		super(locs.getModel(), locs, keyLocation(loc), loc, "BreakpointLocation");
 		this.locs = locs;
 		this.loc = loc;
-		this.getModel().addModelObject(DebugClient.getBreakpointLocationId(loc), this);
 		
 		doChangeAttributes("Initialization");
 	}

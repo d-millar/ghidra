@@ -132,7 +132,7 @@ public class LldbModelTargetRootImpl extends LldbModelDefaultTargetModelRoot
 	public void threadStateChanged(SBThread thread, StateType state, LldbCause cause,
 			LldbReason reason) {
 		LldbModelTargetThread targetThread =
-			(LldbModelTargetThread) getModel().getModelObject(DebugClient.getThreadId(thread));
+			(LldbModelTargetThread) getModel().getModelObject(thread);
 		changeAttributes(List.of(), List.of(), Map.of( //
 			TargetEventScope.EVENT_OBJECT_ATTRIBUTE_NAME, targetThread //
 		), reason.desc());

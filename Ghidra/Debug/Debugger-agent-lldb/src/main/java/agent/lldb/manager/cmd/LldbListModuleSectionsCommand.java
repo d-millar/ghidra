@@ -45,7 +45,7 @@ public class LldbListModuleSectionsCommand extends AbstractLldbCommand<Map<Strin
 		long n = module.GetNumSections();
 		for (int i = 0; i < n; i++) {
 			SBSection section = module.GetSectionAtIndex(i);
-			result.put(DebugClient.getModuleSectionId(module, section), section);
+			result.put(DebugClient.getId(section), section);
 		}
 	}
 }

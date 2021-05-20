@@ -69,7 +69,7 @@ public class DebugModuleInfo {
 
 	public String getModuleName(int index) {
 		SBModule module = modules.get(index);	
-		return DebugClient.getModuleId(module);
+		return DebugClient.getId(module);
 	}
 
 	public void setModuleName(int index, String moduleName) {

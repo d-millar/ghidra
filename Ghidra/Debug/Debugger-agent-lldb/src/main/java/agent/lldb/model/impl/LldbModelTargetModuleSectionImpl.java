@@ -48,7 +48,6 @@ public class LldbModelTargetModuleSectionImpl extends LldbModelTargetObjectImpl
 	public LldbModelTargetModuleSectionImpl(LldbModelTargetModuleSectionContainerImpl sections,
 			SBSection section) {
 		super(sections.getModel(), sections, keySection(section), section, "Section");
-		this.getModel().addModelObject(DebugClient.getModuleSectionId(sections.getModule(), section), this);
 
 		AddressSpace space = getModel().getAddressSpace("ram");
 		Address min = space.getAddress(section.GetFileAddress().longValue());

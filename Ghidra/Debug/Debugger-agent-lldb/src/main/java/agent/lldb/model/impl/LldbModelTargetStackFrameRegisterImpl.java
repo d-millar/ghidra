@@ -49,7 +49,6 @@ public class LldbModelTargetStackFrameRegisterImpl
 	public LldbModelTargetStackFrameRegisterImpl(LldbModelTargetStackFrameRegisterBankImpl bank,
 			SBValue register) {
 		super(bank.getModel(), bank, keyRegister(register), register, "Register");
-		this.getModel().addModelObject(DebugClient.getRegisterId(register), this);
 		String value = register.GetValue();
 		
 		changeAttributes(List.of(), Map.of( //

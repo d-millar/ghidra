@@ -43,7 +43,7 @@ public class LldbListStackFramesCommand extends AbstractLldbCommand<Map<String, 
 		long n = thread.GetNumFrames();
 		for (int i = 0; i < n; i++) {
 			SBFrame frame = thread.GetFrameAtIndex(i);
-			result.put(DebugClient.getFrameId(frame), frame);
+			result.put(DebugClient.getId(frame), frame);
 		}
 	}
 }

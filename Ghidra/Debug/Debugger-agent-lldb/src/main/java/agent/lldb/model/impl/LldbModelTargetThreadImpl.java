@@ -63,7 +63,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 	}
 
 	protected static String indexThread(SBThread thread) {
-		return DebugClient.getThreadId(thread);
+		return DebugClient.getId(thread);
 	}
 
 	protected static String keyThread(SBThread thread) {
@@ -78,7 +78,6 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 	public LldbModelTargetThreadImpl(LldbModelTargetThreadContainer threads,
 			LldbModelTargetProcess process, SBThread thread) {
 		super(threads.getModel(), threads, keyThread(thread), thread, "Thread");
-		this.getModel().addModelObject(DebugClient.getThreadId(thread), this);
 		this.process = process;
 
 		this.stack = new LldbModelTargetStackImpl(this, process);
@@ -98,9 +97,9 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 	@Override
 	public String getDisplay() {
 		if (getManager().isKernelMode()) {
-			return "[PR" +  DebugClient.getThreadId(getThread()) + "]";
+			return "[PR" +  DebugClient.getId(getThread()) + "]";
 		}
-		String tidstr = DebugClient.getThreadId(getThread());
+		String tidstr = DebugClient.getId(getThread());
 		return "[" + tidstr + "]";
 	}
 

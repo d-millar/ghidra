@@ -48,7 +48,7 @@ public class LldbListBreakpointLocationsCommand extends AbstractLldbCommand<Map<
 		long n = spec.GetNumLocations();
 		for (int i = 0; i < n; i++) {
 			SBBreakpointLocation loc = spec.GetLocationAtIndex(i);
-			updatedLocations.put(DebugClient.getBreakpointLocationId(loc), loc);
+			updatedLocations.put(DebugClient.getId(loc), loc);
 		}
 	}
 }
