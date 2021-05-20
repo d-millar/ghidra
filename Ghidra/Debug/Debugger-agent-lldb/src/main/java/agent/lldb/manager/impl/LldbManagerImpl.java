@@ -482,9 +482,9 @@ public class LldbManagerImpl implements LldbManager {
 
 		status = client.getControl().getExecutionStatus();
 		client.setInputCallbacks(new LldbDebugInputCallbacks(this));
+		client.setEventCallbacks(new LldbDebugEventCallbacksAdapter(this));
 		*/
 		client.setOutputCallbacks(new LldbDebugOutputCallbacks(this));
-		client.setEventCallbacks(new LldbDebugEventCallbacksAdapter(this));
 		client.flushCallbacks();
 
 		if (LldbSrvTransport != null && !"none".equalsIgnoreCase(LldbSrvTransport)) {
@@ -1437,7 +1437,7 @@ public class LldbManagerImpl implements LldbManager {
 		Msg.info(this, "Interrupting");
 		// NB: don't use "execute" here - engThread is paused on waitForEvents
 		//  and execute::sequence blocks on engThread 
-		currentProcess.SendAsyncInterrupt();
+		currentSession.GetProcess().SendAsyncInterrupt();
 	}
 
 	@Override

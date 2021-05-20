@@ -18,8 +18,7 @@ package agent.lldb.model.impl;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-import SWIG.SBModule;
-import SWIG.SBTarget;
+import SWIG.*;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.lldb.DebugModuleInfo;
 import agent.lldb.model.iface2.*;
@@ -67,9 +66,9 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 			System.err.println("Module "+info.getModuleName(index)+" not found!");
 			return;
 		}
-		String tid = DebugClient.getId(getManager().getEventThread());
+		SBThread thread = getManager().getEventThread();
 		TargetThread eventThread =
-			(TargetThread) getModel().getModelObject(tid);
+			(TargetThread) getModel().getModelObject(thread);
 		changeElements(List.of(), List.of(targetModule), Map.of(), "Loaded");
 		getListeners().fire.event(getProxy(), eventThread, TargetEventType.MODULE_LOADED,
 			"Library " + info.getModuleName(index) + " loaded", List.of(targetModule));
@@ -80,9 +79,9 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 	public void libraryUnloaded(DebugModuleInfo info, int index) {
 		LldbModelTargetModule targetModule = getTargetModule(info.getModule(index));
 		if (targetModule != null) {
-			String tid = DebugClient.getId(getManager().getEventThread());
+			SBThread thread = getManager().getEventThread();
 			TargetThread eventThread =
-				(TargetThread) getModel().getModelObject(tid);
+				(TargetThread) getModel().getModelObject(thread);
 			getListeners().fire.event(getProxy(), eventThread, TargetEventType.MODULE_UNLOADED,
 				"Library " + info.getModuleName(index) + " unloaded", List.of(targetModule));
 			LldbModelImpl impl = (LldbModelImpl) model;

@@ -12,6 +12,7 @@ import agent.lldb.manager.evt.LldbModuleUnloadedEvent;
 import agent.lldb.manager.evt.LldbStateChangedEvent;
 import agent.lldb.manager.evt.LldbThreadSelectedEvent;
 import ghidra.comm.util.BitmaskSet;
+import ghidra.util.Msg;
 
 public class DebugClientImpl implements DebugClient {
 
@@ -186,57 +187,73 @@ public class DebugClientImpl implements DebugClient {
 		long type = evt.GetType();
 		if (SBTarget.EventIsTargetEvent(evt)) {
 			if ((type & SBTarget.eBroadcastBitBreakpointChanged) != 0) {
+				Msg.info(this, "*** Breakpoint Changed: " + evt.GetType());
 				processEvent(new LldbBreakpointModifiedEvent(null));
 			}
 			if ((type & SBTarget.eBroadcastBitModulesLoaded) != 0) {
+				Msg.info(this, "*** Module Loaded: " + evt.GetType());
 				processEvent(new LldbModuleLoadedEvent(new DebugModuleInfo(evt)));
 			}
 			if ((type & SBTarget.eBroadcastBitModulesUnloaded) != 0) {
+				Msg.info(this, "*** Module Unloaded: " + evt.GetType());
 				processEvent(new LldbModuleUnloadedEvent(null));
 			}
 			if ((type & SBTarget.eBroadcastBitWatchpointChanged) != 0) {
+				Msg.info(this, "*** Watchpoint Changed: " + evt.GetType());
 				//fireEvent(new LldbWatchpointModifiedEvent(null));
 			}
 			if ((type & SBTarget.eBroadcastBitSymbolsLoaded) != 0) {
+				Msg.info(this, "*** Symbols Loaded: " + evt.GetType());
 				//fireEvent(new LldbSymbolsLoadedEvent(null));
 			}
 		}
 		
 		if (SBProcess.EventIsProcessEvent(evt)) {
 			if ((type & SBProcess.eBroadcastBitStateChanged) != 0) {
+				Msg.info(this, "*** State Changed: " + evt.GetType());
 				processEvent(new LldbStateChangedEvent(new DebugEventInfo(evt)));
 			}
 			if ((type & SBProcess.eBroadcastBitInterrupt) != 0) {
+				Msg.info(this, "*** Interrupt: " + evt.GetType());
 				//fireEvent(new LldbInterrupt(null));
 			}
 			if ((type & SBProcess.eBroadcastBitSTDOUT) != 0) {
+				Msg.info(this, "*** Console STDOU: " + evt.GetType());
 				processEvent(new LldbConsoleOutputEvent(0, null));
 			}
 			if ((type & SBProcess.eBroadcastBitSTDERR) != 0) {
+				Msg.info(this, "*** Console STDERR: " + evt.GetType());
 				processEvent(new LldbConsoleOutputEvent(0, null));
 			}
 			if ((type & SBProcess.eBroadcastBitProfileData) != 0) {
+				Msg.info(this, "*** Profile Data Added: " + evt.GetType());
 				//fireEvent(new LldbProfileDataEvent(null));
 			}
 			if ((type & SBProcess.eBroadcastBitStructuredData) != 0) {
+				Msg.info(this, "*** Structured Data Added: " + evt.GetType());
 				//fireEvent(new LldbStructuredDataEvent(null));
 			}
 		}
 		
 		if (SBThread.EventIsThreadEvent(evt)) {
 			if ((type & SBThread.eBroadcastBitStackChanged) != 0) {
+				Msg.info(this, "*** Stack Changed: " + evt.GetType());
 				//fireEvent(new LldbStackChangedEvent(null));
 			}
 			if ((type & SBThread.eBroadcastBitThreadSuspended) != 0) {
+				Msg.info(this, "*** Thread Suspended: " + evt.GetType());
 				//fireEvent(new LldbThreadSuspendedEvent(null));
 			}
 			if ((type & SBThread.eBroadcastBitThreadResumed) != 0) {
+				Msg.info(this, "*** Thread Resumed: " + evt.GetType());
 				//fireEvent(new LldbThreadResumedEvent(null));
 			}
 			if ((type & SBThread.eBroadcastBitSelectedFrameChanged) != 0) {
+				Msg.info(this, "*** Frame Selected: " + evt.GetType());
 				//fireEvent(new LldbSelectedFrameChangedEvent(null));
 			}
 			if ((type & SBThread.eBroadcastBitThreadSelected) != 0) {
+				Msg.info(this, "*** Thread Selected: " + evt.GetType());
 				processEvent(new LldbThreadSelectedEvent(null, null, null));
 			}
 		}
