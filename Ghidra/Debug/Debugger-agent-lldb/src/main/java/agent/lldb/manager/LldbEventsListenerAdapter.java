@@ -77,7 +77,7 @@ public interface LldbEventsListenerAdapter extends LldbEventsListener {
 	}
 
 	@Override
-	public default void threadExited(String threadId, SBProcess process, LldbCause cause) {
+	public default void threadExited(SBThread thread, SBProcess process, LldbCause cause) {
 		// Extension point
 
 	}

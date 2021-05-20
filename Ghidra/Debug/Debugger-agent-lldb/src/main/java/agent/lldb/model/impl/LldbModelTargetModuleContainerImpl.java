@@ -114,8 +114,7 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 	}
 
 	public LldbModelTargetModule getTargetModule(SBModule module) {
-		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject targetObject = impl.getModelObject(module);
+		TargetObject targetObject = getMapObject(module);
 		if (targetObject != null) {
 			LldbModelTargetModule targetModule = (LldbModelTargetModule) targetObject;
 			targetModule.setModelObject(module);

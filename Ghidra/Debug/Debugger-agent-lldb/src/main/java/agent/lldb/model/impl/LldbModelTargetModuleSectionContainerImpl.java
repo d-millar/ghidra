@@ -59,8 +59,7 @@ public class LldbModelTargetModuleSectionContainerImpl extends LldbModelTargetOb
 	}
 
 	protected synchronized LldbModelTargetModuleSection getModuleSection(SBSection section) {
-		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject targetObject = impl.getModelObject(section);
+		TargetObject targetObject = getMapObject(section);
 		if (targetObject != null) {
 			LldbModelTargetModuleSection targetSection = (LldbModelTargetModuleSection) targetObject;
 			targetSection.setModelObject(section);

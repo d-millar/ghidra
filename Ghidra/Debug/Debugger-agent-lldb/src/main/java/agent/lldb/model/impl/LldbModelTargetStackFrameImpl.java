@@ -90,7 +90,9 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 
 		this.registers = new LldbModelTargetStackFrameRegisterContainerImpl(this);
 
-		changeAttributes(List.of(), List.of(), Map.of( //
+		changeAttributes(List.of(), List.of(
+			registers //
+		), Map.of( //
 			DISPLAY_ATTRIBUTE_NAME, display = computeDisplay(frame), //
 			PC_ATTRIBUTE_NAME, pc //
 		), "Initialized");
@@ -138,9 +140,7 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 		this.frameOffset = frame.GetFP().longValue();
 		this.stackOffset = frame.GetSP().longValue();
 
-		changeAttributes(List.of(), List.of(
-			registers //
-		), Map.of( //
+		changeAttributes(List.of(), List.of(), Map.of( //
 			PC_ATTRIBUTE_NAME, pc, //
 			DISPLAY_ATTRIBUTE_NAME, display = computeDisplay(frame), //
 			FUNC_ATTRIBUTE_NAME, func, //

@@ -67,8 +67,7 @@ public class LldbModelTargetMemoryContainerImpl extends LldbModelTargetObjectImp
 
 	@Override
 	public synchronized LldbModelTargetMemoryRegion getTargetMemory(SBMemoryRegionInfo region) {
-		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject targetObject = impl.getModelObject(region);
+		TargetObject targetObject = getMapObject(region);
 		if (targetObject != null) {
 			LldbModelTargetMemoryRegion targetRegion = (LldbModelTargetMemoryRegion) targetObject;
 			targetRegion.setModelObject(region);

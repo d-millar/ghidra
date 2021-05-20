@@ -61,8 +61,7 @@ public class LldbModelTargetSessionContainerImpl extends LldbModelTargetObjectIm
 
 	@Override
 	public synchronized LldbModelTargetSession getTargetSession(SBTarget session) {
-		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject targetObject = impl.getModelObject(session);
+		TargetObject targetObject = getMapObject(session);
 		if (targetObject != null) {
 			LldbModelTargetSession targetSession = (LldbModelTargetSession) targetObject;
 			targetSession.setModelObject(session);

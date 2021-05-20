@@ -95,10 +95,10 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 	}
 
 	@Override
-	public void threadExited(String threadId, SBProcess proc, LldbCause cause) {
+	public void threadExited(SBThread thread, SBProcess proc, LldbCause cause) {
 		LldbModelTargetProcess process = getTargetProcess(proc);
 		if (process != null) {
-			process.getThreads().threadExited(threadId);
+			process.getThreads().threadExited(thread);
 		}
 	}
 
@@ -134,8 +134,7 @@ public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectIm
 
 	@Override
 	public synchronized LldbModelTargetProcess getTargetProcess(SBProcess process) {
-		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject targetObject = impl.getModelObject(process);
+		TargetObject targetObject = getMapObject(process);
 		if (targetObject != null) {
 			LldbModelTargetProcess targetProcess = (LldbModelTargetProcess) targetObject;
 			targetProcess.setModelObject(process);

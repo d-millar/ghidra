@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import agent.lldb.model.AbstractLldbModel;
 import ghidra.async.AsyncUtils;
@@ -87,4 +88,9 @@ public interface LldbModelTargetObject extends SpiTargetObject {
 	
 	public void setModelObject(Object modelObject);
 
+	public void addMapObject(Object object, TargetObject targetObject);
+
+	public TargetObject getMapObject(Object object);
+
+	public void deleteMapObject(Object object);
 }

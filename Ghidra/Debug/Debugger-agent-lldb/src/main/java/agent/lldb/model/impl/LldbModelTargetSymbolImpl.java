@@ -55,7 +55,6 @@ public class LldbModelTargetSymbolImpl extends LldbModelTargetObjectImpl
 	public LldbModelTargetSymbolImpl(LldbModelTargetSymbolContainerImpl symbols,
 			SBSymbol symbol) {
 		super(symbols.getModel(), symbols, keySymbol(symbol), symbol, "Symbol");
-		this.getModel().addModelObject(symbol, this);
 		this.constant = false;
 		this.value = symbols.getModel().getAddressSpace("ram").getAddress(symbol.GetStartAddress().GetOffset().longValue());
 		this.size = symbol.GetEndAddress().GetOffset().subtract(symbol.GetStartAddress().GetOffset()).longValue();

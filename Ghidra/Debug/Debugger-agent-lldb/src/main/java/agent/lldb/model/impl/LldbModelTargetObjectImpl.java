@@ -15,8 +15,7 @@
  */
 package agent.lldb.model.impl;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import SWIG.StateType;
@@ -44,7 +43,9 @@ public class LldbModelTargetObjectImpl extends DefaultTargetObject<TargetObject,
 	protected boolean accessible = true;
 	protected final LldbStateListener accessListener = this::checkExited;
 	private boolean modified;
+	
 	private Object modelObject;
+	protected Map<Object, TargetObject> objectMap = new HashMap<>();
 
 	public LldbModelTargetObjectImpl(AbstractLldbModel impl, TargetObject parent, String name,
 			String typeHint) {
@@ -56,7 +57,7 @@ public class LldbModelTargetObjectImpl extends DefaultTargetObject<TargetObject,
 	public LldbModelTargetObjectImpl(AbstractLldbModel impl, TargetObject parent, String name, Object modelObject,
 			String typeHint) {
 		super(impl, parent, name, typeHint);
-		getModel().addModelObject(modelObject, this);
+		((LldbModelTargetObject) parent).addMapObject(modelObject, this);
 		this.setModelObject(modelObject);
 		getManager().addStateListener(accessListener);
 	}
@@ -233,6 +234,21 @@ public class LldbModelTargetObjectImpl extends DefaultTargetObject<TargetObject,
 	@Override
 	public void setModelObject(Object modelObject) {
 		this.modelObject = modelObject;
+	}
+
+	@Override
+	public void addMapObject(Object object, TargetObject targetObject) {
+		objectMap.put(DebugClient.getModelKey(object), targetObject);
+	}
+
+	@Override
+	public TargetObject getMapObject(Object object) {
+		return objectMap.get(DebugClient.getModelKey(object));
+	}
+
+	@Override
+	public void deleteMapObject(Object object) {
+		objectMap.remove(DebugClient.getModelKey(object));
 	}
 
 }

@@ -50,8 +50,7 @@ public class LldbModelTargetBreakpointLocationContainerImpl extends LldbModelTar
 	}
 
 	public LldbModelTargetBreakpointLocation getTargetBreakpointLocation(SBBreakpointLocation loc) {
-		LldbModelImpl impl = (LldbModelImpl) model;
-		TargetObject targetObject = impl.getModelObject(loc);
+		TargetObject targetObject = getMapObject(loc);
 		if (targetObject != null) {
 			LldbModelTargetBreakpointLocation location = (LldbModelTargetBreakpointLocation) targetObject;
 			location.setModelObject(loc);
