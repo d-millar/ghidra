@@ -361,6 +361,10 @@ public interface DebugClient extends DebugClientReentrant {
 			SBBreakpoint spec = (SBBreakpoint) modelObject;
 			return Integer.toHexString(spec.GetID());
 		}
+		if (modelObject instanceof SBWatchpoint) {
+			SBWatchpoint spec = (SBWatchpoint) modelObject;
+			return Integer.toHexString(spec.GetID());
+		}
 		if (modelObject instanceof SBBreakpointLocation) {
 			SBBreakpointLocation loc= (SBBreakpointLocation) modelObject;
 			return Long.toHexString(loc.GetAddress().GetOffset().longValue());

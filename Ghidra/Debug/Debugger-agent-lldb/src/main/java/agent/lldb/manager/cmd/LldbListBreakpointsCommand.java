@@ -29,7 +29,7 @@ import agent.lldb.manager.impl.LldbManagerImpl;
 /**
  * Implementation of {@link LldbProcess#listBreakpoints()}
  */
-public class LldbListBreakpointsCommand extends AbstractLldbCommand<Map<String, SBBreakpoint>> {
+public class LldbListBreakpointsCommand extends AbstractLldbCommand<Map<String, Object>> {
 
 	protected final SBTarget session;
 	private Map<String, SBBreakpoint> updatedBreakpoints = new HashMap<>();
@@ -40,8 +40,8 @@ public class LldbListBreakpointsCommand extends AbstractLldbCommand<Map<String, 
 	}
 
 	@Override
-	public Map<String, SBBreakpoint> complete(LldbPendingCommand<?> pending) {
-		Map<String, SBBreakpoint> breakpoints = manager.getKnownBreakpoints(session);
+	public Map<String, Object> complete(LldbPendingCommand<?> pending) {
+		Map<String, Object> breakpoints = manager.getKnownBreakpoints(session);
 		Set<String> cur = breakpoints.keySet();
 		for (String id : updatedBreakpoints.keySet()) {
 			if (cur.contains(id)) {

@@ -127,6 +127,12 @@ public class DebugClientImpl implements DebugClient {
 	@Override
 	public void createProcess(DebugServerId si, SBLaunchInfo info) {
 		SBError error = new SBError();
+		String cmd = info.GetExecutableFile().GetDirectory();
+		cmd += "/"+info.GetExecutableFile().GetFilename();
+		for (int i = 0; i < info.GetNumArguments(); i++) {
+			cmd += " "+info.GetArgumentAtIndex(i);
+		}
+		session = connectSession(cmd);
 		SBProcess process = session.Launch(info, error);
 		if (!error.Success()) {
 			Msg.error(this, error.GetType() + " for create process");
@@ -136,7 +142,8 @@ public class DebugClientImpl implements DebugClient {
 	@Override
 	public void createProcess(DebugServerId si, String commandLine, BitmaskSet<DebugCreateFlags> createFlags) {
 		//TODO: fix this
-		session = connectSession("/opt/X11/bin/xclock-x86_64");
+		session = connectSession(commandLine);
+		//session = connectSession("/opt/X11/bin/xclock-x86_64");
 		SBListener listener = new SBListener();
 		SBError error = new SBError();
 		SBProcess process = session.Launch(listener, null, null, "", "", "", "", 0, true, error);
@@ -182,7 +189,7 @@ public class DebugClientImpl implements DebugClient {
 
 	@Override
 	public void endSession(DebugEndSessionFlags flags) {
-		// TODO Auto-generated method stub		
+		sbd.DeleteTarget(session);
 	}
 
 	@Override

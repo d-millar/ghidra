@@ -15,6 +15,10 @@
  */
 package agent.lldb.manager.cmd;
 
+import java.util.Map;
+
+import SWIG.SBBreakpoint;
+import SWIG.SBWatchpoint;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 /**
@@ -31,12 +35,18 @@ public class LldbDisableBreakpointsCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public void invoke() {
-		/*
-		DebugControl control = manager.getControl();
-		for (long id : numbers) {
-			DebugBreakpoint bp = control.getBreakpointById((int) id);
-			bp.removeFlags(BreakFlags.ENABLED);
+		Map<String, Object> knownBreakpoints = manager.getKnownBreakpoints(manager.getCurrentSession());
+		for (long l : numbers) {
+			String key = Long.toString(l);
+			if (knownBreakpoints.containsKey(key)) {
+				Object obj = knownBreakpoints.get(key);
+				if (obj instanceof SBBreakpoint) {
+					((SBBreakpoint)obj).SetEnabled(false);
+				}	
+				if (obj instanceof SBWatchpoint) {
+					((SBWatchpoint)obj).SetEnabled(false);
+				}	
+			}
 		}
-		*/
 	}
 }

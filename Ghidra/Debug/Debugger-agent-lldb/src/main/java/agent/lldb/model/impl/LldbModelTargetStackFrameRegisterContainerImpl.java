@@ -30,7 +30,7 @@ import ghidra.dbg.target.schema.*;
 import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
 
 @TargetObjectSchemaInfo(
-	name = "RegisterValueContainer",
+	name = "RegisterContainer",
 	elementResync = ResyncMode.ALWAYS,
 	elements = {
 		@TargetElementType(type = LldbModelTargetStackFrameRegisterBankImpl.class)

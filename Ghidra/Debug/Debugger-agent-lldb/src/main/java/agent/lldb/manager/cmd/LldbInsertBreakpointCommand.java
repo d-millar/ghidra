@@ -15,13 +15,12 @@
  */
 package agent.lldb.manager.cmd;
 
+import java.math.BigInteger;
+
+import SWIG.*;
 import agent.lldb.lldb.DebugBreakpoint;
-import agent.lldb.lldb.DebugBreakpoint.BreakAccess;
-import agent.lldb.lldb.DebugBreakpoint.BreakFlags;
-import agent.lldb.lldb.DebugBreakpoint.BreakType;
-import agent.lldb.manager.breakpoint.LldbBreakpointInfo;
-import agent.lldb.manager.breakpoint.LldbBreakpointInsertions;
-import agent.lldb.manager.breakpoint.LldbBreakpointType;
+import agent.lldb.lldb.DebugBreakpoint.*;
+import agent.lldb.manager.breakpoint.*;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import ghidra.comm.util.BitmaskSet;
 
@@ -34,7 +33,7 @@ public class LldbInsertBreakpointCommand extends AbstractLldbCommand<LldbBreakpo
 	private LldbBreakpointInfo bkpt;
 	private int len;
 	private final String expression;
-	private final Long loc;
+	private final BigInteger loc;
 
 	public LldbInsertBreakpointCommand(LldbManagerImpl manager, String expression,
 			LldbBreakpointType type) {
@@ -50,7 +49,7 @@ public class LldbInsertBreakpointCommand extends AbstractLldbCommand<LldbBreakpo
 		this.len = len;
 		this.type = type;
 		this.expression = null;
-		this.loc = loc;
+		this.loc = BigInteger.valueOf(loc);
 	}
 
 	@Override
@@ -61,40 +60,36 @@ public class LldbInsertBreakpointCommand extends AbstractLldbCommand<LldbBreakpo
 
 	@Override
 	public void invoke() {
-		/*
-		DebugControl control = manager.getControl();
-		BreakType bt = BreakType.DATA;
+		SBTarget currentSession = manager.getCurrentSession();
 		if (type.equals(LldbBreakpointType.BREAKPOINT)) {
-			bt = BreakType.CODE;
-		}
-		// 2 for BU, 1 for BP
-		DebugBreakpoint bp = control.addBreakpoint(bt);
-		if (bt.equals(BreakType.DATA)) {
-			BitmaskSet<BreakAccess> access = BitmaskSet.of(BreakAccess.EXECUTE);
+			SBBreakpoint bpt;
+			if (loc != null) {
+				bpt = currentSession.BreakpointCreateByAddress(loc);
+			} else {
+				bpt = currentSession.BreakpointCreateByRegex(expression);
+			}
+			bpt.SetEnabled(true);
+			bkpt = new LldbBreakpointInfo(bpt, manager.getCurrentProcess());
+		} else {
+			boolean read = false;
+			boolean write = false;
+			SBError error = new SBError();
 			if (type.equals(LldbBreakpointType.ACCESS_WATCHPOINT)) {
-				access = BitmaskSet.of(BreakAccess.READ, BreakAccess.WRITE);
+				read = write = true;
 			}
 			if (type.equals(LldbBreakpointType.READ_WATCHPOINT)) {
-				access = BitmaskSet.of(BreakAccess.READ);
+				read = true;
 			}
 			if (type.equals(LldbBreakpointType.HW_WATCHPOINT)) {
-				access = BitmaskSet.of(BreakAccess.WRITE);
+				write = true;
 			}
 			if (type.equals(LldbBreakpointType.HW_BREAKPOINT)) {
-				access = BitmaskSet.of(BreakAccess.EXECUTE);
 				len = 1;
 			}
-			bp.setDataParameters(len, access);
+			SBWatchpoint wpt = currentSession.WatchAddress(loc, len, false, false, error);	
+			wpt.SetEnabled(true);
+			bkpt = new LldbWatchpointInfo(wpt, manager.getCurrentProcess());
 		}
-		if (loc != null) {
-			bp.setOffset(loc);
-		}
-		else {
-			bp.setOffsetExpression(expression);
-		}
-		bp.addFlags(BreakFlags.ENABLED);
 
-		bkpt = new LldbBreakpointInfo(bp, manager.getCurrentProcess());
-		*/
 	}
 }

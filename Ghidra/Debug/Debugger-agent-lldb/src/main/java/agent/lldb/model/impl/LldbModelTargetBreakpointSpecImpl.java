@@ -50,8 +50,8 @@ import ghidra.util.datastruct.ListenerSet;
 public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetBreakpointSpec {
 
-	protected static String keyBreakpoint(SBBreakpoint bpt) {
-		return PathUtils.makeKey(Integer.toHexString(bpt.GetID()));
+	protected static String keyBreakpoint(Object bpt) {
+		return PathUtils.makeKey(DebugClient.getId(bpt));
 	}
 
 	private LldbModelTargetBreakpointContainer breakpoints;
@@ -85,26 +85,24 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetObjectImpl
 		};
 
 	public LldbModelTargetBreakpointSpecImpl(LldbModelTargetBreakpointContainer breakpoints,
-			SBBreakpoint bpt) {
+			Object bpt) {
 		super(breakpoints.getModel(), breakpoints, keyBreakpoint(bpt), bpt, "BreakpointSpec");
 		this.breakpoints = breakpoints;
-		//this.setBreakpointInfo(info);
 
 		updateInfo(bpt, "Created");
 	}
 
 	@Override
-	public void updateInfo(SBBreakpoint bpt, String reason) {
+	public void updateInfo(Object bpt, String reason) {
 		synchronized (this) {
 			setModelObject(bpt);
 		}
 		changeAttributeSet("Refreshed");
-		setEnabled(bpt.IsEnabled(), reason);
 	}
 
 	@Override
-	public SBBreakpoint getBreakpointInfo() {
-		return (SBBreakpoint) getModelObject();
+	public Object getBreakpointInfo() {
+		return getModelObject();
 	}
 
 	@Override
@@ -145,7 +143,7 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetObjectImpl
 		return actions;
 	}
 
-	protected CompletableFuture<SBBreakpoint> getInfo() {
+	protected CompletableFuture<Object> getInfo() {
 		SBTarget session = breakpoints.getSession();
 		return getManager().listBreakpoints(session)
 				.thenApply(__ -> getManager().getKnownBreakpoints(session).get(getNumber()));

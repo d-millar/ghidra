@@ -15,36 +15,22 @@
  */
 package agent.lldb.manager.breakpoint;
 
-import java.util.Objects;
+import java.util.*;
 
-import SWIG.SBProcess;
-import SWIG.SBThread;
-import agent.lldb.lldb.DebugBreakpoint;
+import SWIG.*;
 import agent.lldb.lldb.DebugBreakpoint.BreakAccess;
-import agent.lldb.lldb.DebugBreakpoint.BreakDataParameters;
 import agent.lldb.lldb.DebugBreakpoint.BreakFlags;
-import agent.lldb.lldb.DebugBreakpoint.BreakFullType;
-import agent.lldb.lldb.DebugBreakpoint.BreakType;
+import agent.lldb.lldb.DebugClient;
 import ghidra.comm.util.BitmaskSet;
 
 public class LldbBreakpointInfo {
 
-	private DebugBreakpoint bpt;
+	private SBBreakpoint bpt;
 	private SBProcess proc;
-	private SBThread eventThread;
-	private BreakFullType bptType;
-	private BitmaskSet<BreakFlags> flags;
-	private BreakDataParameters parameters =
-		new BreakDataParameters(1, BitmaskSet.of(BreakAccess.EXECUTE));
-	private BitmaskSet<BreakAccess> access;
-	private int size = 1;
-
-	private final long number;
-	private boolean enabled;
 
 	private Long offset;
 	private String expression;
-	//private final List<DbgBreakpointLocation> locations;
+	private final List<SBBreakpointLocation> locations;
 
 	/**
 	 * Construct Dbg breakpoint information
@@ -58,49 +44,29 @@ public class LldbBreakpointInfo {
 	 * @param times the number of times the breakpoint has been hit
 	 * @param locations the resolved address(es) of this breakpoint
 	 */
-	public LldbBreakpointInfo(LldbBreakpointInfo oldInfo, boolean enabled) {
-		this(oldInfo.getDebugBreakpoint(), oldInfo.getProc(), oldInfo.getEventThread());
-		this.enabled = enabled;
+	public LldbBreakpointInfo(SBBreakpoint bpt, boolean enabled) {
+		this(bpt, bpt.GetTarget().GetProcess());
+		bpt.SetEnabled(enabled);
 	}
 
-	public LldbBreakpointInfo(DebugBreakpoint bpt, SBProcess proc) {
-		this(bpt, proc, null);
-	}
-
-	public LldbBreakpointInfo(DebugBreakpoint bp, SBProcess process, SBThread thread) {
-		this.setBreakpoint(bp);
+	public LldbBreakpointInfo(SBBreakpoint bpt, SBProcess process) {
+		this.bpt = bpt;
 		this.proc = process;
-		this.eventThread = thread;
-		this.number = bpt.getId();
-		this.bptType = bpt.getType();
-		this.flags = bpt.getFlags();
-		//if (bpt.getType().breakType.equals(BreakType.DATA)) {
-		//	this.parameters = bpt.getDataParameters();
-		//}
-		this.access = parameters.access;
-		this.size = parameters.size;
-		this.offset = bpt.getOffset();
-		this.expression = bpt.getOffsetExpression();
+		locations = new ArrayList<>();
+		for (int i = 0; i < bpt.GetNumLocations(); i++) {
+			locations.add(bpt.GetLocationAtIndex(i));
+		}
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(number, bptType, getFlags(), /*location,*/ enabled, access, getSize(),
-			offset, expression);
+		return Objects.hash(bpt.GetID());
 	}
 
 	@Override
 	public String toString() {
-		return Integer.toHexString(bpt.getId());
+		return DebugClient.getId(bpt);
 	}
-	/*
-	@Override
-	public String toString() {
-		return "<DbgBreakpointInfo number=" + number + ",type=" + getType() + ",flags=" +
-			getFlags() + ",addr=" + location + ",times=" + getTimes() + ",size=" + getSize() +
-			",access=" + getAccess() + ">";
-	}
-	*/
 
 	@Override
 	public boolean equals(Object obj) {
@@ -108,71 +74,10 @@ public class LldbBreakpointInfo {
 			return false;
 		}
 		LldbBreakpointInfo that = (LldbBreakpointInfo) obj;
-		if (this.number != that.number) {
-			return false;
-		}
-		if (this.getFlags() != that.getFlags()) {
-			return false;
-		}
-		if (this.getSize() != that.getSize()) {
-			return false;
-		}
-		/*if (!Objects.equals(this.location, that.location)) {
-			return false;
-		}*/
-		if (!Objects.equals(this.expression, that.expression)) {
-			return false;
-		}
-		if (!Objects.equals(this.offset, that.offset)) {
-			return false;
-		}
-		if (this.enabled != that.enabled) {
+		if (this.bpt.GetID() != that.bpt.GetID()) {
 			return false;
 		}
 		return true;
-	}
-
-	/**
-	 * Get the Dbg-assigned breakpoint number
-	 * 
-	 * This is the key into Dbg's breakpoint table to locate the breakpoint this information
-	 * describes.
-	 * 
-	 * @return the number
-	 */
-	public long getNumber() {
-		return number;
-	}
-
-	/**
-	 * Get the type of breakpoint
-	 * 
-	 * @return the type
-	 */
-	public LldbBreakpointType getType() {
-		/*
-		boolean isCode = bpt.getType().breakType.equals(BreakType.CODE);
-		if (isCode) {
-			return LldbBreakpointType.BREAKPOINT;
-		}
-		*/
-		BreakDataParameters params = bpt.getDataParameters();
-		if (params == null || params.access.isEmpty()) {
-			return LldbBreakpointType.OTHER;
-		}
-		if (params.access.contains(BreakAccess.READ) && params.access.contains(BreakAccess.WRITE)) {
-			return LldbBreakpointType.ACCESS_WATCHPOINT;
-		}
-		if (params.access.contains(BreakAccess.READ)) {
-			return LldbBreakpointType.READ_WATCHPOINT;
-		}
-		if (params.access.contains(BreakAccess.WRITE)) {
-			return LldbBreakpointType.HW_WATCHPOINT;
-		}
-		if (params.access.contains(BreakAccess.EXECUTE)) {
-			return LldbBreakpointType.HW_BREAKPOINT;
-		}
-		return LldbBreakpointType.OTHER;
 	}
 
 	/**
@@ -199,7 +104,7 @@ public class LldbBreakpointInfo {
 	 * @return the size
 	 */
 	public int getSize() {
-		return size;
+		return 1;
 	}
 
 	/**
@@ -208,7 +113,7 @@ public class LldbBreakpointInfo {
 	 * @return the size
 	 */
 	public BitmaskSet<BreakAccess> getAccess() {
-		return access;
+		return null;//access;
 	}
 
 	/**
@@ -225,21 +130,12 @@ public class LldbBreakpointInfo {
 	}
 
 	/**
-	 * If the breakpoint is pending resolution, get the location that is pending
-	 * 
-	 * @return the pending location
-	 */
-	public String getPending() {
-		return getFlags().contains(BreakFlags.DEFERRED) ? "pending" : "";
-	}
-
-	/**
 	 * Check if the breakpoint is enabled
 	 * 
 	 * @return true if enabled, false otherwise
 	 */
 	public boolean isEnabled() {
-		return getFlags().contains(BreakFlags.ENABLED);
+		return bpt.IsEnabled();
 	}
 
 	/**
@@ -248,7 +144,7 @@ public class LldbBreakpointInfo {
 	 * @return the hit count
 	 */
 	public int getTimes() {
-		return 0;
+		return (int) bpt.GetHitCount();
 	}
 
 	/**
@@ -261,46 +157,33 @@ public class LldbBreakpointInfo {
 	 * 
 	 * @return the list of locations at the time the breakpoint information was captured
 	 */
-	/*public List<DbgBreakpointLocation> getLocations() {
+	public List<SBBreakpointLocation> getLocations() {
 		return locations;
-	}*/
-
-	public LldbBreakpointInfo withEnabled(@SuppressWarnings("hiding") boolean enabled) {
-		if (isEnabled() == enabled) {
-			return this;
-		}
-		return new LldbBreakpointInfo(this, enabled);
 	}
 
-	public DebugBreakpoint getDebugBreakpoint() {
+	/*
+	public SBBreakpoint withEnabled(@SuppressWarnings("hiding") boolean enabled) {
+		if (isEnabled() == enabled) {
+			return bpt;
+		}
+		return new bpt(bpt, enabled);
+	}
+	*/
+
+	public SBBreakpoint getBreakpoint() {
 		return bpt;
 	}
 
-	public BitmaskSet<BreakFlags> getFlags() {
-		return flags;
+	public void setBreakpoint(SBBreakpoint bpt) {
+		this.bpt = bpt;
 	}
 
 	public SBProcess getProc() {
 		return proc;
 	}
 
-	public SBThread getEventThread() {
-		return eventThread;
-	}
-
-	public void setBreakpoint(DebugBreakpoint bpt) {
-		this.bpt = bpt;
-		this.bptType = bpt.getType();
-		this.flags = bpt.getFlags();
-		this.offset = bpt.getOffset();
-		this.expression = bpt.getOffsetExpression();
-		/*
-		if (bptType.breakType.equals(BreakType.DATA)) {
-			BreakDataParameters p = bpt.getDataParameters();
-			this.access = p.access;
-			this.size = p.size;
-		}
-		*/
+	public int getEventThread() {
+		return bpt.GetThreadID().intValue();
 	}
 
 	/*public long getAddressAsLong() {

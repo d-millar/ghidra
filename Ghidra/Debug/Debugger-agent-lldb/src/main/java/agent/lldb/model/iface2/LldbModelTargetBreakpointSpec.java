@@ -20,16 +20,12 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import SWIG.SBBreakpoint;
-import agent.lldb.manager.breakpoint.LldbBreakpointInfo;
+import SWIG.SBWatchpoint;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface1.LldbModelTargetBptHelper;
-import ghidra.dbg.target.TargetBreakpointLocation;
-import ghidra.dbg.target.TargetBreakpointSpec;
+import ghidra.dbg.target.*;
 import ghidra.dbg.target.TargetBreakpointSpecContainer.TargetBreakpointKindSet;
-import ghidra.dbg.target.TargetDeletable;
-import ghidra.dbg.target.TargetObject;
-import ghidra.program.model.address.Address;
-import ghidra.program.model.address.AddressFormatException;
-import ghidra.program.model.address.AddressSpace;
+import ghidra.program.model.address.*;
 
 public interface LldbModelTargetBreakpointSpec extends //
 		LldbModelTargetObject, //
@@ -67,8 +63,8 @@ public interface LldbModelTargetBreakpointSpec extends //
 		return null; //getBreakpointInfo().getExpression();
 	}
 
-	public default int getNumber() {
-		return getBreakpointInfo().GetID();
+	public default long getNumber() {
+		return Long.parseLong(DebugClient.getId(getBreakpointInfo()));
 	}
 
 	@Override
@@ -140,15 +136,17 @@ public interface LldbModelTargetBreakpointSpec extends //
 	}
 
 	public default Address doGetAddress() {
-		SBBreakpoint info = getBreakpointInfo();
+		Object info = getBreakpointInfo();
 		return null; //getModel().getAddress("ram", orZero(info.getOffset()));
 	}
 
-	public default void updateInfo(SBBreakpoint info, String reason) {
+	public default void updateInfo(Object info, String reason) {
 		synchronized (this) {
 			setModelObject(info);
 		}
-		setEnabled(info.IsEnabled(), reason);
+		boolean enabled = info instanceof SBBreakpoint ?
+				((SBBreakpoint) info).IsEnabled() : ((SBWatchpoint)info).IsEnabled();
+		setEnabled(enabled, reason);
 	}
 
 	/**
