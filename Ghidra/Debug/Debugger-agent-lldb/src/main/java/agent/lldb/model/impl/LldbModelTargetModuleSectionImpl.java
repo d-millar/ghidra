@@ -18,8 +18,7 @@ package agent.lldb.model.impl;
 import java.util.List;
 import java.util.Map;
 
-import SWIG.SBSection;
-import SWIG.SBValue;
+import SWIG.*;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.LldbModelTargetModuleSection;
 import ghidra.dbg.target.schema.TargetAttributeType;
@@ -59,7 +58,7 @@ public class LldbModelTargetModuleSectionImpl extends LldbModelTargetObjectImpl
 		changeAttributes(List.of(), List.of(), Map.of( //
 			MODULE_ATTRIBUTE_NAME, sections.getParent(), //
 			RANGE_ATTRIBUTE_NAME, range, //
-			DISPLAY_ATTRIBUTE_NAME, section.GetName(), //
+			DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
 			"Address", min, //
 			"Offset", section.GetFileOffset().toString(16), //
 			"Size", Long.toHexString(sz), //
@@ -67,6 +66,13 @@ public class LldbModelTargetModuleSectionImpl extends LldbModelTargetObjectImpl
 		), "Initialized");
 	}
 
+	public String getDescription(int level) {
+		SBStream stream = new SBStream();
+		SBSection section = (SBSection) getModelObject();		
+		section.GetDescription(stream);
+		return stream.GetData();
+	}
+	
 	@Override
 	public AddressRange getRange() {
 		return range;

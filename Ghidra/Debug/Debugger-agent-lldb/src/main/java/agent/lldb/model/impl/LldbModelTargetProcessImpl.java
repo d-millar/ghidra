@@ -76,7 +76,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 			threads //
 		), Map.of( //
 			ACCESSIBLE_ATTRIBUTE_NAME, accessible = false, //
-			DISPLAY_ATTRIBUTE_NAME, getDisplay(), //
+			DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
 			TargetMethod.PARAMETERS_ATTRIBUTE_NAME, PARAMETERS, //
 			SUPPORTED_ATTACH_KINDS_ATTRIBUTE_NAME, SUPPORTED_KINDS, //
 			SUPPORTED_STEP_KINDS_ATTRIBUTE_NAME, LldbModelTargetThreadImpl.SUPPORTED_KINDS //
@@ -84,6 +84,13 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 		setExecutionState(TargetExecutionState.ALIVE, "Initialized");
 
 		getManager().addEventsListener(this);
+	}
+
+	public String getDescription(int level) {
+		SBStream stream = new SBStream();
+		SBProcess process = (SBProcess) getModelObject();		
+		process.GetDescription(stream);
+		return stream.GetData();
 	}
 
 	@Override
@@ -165,7 +172,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 		if (proc != null) {
 			changeAttributes(List.of(), List.of(), Map.of( //
 				PID_ATTRIBUTE_NAME, getProcess().GetProcessID().longValue(), //
-				DISPLAY_ATTRIBUTE_NAME, getDisplay()//
+				DISPLAY_ATTRIBUTE_NAME, getDescription(0)//
 			), "Started");
 		}
 		setExecutionState(TargetExecutionState.ALIVE, "Started");
@@ -208,7 +215,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 	public void setBase(Object value) {
 		this.base = (Integer) value;
 		changeAttributes(List.of(), List.of(), Map.of( //
-			DISPLAY_ATTRIBUTE_NAME, getDisplay()//
+			DISPLAY_ATTRIBUTE_NAME, getDescription(0)//
 		), "Started");
 	}
 }

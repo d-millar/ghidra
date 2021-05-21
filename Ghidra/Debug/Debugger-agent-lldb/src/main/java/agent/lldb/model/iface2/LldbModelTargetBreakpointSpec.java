@@ -35,9 +35,9 @@ public interface LldbModelTargetBreakpointSpec extends //
 		LldbModelTargetBptHelper {
 
 	String BPT_ACCESS_ATTRIBUTE_NAME = "Access";
-	String BPT_DISP_ATTRIBUTE_NAME = "Disposition";
-	String BPT_PENDING_ATTRIBUTE_NAME = "Pending";
-	String BPT_TIMES_ATTRIBUTE_NAME = "Times";
+	String BPT_DISP_ATTRIBUTE_NAME = "Enabled";
+	String BPT_VALID_ATTRIBUTE_NAME = "Valid";
+	String BPT_TIMES_ATTRIBUTE_NAME = "Count";
 	String BPT_TYPE_ATTRIBUTE_NAME = "Type";
 	String BPT_INDEX_ATTRIBUTE_NAME = "Id";
 
@@ -126,18 +126,6 @@ public interface LldbModelTargetBreakpointSpec extends //
 				setModified(map, !display.equals(oldval));
 			}
 		});
-	}
-
-	private long orZero(Long l) {
-		if (l == null) {
-			return 0;
-		}
-		return l;
-	}
-
-	public default Address doGetAddress() {
-		Object info = getBreakpointInfo();
-		return null; //getModel().getAddress("ram", orZero(info.getOffset()));
 	}
 
 	public default void updateInfo(Object info, String reason) {

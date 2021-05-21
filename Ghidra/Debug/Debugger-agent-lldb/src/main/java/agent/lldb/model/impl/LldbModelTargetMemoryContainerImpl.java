@@ -76,27 +76,6 @@ public class LldbModelTargetMemoryContainerImpl extends LldbModelTargetObjectImp
 		return new LldbModelTargetMemoryRegionImpl(this, region);
 	}
 
-	public CompletableFuture<byte[]> readVirtualMemory(Address address, int length) {
-		LldbManagerImpl manager = getManager();
-		if (manager.isWaiting()) {
-			throw new DebuggerModelAccessException(
-				"Cannot process command readMemory while engine is waiting for events");
-		}
-		byte [] bytes = new byte[length];
-		BigInteger offset = address.getOffsetAsBigInteger();
-		SBError error = new SBError();
-		for (int i = 0; i < length; i += 8) {
-			Long val = 0L;
-			BigInteger increment = new BigInteger(Integer.toString(i));
-			process.getProcess().ReadUnsignedFromMemory(offset.add(increment), val, error);
-			bytes[i] = (byte) (val & 0xFF);
-			bytes[i+1] = (byte) (val>>4 & 0xFF);
-			bytes[i+2] = (byte) (val>>8 & 0xFF);
-			bytes[i+3] = (byte) (val>>12 & 0xFF);
-		}
-		return CompletableFuture.completedFuture(bytes);
-	}
-
 	private byte[] readAssist(Address address, ByteBuffer buf, long offset, RangeSet<Long> set) {
 		if (set == null) {
 			return new byte[0];
@@ -109,20 +88,6 @@ public class LldbModelTargetMemoryContainerImpl extends LldbModelTargetObjectImp
 		return Arrays.copyOf(buf.array(), (int) (range.upperEndpoint() - range.lowerEndpoint()));
 	}
 
-	public CompletableFuture<Void> writeVirtualMemory(Address address, byte[] data) {
-		LldbManagerImpl manager = getManager();
-		if (manager.isWaiting()) {
-			throw new DebuggerModelAccessException(
-				"Cannot process command writeMemory while engine is waiting for events");
-		}
-		long offset = address.getOffset();
-		return null;
-		/*
-		return process.getProcess().writeMemory(offset, ByteBuffer.wrap(data)).thenAccept(___ -> {
-			writeAssist(address, data);
-		});
-		*/
-	}
 
 	private void writeAssist(Address address, byte[] data) {
 		listeners.fire.memoryUpdated(getProxy(), address, data);

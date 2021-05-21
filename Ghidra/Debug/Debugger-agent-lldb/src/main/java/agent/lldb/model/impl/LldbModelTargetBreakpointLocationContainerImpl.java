@@ -25,8 +25,8 @@ import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.*;
 
-@TargetObjectSchemaInfo(name = "BreakpointContainer", elements = { //
-	@TargetElementType(type = LldbModelTargetBreakpointSpecImpl.class) //
+@TargetObjectSchemaInfo(name = "BreakpointLocationContainer", elements = { //
+	@TargetElementType(type = LldbModelTargetBreakpointLocationImpl.class) //
 }, attributes = { //
 	@TargetAttributeType(type = Void.class) //
 }, canonicalContainer = true)
@@ -36,10 +36,11 @@ public class LldbModelTargetBreakpointLocationContainerImpl extends LldbModelTar
 	protected final LldbModelTargetBreakpointSpecImpl targetBreakpoint;
 
 	public LldbModelTargetBreakpointLocationContainerImpl(LldbModelTargetBreakpointSpec targetBreakpoint, SBTarget session) {
-		super(targetBreakpoint.getModel(), targetBreakpoint, "BreakpointLocations", "BreakpointLocationContainer");
+		super(targetBreakpoint.getModel(), targetBreakpoint, "Locations", "BreakpointLocationContainer");
 		this.targetBreakpoint = (LldbModelTargetBreakpointSpecImpl) targetBreakpoint;
 
 		getManager().addEventsListener(this);
+		requestElements(false);
 	}
 
 	public LldbModelTargetBreakpointLocation getTargetBreakpointLocation(SBBreakpointLocation loc) {
@@ -55,14 +56,14 @@ public class LldbModelTargetBreakpointLocationContainerImpl extends LldbModelTar
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
 		return getManager().listBreakpointLocations((SBBreakpoint)(targetBreakpoint).getBreakpointInfo()).thenAccept(byNumber -> {
-			List<TargetObject> specs;
+			List<TargetObject> locs;
 			synchronized (this) {
-				specs = byNumber.values()
+				locs = byNumber.values()
 						.stream()
 						.map(this::getTargetBreakpointLocation)
 						.collect(Collectors.toList());
 			}
-			setElements(specs, Map.of(), "Refreshed");
+			setElements(locs, Map.of(), "Refreshed");
 		});
 	}
 

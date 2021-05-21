@@ -18,19 +18,13 @@ package agent.lldb.model.impl;
 import java.util.List;
 import java.util.Map;
 
-import SWIG.SBMemoryRegionInfo;
-import agent.lldb.lldb.DebugClient;
+import SWIG.*;
 import agent.lldb.model.iface2.LldbModelTargetMemoryContainer;
 import agent.lldb.model.iface2.LldbModelTargetMemoryRegion;
 import ghidra.dbg.target.TargetMemoryRegion;
-import ghidra.dbg.target.schema.TargetAttributeType;
-import ghidra.dbg.target.schema.TargetElementType;
-import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.target.schema.*;
 import ghidra.dbg.util.PathUtils;
-import ghidra.program.model.address.Address;
-import ghidra.program.model.address.AddressRange;
-import ghidra.program.model.address.AddressRangeImpl;
-import ghidra.program.model.address.AddressSpace;
+import ghidra.program.model.address.*;
 
 @TargetObjectSchemaInfo(
 	name = "MemoryRegion",
@@ -61,13 +55,13 @@ public class LldbModelTargetMemoryRegionImpl extends LldbModelTargetObjectImpl
 	public LldbModelTargetMemoryRegionImpl(LldbModelTargetMemoryContainer memory,
 			SBMemoryRegionInfo region) {
 		super(memory.getModel(), memory, keySection(region), region, "Region");
-
+		
 		this.changeAttributes(List.of(), List.of(), Map.of( //
 			MEMORY_ATTRIBUTE_NAME, memory, //
-			RANGE_ATTRIBUTE_NAME, range = doGetRange(region) //
-			//READABLE_ATTRIBUTE_NAME, isReadable(), //
-			//WRITABLE_ATTRIBUTE_NAME, isWritable(), //
-			//EXECUTABLE_ATTRIBUTE_NAME, isExecutable() //
+			RANGE_ATTRIBUTE_NAME, range = doGetRange(region), //
+			READABLE_ATTRIBUTE_NAME, region.IsReadable(), //
+			WRITABLE_ATTRIBUTE_NAME, region.IsWritable(), //
+			EXECUTABLE_ATTRIBUTE_NAME, region.IsExecutable() //
 		), "Initialized");
 
 		this.changeAttributes(List.of(), List.of(), Map.of( //
@@ -77,6 +71,13 @@ public class LldbModelTargetMemoryRegionImpl extends LldbModelTargetObjectImpl
 		), "Initialized");
 	}
 
+	public String getDescription(int level) {
+		SBStream stream = new SBStream();
+		SBMemoryRegionInfo region = (SBMemoryRegionInfo) getModelObject();		
+		region.GetDescription(stream);
+		return stream.GetData();
+	}
+	
 	protected AddressRange doGetRange(SBMemoryRegionInfo s) {
 		AddressSpace addressSpace = getModel().getAddressSpace("ram");
 		Address min = addressSpace.getAddress(s.GetRegionBase().longValue());

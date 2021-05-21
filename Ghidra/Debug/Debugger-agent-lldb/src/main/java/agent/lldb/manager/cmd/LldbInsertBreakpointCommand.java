@@ -18,11 +18,8 @@ package agent.lldb.manager.cmd;
 import java.math.BigInteger;
 
 import SWIG.*;
-import agent.lldb.lldb.DebugBreakpoint;
-import agent.lldb.lldb.DebugBreakpoint.*;
 import agent.lldb.manager.breakpoint.*;
 import agent.lldb.manager.impl.LldbManagerImpl;
-import ghidra.comm.util.BitmaskSet;
 
 /**
  * Implementation of {@link LldbBreakpointInsertions#insertBreakpoint(String)}
@@ -86,7 +83,7 @@ public class LldbInsertBreakpointCommand extends AbstractLldbCommand<LldbBreakpo
 			if (type.equals(LldbBreakpointType.HW_BREAKPOINT)) {
 				len = 1;
 			}
-			SBWatchpoint wpt = currentSession.WatchAddress(loc, len, false, false, error);	
+			SBWatchpoint wpt = currentSession.WatchAddress(loc, len, read, write, error);	
 			wpt.SetEnabled(true);
 			bkpt = new LldbWatchpointInfo(wpt, manager.getCurrentProcess());
 		}

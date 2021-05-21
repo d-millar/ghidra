@@ -93,7 +93,7 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 		changeAttributes(List.of(), List.of(
 			registers //
 		), Map.of( //
-			DISPLAY_ATTRIBUTE_NAME, display = computeDisplay(frame), //
+			DISPLAY_ATTRIBUTE_NAME, display = getDescription(0), //computeDisplay(frame), //
 			PC_ATTRIBUTE_NAME, pc //
 		), "Initialized");
 		setFrame(frame);
@@ -101,6 +101,13 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 		getManager().addEventsListener(this);
 	}
 
+	public String getDescription(int level) {
+		SBStream stream = new SBStream();
+		SBFrame frame = (SBFrame) getModelObject();		
+		frame.GetDescription(stream);
+		return stream.GetData();
+	}
+	
 	protected static String computeDisplay(SBFrame frame) {
 		if (frame.GetFunction() == null) {
 			return String.format("#%d 0x%s", frame.GetFrameID(), frame.GetPC().toString(16));
@@ -142,7 +149,7 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 
 		changeAttributes(List.of(), List.of(), Map.of( //
 			PC_ATTRIBUTE_NAME, pc, //
-			DISPLAY_ATTRIBUTE_NAME, display = computeDisplay(frame), //
+			DISPLAY_ATTRIBUTE_NAME, display = getDescription(0), //computeDisplay(frame), //
 			FUNC_ATTRIBUTE_NAME, func, //
 			INST_OFFSET_ATTRIBUTE_NAME, Long.toHexString(lval), //
 			FRAME_OFFSET_ATTRIBUTE_NAME, Long.toHexString(frameOffset), //
