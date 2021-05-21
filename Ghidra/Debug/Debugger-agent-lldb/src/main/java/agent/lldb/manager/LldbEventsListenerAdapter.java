@@ -98,22 +98,22 @@ public interface LldbEventsListenerAdapter extends LldbEventsListener {
 	}
 
 	@Override
-	public default void breakpointCreated(SBBreakpoint info, LldbCause cause) {
+	public default void breakpointCreated(Object info, LldbCause cause) {
 		// Extension point
 	}
 
 	@Override
-	public default void breakpointModified(SBBreakpoint info, LldbCause cause) {
+	public default void breakpointModified(Object info, LldbCause cause) {
 		// Extension point
 	}
 
 	@Override
-	public default void breakpointDeleted(SBBreakpoint info, LldbCause cause) {
+	public default void breakpointDeleted(Object info, LldbCause cause) {
 		// Extension point
 	}
 
 	@Override
-	public default void breakpointHit(SBBreakpoint info, LldbCause cause) {
+	public default void breakpointHit(Object info, LldbCause cause) {
 		// Extension point
 	}
 

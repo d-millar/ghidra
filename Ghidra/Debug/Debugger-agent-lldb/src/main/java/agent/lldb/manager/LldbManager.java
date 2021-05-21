@@ -223,7 +223,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a map of dbgeng-assigned breakpoint IDs to corresponding breakpoint information
 	 */
-	Map<String, SBBreakpoint> getKnownBreakpoints(SBTarget session);
+	Map<String, Object> getKnownBreakpoints(SBTarget session);
 
 	/**
 	 * Send an interrupt to dbgeng regardless of other queued commands
@@ -380,7 +380,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * @return a future that completes with a list of information for all breakpoints
 	 */
-	CompletableFuture<Map<String, SBBreakpoint>> listBreakpoints(SBTarget session);
+	CompletableFuture<Map<String, Object>> listBreakpoints(SBTarget session);
 	/**
 	 * List information for all breakpoints
 	 * 

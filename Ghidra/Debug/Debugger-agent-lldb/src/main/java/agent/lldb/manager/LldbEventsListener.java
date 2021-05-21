@@ -154,7 +154,7 @@ public interface LldbEventsListener {
 	 * @param info information about the new breakpoint
 	 * @param cause the cause of this event
 	 */
-	void breakpointCreated(SBBreakpoint info, LldbCause cause);
+	void breakpointCreated(Object info, LldbCause cause);
 
 	/**
 	 * A breakpoint in the session has been modified
@@ -163,7 +163,7 @@ public interface LldbEventsListener {
 	 * @param oldInfo old information about the modified breakpoint
 	 * @param cause the cause of this event
 	 */
-	void breakpointModified(SBBreakpoint info, LldbCause cause);
+	void breakpointModified(Object info, LldbCause cause);
 
 	/**
 	 * A breakpoint has been deleted from the session
@@ -171,7 +171,7 @@ public interface LldbEventsListener {
 	 * @param info information about the now-deleted breakpoint
 	 * @param cause the cause of this event
 	 */
-	void breakpointDeleted(SBBreakpoint info, LldbCause cause);
+	void breakpointDeleted(Object info, LldbCause cause);
 
 	/**
 	 * A breakpoint was hit in the session
@@ -179,7 +179,7 @@ public interface LldbEventsListener {
 	 * @param info information about the breakpoint hit
 	 * @param cause the cause of this event
 	 */
-	void breakpointHit(SBBreakpoint info, LldbCause cause);
+	void breakpointHit(Object info, LldbCause cause);
 
 	/**
 	 * A breakpoint has effectively been applied to an process

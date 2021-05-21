@@ -15,7 +15,6 @@
  */
 package agent.lldb.model.iface1;
 
-import SWIG.SBBreakpoint;
 import agent.lldb.model.iface2.LldbModelTargetObject;
 import ghidra.dbg.target.TargetBreakpointSpec.TargetBreakpointAction;
 import ghidra.util.datastruct.ListenerSet;
@@ -29,7 +28,7 @@ import ghidra.util.datastruct.ListenerSet;
  */
 public interface LldbModelTargetBptHelper extends LldbModelTargetObject {
 
-	public SBBreakpoint getBreakpointInfo();
+	public Object getBreakpointInfo();
 
 	public void setBreakpointId(String id);
 

@@ -60,26 +60,26 @@ public class LldbModelTargetBreakpointContainerImpl extends LldbModelTargetObjec
 	}
 
 	@Override
-	public void breakpointCreated(SBBreakpoint info, LldbCause cause) {
+	public void breakpointCreated(Object info, LldbCause cause) {
 		changeElements(List.of(), List.of(getTargetBreakpointSpec(info)), Map.of(), "Created");
 	}
 
 	@Override
-	public void breakpointModified(SBBreakpoint info, LldbCause cause) {
+	public void breakpointModified(Object info, LldbCause cause) {
 		getTargetBreakpointSpec(info).updateInfo(info, "Modified");
 	}
 
 	@Override
-	public void breakpointDeleted(SBBreakpoint info, LldbCause cause) {
+	public void breakpointDeleted(Object info, LldbCause cause) {
 		LldbModelImpl impl = (LldbModelImpl) model;
 		impl.deleteModelObject(info);
 		changeElements(List.of( //
-			Integer.toHexString(info.GetID()) //
+			DebugClient.getId(getModelObject()) //
 		), List.of(), Map.of(), "Deleted");
 	}
 
 	@Override
-	public void breakpointHit(SBBreakpoint bpt, LldbCause cause) {
+	public void breakpointHit(Object bpt, LldbCause cause) {
 		LldbModelTargetThread targetThread =
 			getParentProcess().getThreads().getTargetThread(getManager().getEventThread());
 		LldbModelTargetBreakpointSpec spec = getTargetBreakpointSpec(bpt);
@@ -87,7 +87,7 @@ public class LldbModelTargetBreakpointContainerImpl extends LldbModelTargetObjec
 		spec.breakpointHit();
 	}
 
-	public LldbModelTargetBreakpointSpec getTargetBreakpointSpec(SBBreakpoint bpt) {
+	public LldbModelTargetBreakpointSpec getTargetBreakpointSpec(Object bpt) {
 		TargetObject targetObject = getMapObject(bpt);
 		if (targetObject != null) {
 			LldbModelTargetBreakpointSpec spec = (LldbModelTargetBreakpointSpec) targetObject;

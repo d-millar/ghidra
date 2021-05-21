@@ -27,15 +27,11 @@ public interface DebugBreakpoint {
 	}
 
 	public static class BreakFullType {
-		/*
-			public final BreakType breakType;
-		public final Machine procType; // TODO: Guessing the values are from WinNT
+		public final BreakType breakType;
 
-		public BreakFullType(BreakType breakType, Machine procType) {
+		public BreakFullType(BreakType breakType) {
 			this.breakType = breakType;
-			this.procType = procType;
 		}
-		*/
 	}
 
 	public static enum BreakFlags implements BitmaskUniverse {
@@ -62,7 +58,7 @@ public interface DebugBreakpoint {
 		READ(1 << 0), //
 		WRITE(1 << 1), //
 		EXECUTE(1 << 2), //
-		IO(1 << 3), //
+		READ_WRITE(1 << 3), //
 		;
 
 		private BreakAccess(int mask) {
@@ -87,50 +83,4 @@ public interface DebugBreakpoint {
 		}
 	}
 
-	void remove();
-
-	int getId();
-
-	BreakFullType getType();
-
-	DebugClient getAdder();
-
-	BitmaskSet<BreakFlags> getFlags();
-
-	void addFlags(BitmaskSet<BreakFlags> flags);
-
-	void addFlags(BreakFlags... flags);
-
-	void removeFlags(BitmaskSet<BreakFlags> flags);
-
-	void removeFlags(BreakFlags... flags);
-
-	void setFlags(BitmaskSet<BreakFlags> flags);
-
-	void setFlags(BreakFlags... flags);
-
-	/**
-	 * Get the location on target that triggers the breakpoint
-	 * 
-	 * <p>
-	 * If the breakpoint is deferred, this will return {@code null}. In that case, use
-	 * {@link #getOffsetExpression()}.
-	 * 
-	 * @return the offset, or {@code null}
-	 */
-	Long getOffset();
-
-	void setOffset(long offset);
-
-	String getOffsetExpression();
-
-	void setOffsetExpression(String expression);
-
-	BreakDataParameters getDataParameters();
-
-	void setDataParameters(BreakDataParameters params);
-
-	void setDataParameters(int size, BitmaskSet<BreakAccess> access);
-
-	void setDataParameters(int size, BreakAccess... access);
 }

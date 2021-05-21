@@ -20,17 +20,10 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import SWIG.SBBreakpointLocation;
-import SWIG.SBTarget;
-import agent.lldb.lldb.DebugClient;
-import agent.lldb.model.iface2.LldbModelTargetBreakpointContainer;
-import agent.lldb.model.iface2.LldbModelTargetBreakpointLocation;
-import agent.lldb.model.iface2.LldbModelTargetBreakpointLocationContainer;
-import agent.lldb.model.iface2.LldbModelTargetBreakpointSpec;
+import SWIG.*;
+import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetObject;
-import ghidra.dbg.target.schema.TargetAttributeType;
-import ghidra.dbg.target.schema.TargetElementType;
-import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.target.schema.*;
 
 @TargetObjectSchemaInfo(name = "BreakpointContainer", elements = { //
 	@TargetElementType(type = LldbModelTargetBreakpointSpecImpl.class) //
@@ -61,7 +54,7 @@ public class LldbModelTargetBreakpointLocationContainerImpl extends LldbModelTar
 
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
-		return getManager().listBreakpointLocations(targetBreakpoint.getBreakpointInfo()).thenAccept(byNumber -> {
+		return getManager().listBreakpointLocations((SBBreakpoint)(targetBreakpoint).getBreakpointInfo()).thenAccept(byNumber -> {
 			List<TargetObject> specs;
 			synchronized (this) {
 				specs = byNumber.values()
