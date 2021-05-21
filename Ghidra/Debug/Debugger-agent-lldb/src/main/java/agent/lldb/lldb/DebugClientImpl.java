@@ -1,16 +1,13 @@
 package agent.lldb.lldb;
 
-import static org.junit.Assume.assumeTrue;
+import static org.junit.Assume.*;
+
+import java.math.BigInteger;
 
 import SWIG.*;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.LldbManager;
-import agent.lldb.manager.evt.LldbBreakpointModifiedEvent;
-import agent.lldb.manager.evt.LldbConsoleOutputEvent;
-import agent.lldb.manager.evt.LldbModuleLoadedEvent;
-import agent.lldb.manager.evt.LldbModuleUnloadedEvent;
-import agent.lldb.manager.evt.LldbStateChangedEvent;
-import agent.lldb.manager.evt.LldbThreadSelectedEvent;
+import agent.lldb.manager.evt.*;
 import ghidra.comm.util.BitmaskSet;
 import ghidra.util.Msg;
 
@@ -30,6 +27,7 @@ public class DebugClientImpl implements DebugClient {
 	@Override
 	public DebugClient createClient() {
 		try {
+			//TODO: fix this
 			System.load("/Users/llero/git/llvm-build/lib/liblldb.dylib");
 		}
 		catch (UnsatisfiedLinkError ex) {
@@ -98,17 +96,53 @@ public class DebugClientImpl implements DebugClient {
 	}
 
 	@Override
-	public void attachProcess(DebugServerId si, String processId, BitmaskSet<DebugAttachFlags> attachFlags) {
-		// TODO Auto-generated method stub
-		
+	public void attach(DebugServerId si, SBAttachInfo info) {
+		SBError error = new SBError();
+		session.Attach(info, error);
+		if (!error.Success()) {
+			Msg.error(this, error.GetType() + " for attach");
+		}
 	}
 
 	@Override
+	public void attachProcess(DebugServerId si, String processName, boolean wait, BitmaskSet<DebugAttachFlags> attachFlags) {
+		SBListener listener = new SBListener();
+		SBError error = new SBError();
+		session.AttachToProcessWithName(listener, processName, wait, error);
+		if (!error.Success()) {
+			Msg.error(this, error.GetType() + " while attaching to " + processName);
+		}
+	}
+
+	@Override
+	public void attachProcess(DebugServerId si, BigInteger processId, BitmaskSet<DebugAttachFlags> attachFlags) {
+		SBListener listener = new SBListener();
+		SBError error = new SBError();
+		session.AttachToProcessWithID(listener, processId, error);
+		if (!error.Success()) {
+			Msg.error(this, error.GetType() + " while attaching to " + processId);
+		}
+	}
+
+	@Override
+	public void createProcess(DebugServerId si, SBLaunchInfo info) {
+		SBError error = new SBError();
+		SBProcess process = session.Launch(info, error);
+		if (!error.Success()) {
+			Msg.error(this, error.GetType() + " for create process");
+		}
+	}
+	
+	@Override
 	public void createProcess(DebugServerId si, String commandLine, BitmaskSet<DebugCreateFlags> createFlags) {
+		//TODO: fix this
 		session = connectSession("/opt/X11/bin/xclock-x86_64");
 		SBListener listener = new SBListener();
 		SBError error = new SBError();
 		SBProcess process = session.Launch(listener, null, null, "", "", "", "", 0, true, error);
+		if (!error.Success()) {
+			Msg.error(this, error.GetType() + " while launching " + commandLine);
+		}
 		//SBProcess process = session.LaunchSimple(null, null, null);
 		/*
 		listener = new SBListener(process.GetProcessID().toString());
@@ -117,13 +151,6 @@ public class DebugClientImpl implements DebugClient {
 		event = new SBEvent();
 		executor = new LldbClientThreadExecutor(() -> createClient());
 		*/
-	}
-
-	@Override
-	public void createProcessAndAttach(DebugServerId si, String commandLine, BitmaskSet<DebugCreateFlags> createFlags,
-			int processId, BitmaskSet<DebugAttachFlags> attachFlags) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -140,20 +167,12 @@ public class DebugClientImpl implements DebugClient {
 
 	@Override
 	public void terminateCurrentProcess() {
-		// TODO Auto-generated method stub
-		
+		session.GetProcess().Destroy();
 	}
 
 	@Override
 	public void detachCurrentProcess() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void abandonCurrentProcess() {
-		// TODO Auto-generated method stub
-		
+		session.GetProcess().Detach();
 	}
 
 	@Override
@@ -163,14 +182,16 @@ public class DebugClientImpl implements DebugClient {
 
 	@Override
 	public void endSession(DebugEndSessionFlags flags) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 	@Override
 	public void openDumpFileWide(String fileName) {
-		// TODO Auto-generated method stub
-		
+		SBError error = new SBError();
+		session.LoadCore(fileName, error);
+		if (!error.Success()) {
+			Msg.error(this, error.GetType() + " while loading " + fileName);
+		}
 	}
 
 	@Override

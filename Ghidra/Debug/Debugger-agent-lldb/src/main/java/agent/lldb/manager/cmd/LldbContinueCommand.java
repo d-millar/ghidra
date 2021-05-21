@@ -51,9 +51,5 @@ public class LldbContinueCommand extends AbstractLldbCommand<Void> {
 	@Override
 	public void invoke() {
 		process.Continue();
-		/*
-		DebugClient dbgeng = manager.getClient();
-		dbgeng.getControl().setExecutionStatus(DebugStatus.GO);
-		*/
 	}
 }

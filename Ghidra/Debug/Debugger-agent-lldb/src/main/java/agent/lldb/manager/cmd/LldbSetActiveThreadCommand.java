@@ -15,13 +15,14 @@
  */
 package agent.lldb.manager.cmd;
 
+import SWIG.SBFrame;
 import SWIG.SBThread;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 public class LldbSetActiveThreadCommand extends AbstractLldbCommand<Void> {
 
 	private SBThread thread;
-	private Integer frameId;
+	private long frameId;
 
 	/**
 	 * Set the active thread
@@ -30,7 +31,7 @@ public class LldbSetActiveThreadCommand extends AbstractLldbCommand<Void> {
 	 * @param thread the desired thread
 	 * @param frameId the desired frame level
 	 */
-	public LldbSetActiveThreadCommand(LldbManagerImpl manager, SBThread thread, Integer frameId) {
+	public LldbSetActiveThreadCommand(LldbManagerImpl manager, SBThread thread, long frameId) {
 		super(manager);
 		this.thread = thread;
 		this.frameId = frameId;
@@ -38,14 +39,9 @@ public class LldbSetActiveThreadCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public void invoke() {
-		/*
-		DebugThreadId id = thread.GetIndexID();
-		if (id != null) {
-			manager.getSystemObjects().setCurrentThreadId(id);
-			if (frameId != null) {
-				manager.getSymbols().setCurrentScopeFrameIndex(frameId);
-			}
+		manager.getCurrentProcess().SetSelectedThread(thread);
+		if (frameId >= 0) {
+			manager.getCurrentProcess().GetSelectedThread().SetSelectedFrame(frameId);
 		}
-		*/
 	}
 }

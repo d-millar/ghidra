@@ -15,11 +15,7 @@
  */
 package agent.lldb.model.iface1;
 
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
 import agent.lldb.model.iface2.LldbModelTargetObject;
-import ghidra.async.AsyncUtils;
 import ghidra.dbg.target.TargetSteppable;
 
 /**
@@ -30,64 +26,5 @@ import ghidra.dbg.target.TargetSteppable;
  * @param <T> type for this
  */
 public interface LldbModelTargetSteppable extends LldbModelTargetObject, TargetSteppable {
-
-	/*
-	default ExecSuffix convertToDbg(TargetStepKind kind) {
-		switch (kind) {
-			case FINISH:
-				return ExecSuffix.FINISH;
-			case INTO:
-				return ExecSuffix.STEP_INSTRUCTION;
-			case LINE:
-				return ExecSuffix.STEP;
-			case OVER:
-				return ExecSuffix.NEXT_INSTRUCTION;
-			case OVER_LINE:
-				return ExecSuffix.NEXT;
-			case RETURN:
-				return ExecSuffix.RETURN;
-			case UNTIL:
-				return ExecSuffix.UNTIL;
-			case EXTENDED:
-				return ExecSuffix.EXTENDED;
-			default:
-				throw new AssertionError();
-		}
-	}
-	*/
-
-	@Override
-	default CompletableFuture<Void> step(TargetStepKind kind) {
-		/*
-		DbgThread thread = getManager().getCurrentThread();
-		switch (kind) {
-			case SKIP:
-				throw new UnsupportedOperationException(kind.name());
-			case ADVANCE: // Why no exec-advance in dbgeng?
-				return thread.console("advance");
-			default:
-				if (this instanceof DbgModelTargetThread) {
-					DbgModelTargetThread targetThread = (DbgModelTargetThread) this;
-					return getModel().gateFuture(targetThread.getThread().step(convertToDbg(kind)));
-				}
-				if (this instanceof DbgModelTargetProcess) {
-					DbgModelTargetProcess targetProcess = (DbgModelTargetProcess) this;
-					return getModel()
-							.gateFuture(targetProcess.getProcess().step(convertToDbg(kind)));
-				}
-				return getModel().gateFuture(thread.step(convertToDbg(kind)));
-		}
-		*/
-		return AsyncUtils.NIL;
-	}
-
-	@Override
-	default CompletableFuture<Void> step(Map<String, ?> args) {
-		/*
-		DbgThread thread = getManager().getCurrentThread();
-		return getModel().gateFuture(thread.step(args));
-		*/
-		return AsyncUtils.NIL;
-	}
 
 }

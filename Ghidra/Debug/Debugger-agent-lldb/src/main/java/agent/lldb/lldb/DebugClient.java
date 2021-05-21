@@ -15,6 +15,8 @@
  */
 package agent.lldb.lldb;
 
+import java.math.BigInteger;
+
 import com.sun.jna.platform.win32.WinBase;
 
 import SWIG.*;
@@ -192,7 +194,6 @@ public interface DebugClient extends DebugClientReentrant {
 			return mask;
 		}
 	}
-	
 
 	public static enum DebugAttachFlags implements BitmaskUniverse {
 		DEFAULT(0), //
@@ -436,14 +437,16 @@ public interface DebugClient extends DebugClientReentrant {
 			BitmaskSet<ProcessDescriptionFlags> flags);
 	*/
 
-	void attachProcess(DebugServerId si, String processId, BitmaskSet<DebugAttachFlags> attachFlags);
+	public void attach(DebugServerId si, SBAttachInfo info);
+
+	void attachProcess(DebugServerId si, String procName, boolean wait, BitmaskSet<DebugAttachFlags> attachFlags);
+
+	void attachProcess(DebugServerId si, BigInteger procId, BitmaskSet<DebugAttachFlags> attachFlags);
+
+	void createProcess(DebugServerId si, SBLaunchInfo info);
 
 	void createProcess(DebugServerId si, String commandLine,
 			BitmaskSet<DebugCreateFlags> createFlags);
-
-	void createProcessAndAttach(DebugServerId si, String commandLine,
-			BitmaskSet<DebugCreateFlags> createFlags, int processId,
-			BitmaskSet<DebugAttachFlags> attachFlags);
 
 	void startServer(String options);
 
@@ -458,8 +461,6 @@ public interface DebugClient extends DebugClientReentrant {
 	void terminateCurrentProcess();
 
 	void detachCurrentProcess();
-
-	void abandonCurrentProcess();
 
 	SBTarget connectSession(String commandLine);
 

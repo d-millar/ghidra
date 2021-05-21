@@ -152,19 +152,12 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public CompletableFuture<Void> step(TargetStepKind kind) {
-		switch (kind) {
-			case SKIP:
-				throw new UnsupportedOperationException(kind.name());
-			case ADVANCE: // Why no exec-advance in Lldbeng?
-				throw new UnsupportedOperationException(kind.name());
-			default:
-				return getManager().execute(new LldbStepCommand(getManager(), 0, null));
-		}
+		return getManager().execute(new LldbStepCommand(getManager(), null, kind, null));
 	}
 
 	@Override
 	public CompletableFuture<Void> step(Map<String, ?> args) {
-		return getManager().execute(new LldbStepCommand(getManager(), 0, null));
+		return getManager().execute(new LldbStepCommand(getManager(), null, null, args));
 	}
 
 	@Override

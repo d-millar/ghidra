@@ -15,8 +15,10 @@
  */
 package agent.lldb.manager.cmd;
 
+import SWIG.SBError;
 import SWIG.SBThread;
 import agent.lldb.manager.impl.LldbManagerImpl;
+import ghidra.util.Msg;
 
 public class LldbThreadHoldCommand extends AbstractLldbCommand<Void> {
 
@@ -52,22 +54,14 @@ public class LldbThreadHoldCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public void invoke() {
-		/*
-		DebugThreadId id = thread.getId();
-		if (id != null) {
-			manager.getSystemObjects().setCurrentThreadId(id);
-			if (!manager.isKernelMode()) {
-				DebugControl control = manager.getControl();
-				if (preferFreeze) {
-					control.execute(
-						set ? FREEZE_CURRENT_THREAD_COMMAND : UNFREEZE_CURRENT_THREAD_COMMAND);
-				}
-				else {
-					control.execute(
-						set ? SUSPEND_CURRENT_THREAD_COMMAND : RESUME_CURRENT_THREAD_COMMAND);
-				}
-			}
+		SBError error = new SBError();
+		if (set) {
+			thread.Suspend(error);
+		} else {
+			thread.Resume(error);
 		}
-		*/
+		if (!error.Success()) {
+			Msg.error(this, error.GetType()+" while placing hold");
+		}
 	}
 }
