@@ -77,7 +77,7 @@ public interface LldbModelTargetThread extends //
 	public default CompletableFuture<Void> setActive() {
 		LldbManagerImpl manager = getManager();
 		SBThread thread = getThread();
-		return manager.execute(new LldbSetActiveThreadCommand(manager, thread, null));
+		return manager.execute(new LldbSetActiveThreadCommand(manager, thread, -1));
 	}
 
 	public LldbModelTargetStackImpl getStack();

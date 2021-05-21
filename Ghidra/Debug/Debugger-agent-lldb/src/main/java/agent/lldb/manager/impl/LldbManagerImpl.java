@@ -1587,7 +1587,7 @@ public class LldbManagerImpl implements LldbManager {
 
 	public CompletableFuture<Void> setActiveThread(SBThread thread) {
 		currentThread = thread;
-		return execute(new LldbSetActiveThreadCommand(this, thread, null));
+		return execute(new LldbSetActiveThreadCommand(this, thread, -1L));
 	}
 
 	public CompletableFuture<Void> setActiveProcess(SBProcess process) {

@@ -119,29 +119,18 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public CompletableFuture<Void> step(TargetStepKind kind) {
-		switch (kind) {
-			case SKIP:
-				throw new UnsupportedOperationException(kind.name());
-			case ADVANCE: // Why no exec-advance in GDB/MI?
-				return null; //thread.console("advance");
-			default:
-				return getManager().execute(new LldbStepCommand(getManager(), 0, null));
-		}
+		return getManager().execute(new LldbStepCommand(getManager(), null, kind, null));
 	}
 
 	@Override
 	public CompletableFuture<Void> step(Map<String, ?> args) {
-		return getManager().execute(new LldbStepCommand(getManager(), 0, args));
+		return getManager().execute(new LldbStepCommand(getManager(), null, null, args));
 	}
 
 	@Override
 	public CompletableFuture<Void> setActive() {
 		LldbManagerImpl manager = getManager();
-		return manager.execute(new LldbSetActiveThreadCommand(manager, getThread(), null));
-	}
-
-	public LldbModelTargetRegisterContainerAndBank getRegisters() {
-		return null; //registers;
+		return manager.execute(new LldbSetActiveThreadCommand(manager, getThread(), -1L));
 	}
 
 	@Override

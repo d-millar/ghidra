@@ -17,31 +17,28 @@ package agent.lldb.manager.cmd;
 
 import java.util.Map;
 
-import SWIG.SBProcess;
-import SWIG.SBThread;
+import SWIG.*;
 import agent.lldb.manager.LldbEvent;
-import agent.lldb.manager.LldbManager.ExecSuffix;
-import agent.lldb.manager.evt.AbstractLldbCompletedCommandEvent;
-import agent.lldb.manager.evt.LldbCommandErrorEvent;
-import agent.lldb.manager.evt.LldbRunningEvent;
+import agent.lldb.manager.evt.*;
 import agent.lldb.manager.impl.LldbManagerImpl;
+import ghidra.dbg.target.TargetSteppable.TargetStepKind;
+import ghidra.util.Msg;
 
 /**
  * Implementation of {@link DbgThread#stepInstruction()}
  */
 public class LldbStepCommand extends AbstractLldbCommand<Void> {
 
-	private Integer id;
-	protected final ExecSuffix suffix;
-	private String lastCommand = "tct";
+	private SBThread thread;
+	private TargetStepKind kind;
+	private Map<String, ?> args;
+	private String lastCommand = "";
 
-	public LldbStepCommand(LldbManagerImpl manager, Integer id, Map<String, ?> args) {
+	public LldbStepCommand(LldbManagerImpl manager, SBThread thread, TargetStepKind kind, Map<String, ?> args) {
 		super(manager);
-		this.id = id;
-		this.suffix = ExecSuffix.EXTENDED;
-		if (args != null) {
-			this.lastCommand = (String) args.get("Command");
-		}
+		this.thread = thread;
+		this.kind = kind;
+		this.args = args;
 	}
 
 	@Override
@@ -58,50 +55,51 @@ public class LldbStepCommand extends AbstractLldbCommand<Void> {
 		return false;
 	}
 
-	// NB:  Would really prefer to do this through the API, but the API does
-	//  not appear to support freeze/unfreeze and suspend/resume thread.  These appear
-	//  to be applied via the kernel32 API.  Worse, the WinLldb/KD API appears to lack
-	//  commands to query the freeze/suspend count for a given thread.  Rather than 
-	//  wrestle with the underlying API, we're going to just use the WInLldb commands.
-	//  Note that the thread-restricted form is used iff we're stepping a thread other
-	//  then the event thread.
 	@Override
 	public void invoke() {
-		SBThread currentThread = manager.getCurrentThread();
-		currentThread.StepInto();
-		/*
-		String cmd = "";
-		String prefix = id == null ? "" : "~" + id.id + " ";
-		DebugControl control = manager.getControl();
-		if (suffix.equals(ExecSuffix.STEP_INSTRUCTION)) {
-			cmd = "t";
-			//control.setExecutionStatus(DebugStatus.STEP_INTO);
+		RunMode rm = RunMode.eOnlyThisThread;
+		if (thread == null) {
+			thread = manager.getCurrentThread();
+			rm = RunMode.eAllThreads;
 		}
-		else if (suffix.equals(ExecSuffix.NEXT_INSTRUCTION)) {
-			cmd = "p";
-			//control.setExecutionStatus(DebugStatus.STEP_OVER);
+		if (kind == null) {
+			kind = (TargetStepKind) args.get("Kind");
 		}
-		else if (suffix.equals(ExecSuffix.FINISH)) {
-			cmd = "gu";
-			//control.setExecutionStatus(DebugStatus.STEP_BRANCH);
+		SBError error = new SBError();
+		switch (kind) {
+			case INTO:
+				thread.StepInto();
+				break;
+			case OVER:
+				thread.StepOver(rm, error);
+				break;
+			case LINE:
+				thread.StepInstruction(false, error);
+				break;
+			case OVER_LINE:
+				thread.StepInstruction(true, error);
+				break;
+			case RETURN:
+				thread.StepOut(error);
+				break;
+			case FINISH:
+				thread.StepOutOfFrame(thread.GetSelectedFrame(), error);
+				break;
+			case ADVANCE:
+				SBFileSpec file = (SBFileSpec) args.get("File");
+				long line = (long) args.get("Line");
+				error = thread.StepOverUntil(thread.GetSelectedFrame(), file, line);
+				break;
+			case EXTENDED:
+				manager.execute(new LldbEvaluateCommand(manager, lastCommand));
+				break;
+			case SKIP:
+			default:
+				throw new UnsupportedOperationException("Step "+kind.name()+" not supported");
 		}
-		else if (suffix.equals(ExecSuffix.EXTENDED)) {
-			cmd = getLastCommand();
+		if (!error.Success()) {
+			Msg.error(this, error.GetType()+" while stepping");
 		}
-		SBThread eventThread = manager.getEventThread();
-		if (eventThread != null && eventThread.getId().equals(id)) {
-			control.execute(cmd);
-		}
-		else {
-			if (manager.isKernelMode()) {
-				Msg.info(this, "Thread-specific stepping ignored in kernel-mode");
-				control.execute(cmd);
-			}
-			else {
-				control.execute(prefix + cmd);
-			}
-		}
-		*/
 	}
 
 	public String getLastCommand() {
