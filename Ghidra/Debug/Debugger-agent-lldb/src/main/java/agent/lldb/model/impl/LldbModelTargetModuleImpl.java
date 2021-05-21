@@ -18,10 +18,7 @@ package agent.lldb.model.impl;
 import java.util.List;
 import java.util.Map;
 
-import SWIG.SBFileSpec;
-import SWIG.SBModule;
-import SWIG.SBProcess;
-import SWIG.SBTarget;
+import SWIG.*;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.LldbModelTargetModule;
 import ghidra.dbg.target.TargetObject;
@@ -70,7 +67,7 @@ public class LldbModelTargetModuleImpl extends LldbModelTargetObjectImpl
 			sections //
 			//symbols //
 		), Map.of( //
-			DISPLAY_ATTRIBUTE_NAME, getIndex(), //
+			DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
 			SHORT_DISPLAY_ATTRIBUTE_NAME, fspec.GetFilename(), //
 			MODULE_NAME_ATTRIBUTE_NAME, fspec.GetDirectory()+"/"+fspec.GetFilename(), //
 			"ImageName", fspec.GetDirectory()+"/"+fspec.GetFilename(), //
@@ -84,6 +81,13 @@ public class LldbModelTargetModuleImpl extends LldbModelTargetObjectImpl
 
 	}
 
+	public String getDescription(int level) {
+		SBStream stream = new SBStream();
+		SBModule module = (SBModule) getModelObject();		
+		module.GetDescription(stream);
+		return stream.GetData();
+	}
+	
 	protected Address doGetBase() {
 		return null; //getModel().getAddressSpace("ram").getAddress(module.getKnownBase());
 	}

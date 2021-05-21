@@ -18,7 +18,7 @@ package agent.lldb.model.impl;
 import java.util.List;
 import java.util.Map;
 
-import SWIG.SBSymbol;
+import SWIG.*;
 import agent.lldb.model.iface2.LldbModelTargetSymbol;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.TargetSymbol;
@@ -60,7 +60,7 @@ public class LldbModelTargetSymbolImpl extends LldbModelTargetObjectImpl
 		this.size = symbol.GetEndAddress().GetOffset().subtract(symbol.GetStartAddress().GetOffset()).longValue();
 
 		changeAttributes(List.of(), List.of(), Map.of( //
-			// TODO: DATA_TYPE
+			DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
 			NAMESPACE_ATTRIBUTE_NAME, symbols, //
 			VALUE_ATTRIBUTE_NAME, value, //
 			SIZE_ATTRIBUTE_NAME, size //
@@ -71,6 +71,13 @@ public class LldbModelTargetSymbolImpl extends LldbModelTargetObjectImpl
 			"Tag", symbol.getTag() //
 			*/
 		), "Initialized");
+	}
+
+	public String getDescription(int level) {
+		SBStream stream = new SBStream();
+		SBSymbol symbol = (SBSymbol) getModelObject();		
+		symbol.GetDescription(stream);
+		return stream.GetData();
 	}
 
 	@Override

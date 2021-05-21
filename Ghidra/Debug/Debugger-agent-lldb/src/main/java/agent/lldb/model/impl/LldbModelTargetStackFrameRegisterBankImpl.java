@@ -20,8 +20,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import SWIG.SBValue;
-import SWIG.StateType;
+import SWIG.*;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface2.LldbModelTargetRegister;
 import agent.lldb.model.iface2.LldbModelTargetStackFrameRegisterBank;
@@ -60,11 +59,18 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 		this.container = container;
 		
 		changeAttributes(List.of(), List.of(), Map.of(
-			DISPLAY_ATTRIBUTE_NAME, val.GetName(), 
+			DISPLAY_ATTRIBUTE_NAME, getName(), 
 			DESCRIPTIONS_ATTRIBUTE_NAME, container
 		), "Initialized");
 		
 		requestElements(false);
+	}
+
+	public String getDescription(int level) {
+		SBStream stream = new SBStream();
+		SBValue val = (SBValue) getModelObject();		
+		val.GetDescription(stream);
+		return stream.GetData();
 	}
 
 	/**

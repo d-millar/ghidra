@@ -18,7 +18,7 @@ package agent.lldb.model.impl;
 import java.util.List;
 import java.util.Map;
 
-import SWIG.SBBreakpointLocation;
+import SWIG.*;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.LldbModelTargetBreakpointLocation;
 import agent.lldb.model.iface2.LldbModelTargetBreakpointLocationContainer;
@@ -61,12 +61,16 @@ public class LldbModelTargetBreakpointLocationImpl extends LldbModelTargetObject
 			SPEC_ATTRIBUTE_NAME, parent,
 			ADDRESS_ATTRIBUTE_NAME, address,
 			LENGTH_ATTRIBUTE_NAME, length,
-			DISPLAY_ATTRIBUTE_NAME, display = computeDisplay()),
+			DISPLAY_ATTRIBUTE_NAME, display = getDescription(0)),
 			reason);
 	}
 	
-	protected String computeDisplay() {
-		return String.format("%d %s", loc.GetID(), address);
+	public String getDescription(int level) {
+		SBStream stream = new SBStream();
+		SBBreakpointLocation loc = (SBBreakpointLocation) getModelObject();		
+		DescriptionLevel detail = DescriptionLevel.swigToEnum(level);
+		loc.GetDescription(stream, detail);
+		return stream.GetData();
 	}
 
 	@Override

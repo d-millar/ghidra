@@ -20,8 +20,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 import SWIG.SBTarget;
+import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbEventsListenerAdapter;
 import agent.lldb.manager.breakpoint.LldbBreakpointType;
+import agent.lldb.manager.impl.LldbManagerImpl;
 import ghidra.async.AsyncFence;
 import ghidra.dbg.target.TargetBreakpointLocationContainer;
 import ghidra.dbg.target.TargetBreakpointSpec.TargetBreakpointKind;
@@ -82,16 +84,17 @@ public interface LldbModelTargetBreakpointContainer extends LldbModelTargetObjec
 	@Override
 	public default CompletableFuture<Void> placeBreakpoint(String expression,
 			Set<TargetBreakpointKind> kinds) {
-		return doPlaceBreakpoint(kinds, t -> getManager().insertBreakpoint(expression, t));
+		LldbManagerImpl manager = getManager();
+		return doPlaceBreakpoint(kinds, t -> manager.insertBreakpoint(expression, t));			
 	}
 
 	@Override
 	public default CompletableFuture<Void> placeBreakpoint(AddressRange range,
 			Set<TargetBreakpointKind> kinds) {
-		// TODO: Consider how to translate address spaces
+		LldbManagerImpl manager = getManager();
 		long offset = range.getMinAddress().getOffset();
 		int len = (int) range.getLength();
-		return doPlaceBreakpoint(kinds, t -> getManager().insertBreakpoint(offset, len, t));
+		return doPlaceBreakpoint(kinds, t -> manager.insertBreakpoint(offset, len, t));
 	}
 	
 	public SBTarget getSession();

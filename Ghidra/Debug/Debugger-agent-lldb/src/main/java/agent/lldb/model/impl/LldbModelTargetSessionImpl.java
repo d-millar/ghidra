@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import SWIG.SBTarget;
+import SWIG.*;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface1.LldbModelSelectableObject;
 import agent.lldb.model.iface1.LldbModelTargetInterpreter;
@@ -92,6 +92,7 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 			processes, //
 			modules //
 		), Map.of( //
+			DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
 			ACCESSIBLE_ATTRIBUTE_NAME, accessible, //
 			PROMPT_ATTRIBUTE_NAME, LldbModelTargetInterpreter.LLDB_PROMPT, //
 			STATE_ATTRIBUTE_NAME, TargetExecutionState.ALIVE //
@@ -100,6 +101,14 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 		getManager().addEventsListener(this);
 	}
 
+	public String getDescription(int level) {
+		SBStream stream = new SBStream();
+		SBTarget session = (SBTarget) getModelObject();		
+		DescriptionLevel detail = DescriptionLevel.swigToEnum(level);
+		session.GetDescription(stream, detail);
+		return stream.GetData();
+	}
+	
 	@Override
 	public CompletableFuture<Void> setActive() {
 		//LldbManagerImpl manager = getManager();

@@ -18,6 +18,7 @@ package agent.lldb.model.impl;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
+import SWIG.SBStream;
 import SWIG.StateType;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
@@ -224,6 +225,10 @@ public class LldbModelTargetObjectImpl extends DefaultTargetObject<TargetObject,
 	public TargetObject searchForSuitable(Class<? extends TargetObject> type) {
 		List<String> pathToClass = model.getRootSchema().searchForSuitable(type, path);
 		return model.getModelObject(pathToClass);
+	}
+	
+	public String getDescription(int level) {
+		return getName();
 	}
 
 	@Override

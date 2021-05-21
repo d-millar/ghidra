@@ -19,6 +19,7 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
+import SWIG.SBStream;
 import SWIG.SBValue;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.LldbModelTargetStackFrameRegister;
@@ -56,10 +57,17 @@ public class LldbModelTargetStackFrameRegisterImpl
 		changeAttributes(List.of(), Map.of( //
 			CONTAINER_ATTRIBUTE_NAME, bank, //
 			LENGTH_ATTRIBUTE_NAME, getBitLength(), //
-			DISPLAY_ATTRIBUTE_NAME, getDisplay(), //
+			DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
 			VALUE_ATTRIBUTE_NAME, value == null ? "" : value, //
 			MODIFIED_ATTRIBUTE_NAME, false //
 		), "Initialized");
+	}
+
+	public String getDescription(int level) {
+		SBStream stream = new SBStream();
+		SBValue val = (SBValue) getModelObject();		
+		val.GetDescription(stream);
+		return stream.GetData();
 	}
 
 	@Override
@@ -89,7 +97,7 @@ public class LldbModelTargetStackFrameRegisterImpl
 			VALUE_ATTRIBUTE_NAME, value //
 		), "Refreshed");
 		if (val.longValue() != 0) {
-			String newval = getDisplay();
+			String newval = getDescription(0);
 			changeAttributes(List.of(), Map.of( //
 				DISPLAY_ATTRIBUTE_NAME, newval //
 			), "Refreshed");

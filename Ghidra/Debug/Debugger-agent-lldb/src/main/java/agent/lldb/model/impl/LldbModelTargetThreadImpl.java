@@ -19,9 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import SWIG.SBFrame;
-import SWIG.SBThread;
-import SWIG.StateType;
+import SWIG.*;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbReason;
@@ -84,12 +82,19 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 			stack //
 		), Map.of( //
 			ACCESSIBLE_ATTRIBUTE_NAME, accessible = false, //
-			DISPLAY_ATTRIBUTE_NAME, getDisplay(), //
+			DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
 			SUPPORTED_STEP_KINDS_ATTRIBUTE_NAME, SUPPORTED_KINDS //
 		), "Initialized");
 
 		getManager().addStateListener(this);
 		getManager().addEventsListener(this);
+	}
+
+	public String getDescription(int level) {
+		SBStream stream = new SBStream();
+		SBThread thread = (SBThread) getModelObject();		
+		thread.GetDescription(stream);
+		return stream.GetData();
 	}
 
 	@Override
@@ -160,7 +165,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 	public void setBase(Object value) {
 		this.base = (Integer) value;
 		changeAttributes(List.of(), List.of(), Map.of( //
-			DISPLAY_ATTRIBUTE_NAME, getDisplay()//
+			DISPLAY_ATTRIBUTE_NAME, getDescription(0)//
 		), "Started");
 	}
 
