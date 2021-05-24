@@ -15,7 +15,6 @@
  */
 package agent.lldb.model.impl;
 
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -24,8 +23,7 @@ import java.util.stream.Collectors;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 
-import SWIG.*;
-import agent.lldb.lldb.DebugClient;
+import SWIG.SBMemoryRegionInfo;
 import agent.lldb.manager.cmd.*;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import agent.lldb.model.iface2.*;
@@ -33,13 +31,17 @@ import ghidra.dbg.error.DebuggerMemoryAccessException;
 import ghidra.dbg.error.DebuggerModelAccessException;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.*;
+import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
 import ghidra.program.model.address.Address;
-import ghidra.util.NumericUtilities;
 import ghidra.util.datastruct.WeakValueHashMap;
 
-@TargetObjectSchemaInfo(name = "Memory", elements = {
-	@TargetElementType(type = LldbModelTargetMemoryRegionImpl.class) }, attributes = {
-		@TargetAttributeType(type = Void.class) }, canonicalContainer = true)
+@TargetObjectSchemaInfo(name = "Memory", 
+	elementResync = ResyncMode.ALWAYS,
+	elements = {
+		@TargetElementType(type = LldbModelTargetMemoryRegionImpl.class)
+	}, attributes = {
+		@TargetAttributeType(type = Void.class) 
+	}, canonicalContainer = true)
 public class LldbModelTargetMemoryContainerImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetMemoryContainer {
 

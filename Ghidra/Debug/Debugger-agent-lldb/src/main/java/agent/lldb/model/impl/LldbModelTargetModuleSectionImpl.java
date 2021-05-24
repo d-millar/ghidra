@@ -49,10 +49,11 @@ public class LldbModelTargetModuleSectionImpl extends LldbModelTargetObjectImpl
 		super(sections.getModel(), sections, keySection(section), section, "Section");
 
 		AddressSpace space = getModel().getAddressSpace("ram");
-		Address min = space.getAddress(section.GetFileAddress().longValue());
+		SBTarget currentSession = getManager().getCurrentSession();
+		Address min = space.getAddress(section.GetLoadAddress(currentSession).longValue());
 		// Ghidra ranges are not inclusive at the end.
-		long sz = section.GetFileAddress().add(section.GetFileByteSize()).longValue() - 1;
-		Address max = space.getAddress(sz);
+		long sz = section.GetFileByteSize().longValue();
+		Address max = min.add(sz);
 		range = new AddressRangeImpl(min, max);
 
 		changeAttributes(List.of(), List.of(), Map.of( //
@@ -60,7 +61,7 @@ public class LldbModelTargetModuleSectionImpl extends LldbModelTargetObjectImpl
 			RANGE_ATTRIBUTE_NAME, range, //
 			DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
 			"Address", min, //
-			"Offset", section.GetFileOffset().toString(16), //
+			"File Offset", section.GetFileOffset().toString(16), //
 			"Size", Long.toHexString(sz), //
 			"Permissions", section.GetPermissions() //
 		), "Initialized");

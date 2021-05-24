@@ -30,11 +30,13 @@ import ghidra.dbg.target.TargetExecutionStateful.TargetExecutionState;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetElementType;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
 import ghidra.util.Msg;
 import ghidra.util.datastruct.WeakValueHashMap;
 
 @TargetObjectSchemaInfo(
 	name = "Stack",
+	elementResync = ResyncMode.ALWAYS,
 	elements = {
 		@TargetElementType(type = LldbModelTargetStackFrameImpl.class)
 	},

@@ -32,5 +32,9 @@ public interface LldbModelTargetBreakpointLocationContainer extends LldbModelTar
 		TargetBreakpointLocationContainer, //
 		LldbEventsListenerAdapter {
 
+	void addBreakpointLocation(LldbModelTargetBreakpointLocation loc);
+
+	void removeBreakpointLocation(LldbModelTargetBreakpointLocation loc);
+
 
 }

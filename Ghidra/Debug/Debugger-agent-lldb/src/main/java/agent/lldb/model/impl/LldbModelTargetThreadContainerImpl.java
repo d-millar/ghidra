@@ -37,13 +37,16 @@ import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetElementType;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
 
-@TargetObjectSchemaInfo(name = "ThreadContainer", elements = { //
-	@TargetElementType(type = LldbModelTargetThreadImpl.class) //
-}, attributes = { //
-	@TargetAttributeType(name = TargetConfigurable.BASE_ATTRIBUTE_NAME, type = Integer.class), //
-	@TargetAttributeType(type = Void.class) //
-}, canonicalContainer = true)
+@TargetObjectSchemaInfo(name = "ThreadContainer", 
+	elementResync = ResyncMode.ALWAYS,
+	elements = { //
+		@TargetElementType(type = LldbModelTargetThreadImpl.class) //
+	}, attributes = { //
+		@TargetAttributeType(name = TargetConfigurable.BASE_ATTRIBUTE_NAME, type = Integer.class), //
+		@TargetAttributeType(type = Void.class) //
+	}, canonicalContainer = true)
 public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetThreadContainer, LldbModelTargetConfigurable {
 

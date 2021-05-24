@@ -17,10 +17,10 @@ package agent.lldb.model.impl;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
-import SWIG.*;
+import SWIG.SBBreakpointLocation;
+import SWIG.SBTarget;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.*;
@@ -33,11 +33,11 @@ import ghidra.dbg.target.schema.*;
 public class LldbModelTargetBreakpointLocationContainerImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetBreakpointLocationContainer {
 
-	protected final LldbModelTargetBreakpointSpecImpl targetBreakpoint;
+	protected final LldbModelTargetProcessImpl targetProcess;
 
-	public LldbModelTargetBreakpointLocationContainerImpl(LldbModelTargetBreakpointSpec targetBreakpoint, SBTarget session) {
-		super(targetBreakpoint.getModel(), targetBreakpoint, "Locations", "BreakpointLocationContainer");
-		this.targetBreakpoint = (LldbModelTargetBreakpointSpecImpl) targetBreakpoint;
+	public LldbModelTargetBreakpointLocationContainerImpl(LldbModelTargetProcess targetProcess) {
+		super(targetProcess.getModel(), targetProcess, "Breakpoints", "BreakpointLocationContainer");
+		this.targetProcess = (LldbModelTargetProcessImpl) targetProcess;
 
 		getManager().addEventsListener(this);
 		requestElements(false);
@@ -50,9 +50,11 @@ public class LldbModelTargetBreakpointLocationContainerImpl extends LldbModelTar
 			location.setModelObject(loc);
 			return location;
 		}
-		return new LldbModelTargetBreakpointLocationImpl(this, loc);
+		TargetObject spec = getModel().getModelObject(loc.GetBreakpoint());
+		return new LldbModelTargetBreakpointLocationImpl((LldbModelTargetBreakpointSpecImpl) spec, loc);
 	}
 
+	/*
 	@Override
 	public CompletableFuture<Void> requestElements(boolean refresh) {
 		return getManager().listBreakpointLocations((SBBreakpoint)(targetBreakpoint).getBreakpointInfo()).thenAccept(byNumber -> {
@@ -66,6 +68,16 @@ public class LldbModelTargetBreakpointLocationContainerImpl extends LldbModelTar
 			setElements(locs, Map.of(), "Refreshed");
 		});
 	}
+	*/
+	
+	public void addBreakpointLocation(LldbModelTargetBreakpointLocation loc) {
+		changeElements(List.of(), Map.of(loc.getName(), loc), "Added");
+	}
+
+	public void removeBreakpointLocation(LldbModelTargetBreakpointLocation loc) {
+		changeElements(List.of(loc.getName()), Map.of(), "Removed");
+	}
+
 
 	public SBTarget getSession() {
 		return (SBTarget) getModelObject();

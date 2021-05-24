@@ -15,6 +15,8 @@
  */
 package agent.lldb.manager.cmd;
 
+import SWIG.*;
+import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 /**
@@ -31,12 +33,18 @@ public class LldbDeleteBreakpointsCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public void invoke() {
-		/*
-		DebugControl control = manager.getControl();
-		for (long id : numbers) {
-			manager.doBreakpointDeleted(id, LldbCause.Causes.UNCLAIMED);
-			DebugBreakpoint bp = control.getBreakpointById((int) id);
-			bp.remove();		
-		 */
+		SBTarget currentSession = manager.getCurrentSession();
+		for (long l : numbers) {
+			Object info = manager.getBreakpoint(currentSession, Long.toString(l));
+			if (info instanceof SBBreakpoint) {
+				SBBreakpoint bpt = (SBBreakpoint) info;
+				currentSession.BreakpointDelete(bpt.GetID());
+				manager.getEventListeners().fire.breakpointDeleted(bpt, LldbCause.Causes.UNCLAIMED);
+			} else {
+				SBWatchpoint wpt = (SBWatchpoint) info;
+				currentSession.DeleteWatchpoint(wpt.GetID());
+				manager.getEventListeners().fire.breakpointDeleted(wpt, LldbCause.Causes.UNCLAIMED);
+			}
+		}
 	}
 }
