@@ -75,13 +75,13 @@ public class LldbModelTargetModuleSectionContainerImpl extends LldbModelTargetOb
 		for (TargetObject element : elements.values()) {
 			LldbModelTargetModuleSectionImpl section = (LldbModelTargetModuleSectionImpl) element;
 			Address start = section.getStart();
-			if (start.getOffset() != 0) {
+			if (start.getOffset() > 0) {
 				if (min == null || min.getOffset() > start.getOffset()) {
 					min = start;
 				}
 			}
 			Address stop = section.getEnd();
-			if (stop.getOffset() != 0) {
+			if (stop.getOffset() > 0) {
 				if (max == null || max.getOffset() < stop.getOffset()) {
 					max = stop;
 				}

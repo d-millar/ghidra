@@ -21,7 +21,7 @@ import java.util.Map;
 import SWIG.*;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.LldbModelTargetBreakpointLocation;
-import agent.lldb.model.iface2.LldbModelTargetBreakpointLocationContainer;
+import agent.lldb.model.iface2.LldbModelTargetBreakpointSpec;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 import ghidra.dbg.util.PathUtils;
@@ -35,27 +35,35 @@ public class LldbModelTargetBreakpointLocationImpl extends LldbModelTargetObject
 		implements LldbModelTargetBreakpointLocation {
 
 	protected static String keyLocation(SBBreakpointLocation loc) {
-		return PathUtils.makeKey(Integer.toHexString(loc.GetID()));
+		return PathUtils.makeKey(DebugClient.getId(loc));
 	}
 
-	private LldbModelTargetBreakpointLocationContainer locs;
+	private LldbModelTargetBreakpointSpec spec;
 	protected SBBreakpointLocation loc;
 	
 	protected Address address;
 	protected Integer length;
 	protected String display;
 
-	public LldbModelTargetBreakpointLocationImpl(LldbModelTargetBreakpointLocationContainerImpl locs,
+	public LldbModelTargetBreakpointLocationImpl(LldbModelTargetBreakpointSpecImpl spec,
 			SBBreakpointLocation loc) {
-		super(locs.getModel(), locs, keyLocation(loc), loc, "BreakpointLocation");
-		this.locs = locs;
+		super(spec.getModel(), spec, keyLocation(loc), loc, "BreakpointLocation");
+		this.spec = spec;
 		this.loc = loc;
 		
 		doChangeAttributes("Initialization");
 	}
 
+	public String getDescription(int level) {
+		SBStream stream = new SBStream();
+		SBBreakpointLocation loc = (SBBreakpointLocation) getModelObject();		
+		DescriptionLevel detail = DescriptionLevel.swigToEnum(level);
+		loc.GetDescription(stream, detail);
+		return stream.GetData();
+	}
+	
 	protected void doChangeAttributes(String reason) {
-		address = getModel().getAddress("ram", loc.GetAddress().GetOffset().longValue());
+		address = getModel().getAddress("ram", loc.GetLoadAddress().longValue());
 		length = 1;
 		this.changeAttributes(List.of(), Map.of(
 			SPEC_ATTRIBUTE_NAME, parent,
@@ -63,14 +71,14 @@ public class LldbModelTargetBreakpointLocationImpl extends LldbModelTargetObject
 			LENGTH_ATTRIBUTE_NAME, length,
 			DISPLAY_ATTRIBUTE_NAME, display = getDescription(0)),
 			reason);
+		placeLocations();
 	}
 	
-	public String getDescription(int level) {
-		SBStream stream = new SBStream();
-		SBBreakpointLocation loc = (SBBreakpointLocation) getModelObject();		
-		DescriptionLevel detail = DescriptionLevel.swigToEnum(level);
-		loc.GetDescription(stream, detail);
-		return stream.GetData();
+	protected void placeLocations() {
+		//TODO: FIX THIS
+		SBProcess currentProcess = getManager().getCurrentProcess();
+		LldbModelTargetProcessImpl process = (LldbModelTargetProcessImpl) getModel().getModelObject(currentProcess);
+		process.addBreakpointLocation(this);
 	}
 
 	@Override

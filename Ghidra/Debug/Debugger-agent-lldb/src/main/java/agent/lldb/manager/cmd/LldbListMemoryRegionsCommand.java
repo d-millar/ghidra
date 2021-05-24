@@ -18,9 +18,7 @@ package agent.lldb.manager.cmd;
 import java.util.ArrayList;
 import java.util.List;
 
-import SWIG.SBMemoryRegionInfo;
-import SWIG.SBMemoryRegionInfoList;
-import SWIG.SBProcess;
+import SWIG.*;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 public class LldbListMemoryRegionsCommand extends AbstractLldbCommand<List<SBMemoryRegionInfo>> {

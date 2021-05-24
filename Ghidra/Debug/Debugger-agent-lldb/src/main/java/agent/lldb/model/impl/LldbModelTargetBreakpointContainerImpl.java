@@ -61,6 +61,8 @@ public class LldbModelTargetBreakpointContainerImpl extends LldbModelTargetObjec
 
 	@Override
 	public void breakpointCreated(Object info, LldbCause cause) {
+		LldbModelTargetBreakpointSpec spec = getTargetBreakpointSpec(info);
+		spec.updateInfo(info, "Created");
 		changeElements(List.of(), List.of(getTargetBreakpointSpec(info)), Map.of(), "Created");
 	}
 

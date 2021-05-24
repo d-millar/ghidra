@@ -69,73 +69,16 @@ public interface LldbModelTargetBreakpointSpec extends //
 
 	@Override
 	public default TargetBreakpointKindSet getKinds() {
-		/*
-		switch (getBreakpointInfo().getType()) {
-			case BREAKPOINT:
-				return TargetBreakpointKindSet.of(TargetBreakpointKind.SW_EXECUTE);
-			case HW_BREAKPOINT:
-				return TargetBreakpointKindSet.of(TargetBreakpointKind.HW_EXECUTE);
-			case HW_WATCHPOINT:
-				return TargetBreakpointKindSet.of(TargetBreakpointKind.WRITE);
-			case READ_WATCHPOINT:
-				return TargetBreakpointKindSet.of(TargetBreakpointKind.READ);
-			case ACCESS_WATCHPOINT:
-				return TargetBreakpointKindSet.of(TargetBreakpointKind.READ,
-					TargetBreakpointKind.WRITE);
-			default:
-				return TargetBreakpointKindSet.of();
+		Object modelObject = getModelObject();
+		if (modelObject instanceof SBBreakpoint) {
+			return TargetBreakpointKindSet.of(TargetBreakpointKind.SW_EXECUTE);
+		} else {
+			SBWatchpoint wpt = (SBWatchpoint) modelObject;
 		}
-		*/
 		return TargetBreakpointKindSet.of();
 	}
 
-	@Override
-	public default CompletableFuture<Void> init(Map<String, Object> map) {
-		AddressSpace space = getModel().getAddressSpace("ram");
-		return requestNativeAttributes().thenAccept(attrs -> {
-			if (attrs != null) {
-				map.putAll(attrs);
-				TargetObject addr = (TargetObject) attrs.get("Address");
-				TargetObject id = (TargetObject) attrs.get("Id");
-				//TargetObject unique = (TargetObject) attrs.get("UniqueID");
-				TargetObject enabled = (TargetObject) attrs.get("IsEnabled");
-				String addstr = addr.getCachedAttribute(VALUE_ATTRIBUTE_NAME).toString();
-				String idstr = id.getCachedAttribute(VALUE_ATTRIBUTE_NAME).toString();
-				setBreakpointId(idstr);
-				//String uidstr = unique.getCachedAttribute(VALUE_ATTRIBUTE_NAME).toString();
-				String enstr = enabled.getCachedAttribute(VALUE_ATTRIBUTE_NAME).toString();
-				try {
-					Address address = space.getAddress(addstr);
-					map.put(ADDRESS_ATTRIBUTE_NAME, address);
-				}
-				catch (AddressFormatException e) {
-					e.printStackTrace();
-				}
-				map.put(SPEC_ATTRIBUTE_NAME, this);
-				map.put(EXPRESSION_ATTRIBUTE_NAME, addstr);
-				map.put(KINDS_ATTRIBUTE_NAME, getKinds());
-				//map.put(BPT_INDEX_ATTRIBUTE_NAME, Long.decode(idstr));
-				map.put(ENABLED_ATTRIBUTE_NAME, enstr.equals("-1"));
-				setEnabled(enstr.equals("-1"), "Refreshed");
-				//int size = getBreakpointInfo().getSize();
-				//map.put(LENGTH_ATTRIBUTE_NAME, size);
-
-				String oldval = (String) getCachedAttribute(DISPLAY_ATTRIBUTE_NAME);
-				String display = "[" + idstr + "] " + addstr;
-				map.put(DISPLAY_ATTRIBUTE_NAME, display);
-				setModified(map, !display.equals(oldval));
-			}
-		});
-	}
-
-	public default void updateInfo(Object info, String reason) {
-		synchronized (this) {
-			setModelObject(info);
-		}
-		boolean enabled = info instanceof SBBreakpoint ?
-				((SBBreakpoint) info).IsEnabled() : ((SBWatchpoint)info).IsEnabled();
-		setEnabled(enabled, reason);
-	}
+	public void updateInfo(Object info, String reason);
 
 	/**
 	 * Update the enabled field

@@ -1193,7 +1193,8 @@ public class LldbManagerImpl implements LldbManager {
 	 * @param v nothing
 	 */
 	protected void processBreakpointCreated(LldbBreakpointCreatedEvent evt, Void v) {
-		//doBreakpointCreated(evt.getBreakpointInfo(), evt.getCause());
+		SBBreakpoint bpt = evt.getBreakpointInfo();
+		doBreakpointCreated(bpt.GetTarget(), bpt, evt.getCause());
 	}
 
 	/**
@@ -1248,9 +1249,9 @@ public class LldbManagerImpl implements LldbManager {
 	 * @param cause the cause of the creation
 	 */
 	@Internal
-	public void doBreakpointCreated(SBTarget session, SBBreakpoint newInfo, LldbCause cause) {
-		addKnownBreakpoint(session, newInfo, false);
-		getEventListeners().fire.breakpointCreated(newInfo, cause);
+	public void doBreakpointCreated(SBTarget session, SBBreakpoint bpt, LldbCause cause) {
+		addBreakpointIfAbsent(session, bpt);
+		getEventListeners().fire.breakpointCreated(bpt, cause);
 	}
 
 	/**

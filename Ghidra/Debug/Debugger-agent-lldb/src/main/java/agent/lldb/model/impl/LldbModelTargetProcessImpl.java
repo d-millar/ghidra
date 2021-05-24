@@ -36,6 +36,7 @@ import ghidra.dbg.util.PathUtils;
 	@TargetElementType(type = Void.class) }, attributes = {
 		@TargetAttributeType(name = "Memory", type = LldbModelTargetMemoryContainerImpl.class, required = true, fixed = true),
 		@TargetAttributeType(name = "Threads", type = LldbModelTargetThreadContainerImpl.class, required = true, fixed = true),
+		@TargetAttributeType(name = "Breakpoints", type = LldbModelTargetBreakpointLocationContainerImpl.class, required = true, fixed = true),
 		@TargetAttributeType(name = LldbModelTargetProcessImpl.EXIT_CODE_ATTRIBUTE_NAME, type = String.class),
 		@TargetAttributeType(type = Void.class) })
 public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
@@ -57,6 +58,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 
 	protected final LldbModelTargetMemoryContainer memory;
 	protected final LldbModelTargetThreadContainer threads;
+	protected final LldbModelTargetBreakpointLocationContainer breakpoints;
 	// Note: not sure section info is available from the Lldbeng
 	//protected final LldbModelTargetProcessSectionContainer sections;
 
@@ -64,16 +66,17 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 
 	public LldbModelTargetProcessImpl(LldbModelTargetProcessContainer processes, SBProcess process) {
 		super(processes.getModel(), processes, keyProcess(process), process, "Process");
+		getModel().addModelObject(process, this);
 		getManager().getClient().addBroadcaster(process);
 
 		this.memory = new LldbModelTargetMemoryContainerImpl(this);
-		//this.sections = new LldbModelTargetProcessSectionContainerImpl(this);
 		this.threads = new LldbModelTargetThreadContainerImpl(this);
+		this.breakpoints = new LldbModelTargetBreakpointLocationContainerImpl(this);
 
 		changeAttributes(List.of(), List.of( //
 			memory, //
-			//sections, //
-			threads //
+			threads, //
+			breakpoints //
 		), Map.of( //
 			ACCESSIBLE_ATTRIBUTE_NAME, accessible = false, //
 			DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
@@ -84,6 +87,12 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 		setExecutionState(TargetExecutionState.ALIVE, "Initialized");
 
 		getManager().addEventsListener(this);
+	}
+
+	@Override
+	public void setModelObject(Object modelObject) {
+		super.setModelObject(modelObject);
+		getModel().addModelObject(modelObject, this);
 	}
 
 	public String getDescription(int level) {
@@ -218,4 +227,14 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 			DISPLAY_ATTRIBUTE_NAME, getDescription(0)//
 		), "Started");
 	}
+	
+	public void addBreakpointLocation(LldbModelTargetBreakpointLocation loc) {
+		breakpoints.addBreakpointLocation(loc);
+	}
+
+	public void removeBreakpointLocation(LldbModelTargetBreakpointLocation loc) {
+		breakpoints.removeBreakpointLocation(loc);
+	}
+
+
 }

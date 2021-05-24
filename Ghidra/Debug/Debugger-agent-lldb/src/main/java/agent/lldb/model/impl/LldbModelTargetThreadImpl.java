@@ -73,7 +73,6 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 	public LldbModelTargetThreadImpl(LldbModelTargetThreadContainer threads,
 			LldbModelTargetProcess process, SBThread thread) {
 		super(threads.getModel(), threads, keyThread(thread), thread, "Thread");
-		getModel().addModelObject(thread, this);
 		this.process = process;
 
 		this.stack = new LldbModelTargetStackImpl(this, process);
@@ -88,6 +87,12 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 
 		getManager().addStateListener(this);
 		getManager().addEventsListener(this);
+	}
+
+	@Override
+	public void setModelObject(Object modelObject) {
+		super.setModelObject(modelObject);
+		getModel().addModelObject(modelObject, this);
 	}
 
 	public String getDescription(int level) {
