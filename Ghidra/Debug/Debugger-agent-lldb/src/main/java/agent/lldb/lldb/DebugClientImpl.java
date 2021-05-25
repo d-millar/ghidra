@@ -118,9 +118,13 @@ public class DebugClientImpl implements DebugClient {
 	public void attachProcess(DebugServerId si, BigInteger processId, BitmaskSet<DebugAttachFlags> attachFlags) {
 		SBListener listener = new SBListener();
 		SBError error = new SBError();
+		session = createNullSession(); //sbd.CreateTarget("/opt/X11/bin/xclock");
 		session.AttachToProcessWithID(listener, processId, error);
 		if (!error.Success()) {
 			Msg.error(this, error.GetType() + " while attaching to " + processId);
+			SBStream stream = new SBStream();
+			error.GetDescription(stream);
+			Msg.error(this, stream.GetData());
 		}
 	}
 
@@ -180,6 +184,10 @@ public class DebugClientImpl implements DebugClient {
 	@Override
 	public void detachCurrentProcess() {
 		session.GetProcess().Detach();
+	}
+
+	public SBTarget createNullSession() {
+		return sbd.GetDummyTarget();
 	}
 
 	@Override

@@ -1377,6 +1377,11 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	@Override
+	public CompletableFuture<?> attach(String pid, BitmaskSet<DebugAttachFlags> flags) {
+		return execute(new LldbAttachCommand(this, pid, flags));
+	}
+
+	@Override
 	public CompletableFuture<?> launch(List<String> args) {
 		return execute(new LldbLaunchProcessCommand(this, args));
 	}
