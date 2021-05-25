@@ -20,23 +20,17 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import SWIG.SBProcess;
-import SWIG.SBThread;
-import SWIG.StateType;
+import SWIG.*;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface1.LldbModelTargetConfigurable;
-import agent.lldb.model.iface2.LldbModelTargetProcess;
-import agent.lldb.model.iface2.LldbModelTargetThread;
-import agent.lldb.model.iface2.LldbModelTargetThreadContainer;
+import agent.lldb.model.iface2.*;
 import ghidra.async.AsyncUtils;
 import ghidra.dbg.error.DebuggerIllegalArgumentException;
 import ghidra.dbg.target.TargetConfigurable;
 import ghidra.dbg.target.TargetObject;
-import ghidra.dbg.target.schema.TargetAttributeType;
-import ghidra.dbg.target.schema.TargetElementType;
-import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.target.schema.*;
 import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
 
 @TargetObjectSchemaInfo(name = "ThreadContainer", 
@@ -76,16 +70,13 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 			LldbReason reason) {
 		LldbModelTargetThread targetThread = getTargetThread(thread);
 		TargetEventType eventType = getEventType(state, cause, reason);
-		/*
 		getListeners().fire.event(getProxy(), targetThread, eventType,
-			"Thread " + thread.getId() + " state changed", List.of(targetThread));
-		*/
+			"Thread " + DebugClient.getId(thread) + " state changed", List.of(targetThread));
 		targetThread.threadStateChangedSpecific(state, reason);
 	}
 
 	@Override
 	public void threadExited(SBThread thread) {
-		LldbModelImpl impl = (LldbModelImpl) model;
 		String threadId = LldbModelTargetThreadImpl.indexThread(thread);
 		LldbModelTargetThread targetThread = (LldbModelTargetThread) getMapObject(thread);
 		if (targetThread != null) {

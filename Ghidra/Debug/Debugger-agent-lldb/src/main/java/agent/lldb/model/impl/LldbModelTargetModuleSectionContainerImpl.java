@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 import SWIG.SBModule;
 import SWIG.SBSection;
-import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.*;

@@ -19,16 +19,10 @@ import java.util.List;
 import java.util.Map;
 
 import SWIG.*;
-import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.LldbModelTargetModuleSection;
-import ghidra.dbg.target.schema.TargetAttributeType;
-import ghidra.dbg.target.schema.TargetElementType;
-import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.target.schema.*;
 import ghidra.dbg.util.PathUtils;
-import ghidra.program.model.address.Address;
-import ghidra.program.model.address.AddressRange;
-import ghidra.program.model.address.AddressRangeImpl;
-import ghidra.program.model.address.AddressSpace;
+import ghidra.program.model.address.*;
 
 @TargetObjectSchemaInfo(name = "Section", elements = {
 	@TargetElementType(type = Void.class) }, attributes = {

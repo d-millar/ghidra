@@ -21,12 +21,10 @@ import java.util.Map;
 import SWIG.*;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.LldbModelTargetModule;
-import ghidra.dbg.target.TargetObject;
-import ghidra.dbg.target.schema.TargetAttributeType;
-import ghidra.dbg.target.schema.TargetElementType;
-import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.target.schema.*;
 import ghidra.dbg.util.PathUtils;
-import ghidra.program.model.address.*;
+import ghidra.program.model.address.Address;
+import ghidra.program.model.address.AddressRangeImpl;
 
 @TargetObjectSchemaInfo(name = "Module", elements = {
 	@TargetElementType(type = Void.class) 

@@ -68,7 +68,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 	protected final LldbModelTargetStackImpl stack;
 
 	private LldbModelTargetProcess process;
-	private Integer base = 16;
+	//private Integer base = 16;
 
 	public LldbModelTargetThreadImpl(LldbModelTargetThreadContainer threads,
 			LldbModelTargetProcess process, SBThread thread) {

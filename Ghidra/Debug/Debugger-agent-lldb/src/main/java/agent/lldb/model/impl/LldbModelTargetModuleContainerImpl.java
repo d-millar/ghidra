@@ -19,9 +19,9 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import SWIG.*;
-import agent.lldb.lldb.DebugClient;
 import agent.lldb.lldb.DebugModuleInfo;
-import agent.lldb.model.iface2.*;
+import agent.lldb.model.iface2.LldbModelTargetModule;
+import agent.lldb.model.iface2.LldbModelTargetModuleContainer;
 import ghidra.dbg.target.*;
 import ghidra.dbg.target.schema.*;
 import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;

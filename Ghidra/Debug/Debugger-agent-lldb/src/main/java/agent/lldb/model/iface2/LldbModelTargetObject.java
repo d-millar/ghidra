@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import agent.lldb.model.AbstractLldbModel;
 import ghidra.async.AsyncUtils;

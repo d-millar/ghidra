@@ -56,7 +56,7 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetSession {
 
 	protected static final String Lldb_PROMPT = "(kd)";
-	private Integer base = 16;
+	//private Integer base = 16;
 
 	// NB: This should almost certainly always be implemented by the root of the object tree
 

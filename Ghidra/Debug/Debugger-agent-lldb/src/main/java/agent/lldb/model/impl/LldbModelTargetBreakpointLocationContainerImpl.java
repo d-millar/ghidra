@@ -20,7 +20,6 @@ import java.util.Map;
 
 import SWIG.SBBreakpointLocation;
 import SWIG.SBTarget;
-import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.*;

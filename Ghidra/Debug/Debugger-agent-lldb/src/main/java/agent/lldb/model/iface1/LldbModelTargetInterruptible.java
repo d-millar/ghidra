@@ -18,7 +18,6 @@ package agent.lldb.model.iface1;
 import java.util.concurrent.CompletableFuture;
 
 import agent.lldb.model.iface2.LldbModelTargetObject;
-import ghidra.async.AsyncUtils;
 import ghidra.dbg.target.TargetInterruptible;
 
 /**
