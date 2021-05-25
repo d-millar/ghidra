@@ -51,8 +51,8 @@ public abstract class AbstractModelForLldbRootAttacherTest
 	@Override
 	public void assertEnvironment(TargetEnvironment environment) {
 		assertEquals("x86_64", environment.getArchitecture());
-		assertEquals("Windows", environment.getOperatingSystem());
+		assertEquals("macos", environment.getOperatingSystem());
 		assertEquals("little", environment.getEndian());
-		assertTrue(environment.getDebugger().toLowerCase().contains("dbgeng"));
+		assertTrue(environment.getDebugger().toLowerCase().contains("lldb"));
 	}
 }

@@ -36,7 +36,7 @@ public abstract class AbstractModelForLldbInterpreterTest
 
 	@Override
 	protected String getEchoCommand(String msg) {
-		return ".echo " + msg;
+		return "script print " + msg;
 	}
 
 	@Override
@@ -46,17 +46,17 @@ public abstract class AbstractModelForLldbInterpreterTest
 
 	@Override
 	protected String getAttachCommand() {
-		return ".attach " + Long.toHexString(dummy.pid);
+		return "process attach " + Long.toHexString(dummy.pid);
 	}
 
 	@Override
 	protected String getDetachCommand(TargetProcess process) {
-		return ".detach";
+		return "process detach";
 	}
 
 	@Override
 	protected String getKillCommand(TargetProcess process) {
-		return ".kill";
+		return "kill";
 	}
 
 	@Override

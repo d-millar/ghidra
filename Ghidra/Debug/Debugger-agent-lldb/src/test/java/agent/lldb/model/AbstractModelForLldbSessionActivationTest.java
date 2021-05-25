@@ -22,7 +22,7 @@ import java.util.Set;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.test.AbstractDebuggerModelActivationTest;
 
-public abstract class AbstractModelForLldbessionActivationTest
+public abstract class AbstractModelForLldbSessionActivationTest
 		extends AbstractDebuggerModelActivationTest {
 
 	@Override
