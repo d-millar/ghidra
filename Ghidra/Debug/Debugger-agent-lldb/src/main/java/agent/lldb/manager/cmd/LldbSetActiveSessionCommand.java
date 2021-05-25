@@ -34,13 +34,6 @@ public class LldbSetActiveSessionCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public void invoke() {
-		/*
-		if (session != null) {
-			DebugSessionId id = session.getId();
-			if (id != null) {
-				manager.getSystemObjects().setCurrentSystemId(id);
-			}
-		}
-		*/
+		// TODO?
 	}
 }

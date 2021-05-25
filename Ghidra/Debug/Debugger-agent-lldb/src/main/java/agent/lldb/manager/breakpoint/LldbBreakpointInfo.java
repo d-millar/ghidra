@@ -25,7 +25,7 @@ import ghidra.comm.util.BitmaskSet;
 
 public class LldbBreakpointInfo {
 
-	private SBBreakpoint bpt;
+	private Object info;
 	private SBProcess proc;
 
 	private Long offset;
@@ -50,7 +50,7 @@ public class LldbBreakpointInfo {
 	}
 
 	public LldbBreakpointInfo(SBBreakpoint bpt, SBProcess process) {
-		this.bpt = bpt;
+		this.info = bpt;
 		this.proc = process;
 		locations = new ArrayList<>();
 		for (int i = 0; i < bpt.GetNumLocations(); i++) {
@@ -58,14 +58,24 @@ public class LldbBreakpointInfo {
 		}
 	}
 
+	public LldbBreakpointInfo(SBWatchpoint wpt, SBProcess process) {
+		this.info = wpt;
+		this.proc = process;
+		locations = new ArrayList<>();
+	}
+
+	public String getId() {
+		return DebugClient.getId(info);
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(bpt.GetID());
+		return Objects.hash(getId());
 	}
 
 	@Override
 	public String toString() {
-		return DebugClient.getId(bpt);
+		return DebugClient.getId(info);
 	}
 
 	@Override
@@ -74,7 +84,7 @@ public class LldbBreakpointInfo {
 			return false;
 		}
 		LldbBreakpointInfo that = (LldbBreakpointInfo) obj;
-		if (this.bpt.GetID() != that.bpt.GetID()) {
+		if (this.getId() != that.getId()) {
 			return false;
 		}
 		return true;
@@ -135,7 +145,11 @@ public class LldbBreakpointInfo {
 	 * @return true if enabled, false otherwise
 	 */
 	public boolean isEnabled() {
-		return bpt.IsEnabled();
+		if (info instanceof SBBreakpoint) {
+			return ((SBBreakpoint)info).IsEnabled();
+		} else {
+			return ((SBWatchpoint)info).IsEnabled();
+		}
 	}
 
 	/**
@@ -143,8 +157,12 @@ public class LldbBreakpointInfo {
 	 * 
 	 * @return the hit count
 	 */
-	public int getTimes() {
-		return (int) bpt.GetHitCount();
+	public long getTimes() {
+		if (info instanceof SBBreakpoint) {
+			return ((SBBreakpoint)info).GetHitCount();
+		} else {
+			return ((SBWatchpoint)info).GetHitCount();
+		}
 	}
 
 	/**
@@ -161,21 +179,12 @@ public class LldbBreakpointInfo {
 		return locations;
 	}
 
-	/*
-	public SBBreakpoint withEnabled(@SuppressWarnings("hiding") boolean enabled) {
-		if (isEnabled() == enabled) {
-			return bpt;
-		}
-		return new bpt(bpt, enabled);
-	}
-	*/
-
-	public SBBreakpoint getBreakpoint() {
-		return bpt;
+	public Object getBreakpoint() {
+		return info;
 	}
 
-	public void setBreakpoint(SBBreakpoint bpt) {
-		this.bpt = bpt;
+	public void setBreakpoint(Object info) {
+		this.info = info;
 	}
 
 	public SBProcess getProc() {
@@ -183,10 +192,18 @@ public class LldbBreakpointInfo {
 	}
 
 	public int getEventThread() {
-		return bpt.GetThreadID().intValue();
+		if (info instanceof SBBreakpoint) {
+			return ((SBBreakpoint)info).GetThreadID().intValue();
+		} else {
+			return -1;
+		}
 	}
 
-	/*public long getAddressAsLong() {
-		return locations.get(0).addrAsLong();
-	}*/ // getOffset instead
+	public long getAddressAsLong() {
+		if (info instanceof SBBreakpoint) {
+			return locations.get(0).GetLoadAddress().longValue();
+		} else {
+			return ((SBWatchpoint) info).GetWatchAddress().longValue();
+		}
+	}
 }

@@ -36,6 +36,6 @@ public class LldbEvaluateCommand extends AbstractLldbCommand<String> {
 
 	@Override
 	public void invoke() {
-		// TODO: do something with expression to get result
+		manager.getClient().execute(expression);
 	}
 }

@@ -15,11 +15,10 @@
  */
 package agent.lldb.manager.cmd;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import SWIG.SBProcess;
 import SWIG.SBThread;
+import agent.lldb.lldb.DebugClient;
+import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 /**
@@ -35,23 +34,18 @@ public class LldbDetachCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public Void complete(LldbPendingCommand<?> pending) {
-		/*
-		// TODO: necessary?
-		Collection<SBThread> threads = new ArrayList<>(process.getKnownThreadsImpl().values());
-		for (SBThread t : threads) {
-			manager.fireThreadExited(t.getId(), process, pending);
-			t.remove();
+		String pid = DebugClient.getId(process);
+		for (int i = 0; i < process.GetNumThreads(); i++) {
+			SBThread t = process.GetThreadAtIndex(i);
+			manager.removeThread(pid, DebugClient.getId(t));
 		}
-		manager.getEventListeners().fire.processRemoved(process.getId(), DbgCause.Causes.UNCLAIMED);
-		*/
+		manager.getEventListeners().fire.processRemoved(pid, LldbCause.Causes.UNCLAIMED);
 		return null;
 	}
 
 	@Override
 	public void invoke() {
-		/*
-		DebugClient dbgeng = manager.getClient();
-		dbgeng.detachCurrentProcess();
-		*/
+		DebugClient client = manager.getClient();
+		client.detachCurrentProcess();
 	}
 }

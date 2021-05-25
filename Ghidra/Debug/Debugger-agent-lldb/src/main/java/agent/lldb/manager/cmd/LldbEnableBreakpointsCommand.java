@@ -17,8 +17,7 @@ package agent.lldb.manager.cmd;
 
 import java.util.Map;
 
-import SWIG.SBBreakpoint;
-import SWIG.SBWatchpoint;
+import SWIG.*;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 /**
@@ -31,6 +30,15 @@ public class LldbEnableBreakpointsCommand extends AbstractLldbCommand<Void> {
 	public LldbEnableBreakpointsCommand(LldbManagerImpl manager, String... ids) {
 		super(manager);
 		this.ids = ids;
+	}
+
+	@Override
+	public Void complete(LldbPendingCommand<?> pending) {
+		SBTarget currentSession = manager.getCurrentSession();
+		for (String id : ids) {
+			manager.doBreakpointEnabled(currentSession, id, pending);
+		}
+		return null;
 	}
 
 	@Override
