@@ -51,7 +51,7 @@ public class LldbModelTargetBreakpointLocationContainerImpl extends LldbModelTar
 			return location;
 		}
 		TargetObject spec = getModel().getModelObject(loc.GetBreakpoint());
-		return new LldbModelTargetBreakpointLocationImpl((LldbModelTargetBreakpointSpecImpl) spec, loc);
+		return new LldbModelTargetBreakpointLocationImpl((LldbModelTargetAbstractXpointSpec) spec, loc);
 	}
 
 	/*

@@ -35,7 +35,7 @@ import ghidra.dbg.target.schema.TargetElementType;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 
 @TargetObjectSchemaInfo(name = "BreakpointContainer", elements = { //
-	@TargetElementType(type = LldbModelTargetBreakpointSpecImpl.class) //
+	@TargetElementType(type = LldbModelTargetAbstractXpointSpec.class) //
 }, attributes = { //
 	@TargetAttributeType(type = Void.class) //
 }, canonicalContainer = true)
@@ -95,7 +95,11 @@ public class LldbModelTargetBreakpointContainerImpl extends LldbModelTargetObjec
 			spec.setModelObject(bpt);
 			return spec;
 		}
-		return new LldbModelTargetBreakpointSpecImpl(this, bpt);
+		if (bpt instanceof SBBreakpoint) {
+			return new LldbModelTargetBreakpointSpecImpl(this, bpt);
+		} else {
+			return new LldbModelTargetWatchpointSpecImpl(this, bpt);
+		}
 	}
 
 	@Override
