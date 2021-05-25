@@ -15,7 +15,6 @@
  */
 package agent.lldb.manager.cmd;
 
-import SWIG.SBFrame;
 import SWIG.SBThread;
 import agent.lldb.manager.impl.LldbManagerImpl;
 

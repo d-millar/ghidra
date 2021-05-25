@@ -37,17 +37,16 @@ public class LldbListSessionsCommand extends AbstractLldbCommand<Map<String, SBT
 
 	@Override
 	public Map<String, SBTarget> complete(LldbPendingCommand<?> pending) {
-		return manager.getKnownSessions();
-		/*
-		Set<Integer> cur = allSessions.keySet();
-		for (Integer id : updatedSessionIds) {
+		Map<String, SBTarget> knownSessions = manager.getKnownSessions();
+		Set<String> cur = knownSessions.keySet();
+		for (String id : updatedSessionIds) {
 			if (cur.contains(id)) {
 				continue; // Do nothing, we're in sync
 			}
 			// Need to create the inferior as if we received =thread-group-created
 			Msg.warn(this, "Resync: Was missing group: i" + id);
 		}
-		for (Integer id : new ArrayList<>(cur)) {
+		for (String id : new ArrayList<>(cur)) {
 			if (updatedSessionIds.contains(id)) {
 				continue; // Do nothing, we're in sync
 			}
@@ -55,13 +54,11 @@ public class LldbListSessionsCommand extends AbstractLldbCommand<Map<String, SBT
 			Msg.warn(this, "Resync: Had extra group: i" + id);
 			manager.removeSession(id, Causes.UNCLAIMED);
 		}
-		return allSessions;
-		*/
+		return manager.getKnownSessions();
 	}
 
 	@Override
 	public void invoke() {
-		//DebugSystemObjects so = manager.getSystemObjects();
-		//updatedSessionIds = so.getSessions();
+		// TODO?
 	}
 }

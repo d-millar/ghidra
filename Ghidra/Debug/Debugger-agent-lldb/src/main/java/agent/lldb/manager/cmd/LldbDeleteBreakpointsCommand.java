@@ -49,11 +49,9 @@ public class LldbDeleteBreakpointsCommand extends AbstractLldbCommand<Void> {
 			if (info instanceof SBBreakpoint) {
 				SBBreakpoint bpt = (SBBreakpoint) info;
 				currentSession.BreakpointDelete(bpt.GetID());
-				//manager.getEventListeners().fire.breakpointDeleted(bpt, LldbCause.Causes.UNCLAIMED);
 			} else {
 				SBWatchpoint wpt = (SBWatchpoint) info;
 				currentSession.DeleteWatchpoint(wpt.GetID());
-				//manager.getEventListeners().fire.breakpointDeleted(wpt, LldbCause.Causes.UNCLAIMED);
 			}
 		}
 	}

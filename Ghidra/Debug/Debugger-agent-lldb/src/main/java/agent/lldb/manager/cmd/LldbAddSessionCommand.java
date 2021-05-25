@@ -29,7 +29,8 @@ public class LldbAddSessionCommand extends AbstractLldbCommand<SBTarget> {
 
 	@Override
 	public SBTarget complete(LldbPendingCommand<?> pending) {
-		return null; //new SBTarget(manager);
+		// Not apparent this is needed
+		return null; 
 	}
 
 }

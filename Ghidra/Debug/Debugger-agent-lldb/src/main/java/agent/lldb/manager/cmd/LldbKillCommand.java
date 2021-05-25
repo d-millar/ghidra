@@ -15,6 +15,8 @@
  */
 package agent.lldb.manager.cmd;
 
+import agent.lldb.lldb.DebugClient;
+import agent.lldb.manager.evt.LldbProcessExitedEvent;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 /**
@@ -27,12 +29,10 @@ public class LldbKillCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public void invoke() {
-		/*
-		DebugClient dbgeng = manager.getClient();
+		DebugClient client = manager.getClient();
 		// NB: process the event before terminating
 		manager.processEvent(new LldbProcessExitedEvent(0));
-		dbgeng.terminateCurrentProcess();
-		dbgeng.detachCurrentProcess();
-		*/
+		client.terminateCurrentProcess();
+		client.detachCurrentProcess();
 	}
 }

@@ -88,7 +88,7 @@ public class LldbInsertBreakpointCommand extends AbstractLldbCommand<LldbBreakpo
 			}
 			SBWatchpoint wpt = currentSession.WatchAddress(loc, len, read, write, error);	
 			wpt.SetEnabled(true);
-			bkpt = new LldbWatchpointInfo(wpt, manager.getCurrentProcess());
+			bkpt = new LldbBreakpointInfo(wpt, manager.getCurrentProcess());
 			//manager.getEventListeners().fire.breakpointCreated(wpt, LldbCause.Causes.UNCLAIMED);
 		}
 	}

@@ -35,13 +35,6 @@ public class LldbSetActiveProcessCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public void invoke() {
-		/*
-		if (process != null) {
-			DebugProcessId id = process.getId();
-			if (id != null) {
-				manager.getSystemObjects().setCurrentProcessId(id);
-			}
-		}
-		*/
+		// TODO?
 	}
 }
