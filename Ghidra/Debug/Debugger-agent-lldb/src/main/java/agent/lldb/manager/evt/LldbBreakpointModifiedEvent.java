@@ -15,14 +15,15 @@
  */
 package agent.lldb.manager.evt;
 
-import agent.lldb.manager.breakpoint.LldbBreakpointInfo;
+import agent.lldb.lldb.DebugBreakpointInfo;
+import agent.lldb.lldb.DebugClient;
 
 /**
  * The event corresponding with "{@code =breakpoint-modified}"
  */
-public class LldbBreakpointModifiedEvent extends AbstractLldbEvent<LldbBreakpointInfo> {
+public class LldbBreakpointModifiedEvent extends AbstractLldbEvent<DebugBreakpointInfo> {
 
-	private long bptId;
+	private String id;
 
 	/**
 	 * Construct a new event by parsing the tail for information
@@ -31,14 +32,14 @@ public class LldbBreakpointModifiedEvent extends AbstractLldbEvent<LldbBreakpoin
 	 * 
 	 * @param info breakpoint info
 	 */
-	public LldbBreakpointModifiedEvent(LldbBreakpointInfo info) {
+	public LldbBreakpointModifiedEvent(DebugBreakpointInfo info) {
 		super(info);
-		//this.bptId = info.getNumber();
+		this.id = DebugClient.getId(info.pt);
 	}
 
-	public LldbBreakpointModifiedEvent(long bptId) {
+	public LldbBreakpointModifiedEvent(String id) {
 		super(null);
-		this.bptId = bptId;
+		this.id = id;
 	}
 
 	/**
@@ -46,11 +47,11 @@ public class LldbBreakpointModifiedEvent extends AbstractLldbEvent<LldbBreakpoin
 	 * 
 	 * @return the parsed, but not processed, breakpoint information
 	 */
-	public LldbBreakpointInfo getBreakpointInfo() {
+	public DebugBreakpointInfo getBreakpointInfo() {
 		return getInfo();
 	}
 
-	public long getId() {
-		return bptId;
+	public String getId() {
+		return id;
 	}
 }

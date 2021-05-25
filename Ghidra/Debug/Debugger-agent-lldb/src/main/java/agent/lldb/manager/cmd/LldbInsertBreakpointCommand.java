@@ -52,7 +52,8 @@ public class LldbInsertBreakpointCommand extends AbstractLldbCommand<LldbBreakpo
 
 	@Override
 	public LldbBreakpointInfo complete(LldbPendingCommand<?> pending) {
-		//manager.doBreakpointCreated(bkpt, pending);
+		SBTarget currentSession = manager.getCurrentSession();
+		manager.doBreakpointCreated(currentSession, bkpt.getBreakpoint(), pending);
 		return bkpt;
 	}
 
@@ -68,7 +69,7 @@ public class LldbInsertBreakpointCommand extends AbstractLldbCommand<LldbBreakpo
 			}
 			bpt.SetEnabled(true);
 			bkpt = new LldbBreakpointInfo(bpt, manager.getCurrentProcess());
-			manager.getEventListeners().fire.breakpointCreated(bpt, LldbCause.Causes.UNCLAIMED);
+			//manager.getEventListeners().fire.breakpointCreated(bpt, LldbCause.Causes.UNCLAIMED);
 		} else {
 			boolean read = false;
 			boolean write = false;
@@ -88,7 +89,7 @@ public class LldbInsertBreakpointCommand extends AbstractLldbCommand<LldbBreakpo
 			SBWatchpoint wpt = currentSession.WatchAddress(loc, len, read, write, error);	
 			wpt.SetEnabled(true);
 			bkpt = new LldbWatchpointInfo(wpt, manager.getCurrentProcess());
-			manager.getEventListeners().fire.breakpointCreated(wpt, LldbCause.Causes.UNCLAIMED);
+			//manager.getEventListeners().fire.breakpointCreated(wpt, LldbCause.Causes.UNCLAIMED);
 		}
 	}
 }

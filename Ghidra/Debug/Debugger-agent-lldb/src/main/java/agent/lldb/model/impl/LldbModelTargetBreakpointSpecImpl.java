@@ -51,7 +51,7 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetObjectImpl
 	protected String display;
 	protected TargetBreakpointKindSet kinds;
 
-	protected final Map<SBBreakpoint, LldbModelTargetBreakpointLocation> breaksBySub =
+	protected final Map<String, LldbModelTargetBreakpointLocation> breaksBySub =
 		new WeakValueHashMap<>();
 	protected final ListenerSet<TargetBreakpointAction> actions =
 		new ListenerSet<>(TargetBreakpointAction.class) {
@@ -93,7 +93,8 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetObjectImpl
 	
 	@Override
 	public CompletableFuture<Void> delete() {
-		return getModel().gateFuture(getManager().deleteBreakpoints(number));
+		String id = DebugClient.getId(getModelObject());
+		return getModel().gateFuture(getManager().deleteBreakpoints(id));
 	}
 
 	@Override
@@ -144,11 +145,12 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetObjectImpl
 
 	protected CompletableFuture<Object> getInfo(boolean refresh) {
 		SBTarget session = getManager().getCurrentSession();
+		String id = DebugClient.getId(getModelObject());
 		if (!refresh) {
-			return CompletableFuture.completedFuture(getManager().getKnownBreakpoints(session).get(number));
+			return CompletableFuture.completedFuture(getManager().getKnownBreakpoints(session).get(id));
 		}
 		return getManager().listBreakpoints(session)
-				.thenApply(__ -> getManager().getKnownBreakpoints(session).get(number));
+				.thenApply(__ -> getManager().getKnownBreakpoints(session).get(id));
 	}
 
 	@Override
@@ -160,12 +162,14 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public CompletableFuture<Void> disable() {
-		return getModel().gateFuture(getManager().disableBreakpoints(number));
+		String id = DebugClient.getId(getModelObject());
+		return getModel().gateFuture(getManager().disableBreakpoints(id));
 	}
 
 	@Override
 	public CompletableFuture<Void> enable() {
-		return getModel().gateFuture(getManager().enableBreakpoints(number));
+		String id = DebugClient.getId(getModelObject());
+		return getModel().gateFuture(getManager().enableBreakpoints(id));
 	}
 
 	public void updateInfo(Object info, String reason) {
@@ -215,7 +219,7 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetObjectImpl
 
 	public synchronized LldbModelTargetBreakpointLocation getTargetBreakpointLocation(
 			SBBreakpointLocation loc) {
-		return breaksBySub.computeIfAbsent(loc.GetBreakpoint(),
+		return breaksBySub.computeIfAbsent(DebugClient.getId(loc.GetBreakpoint()),
 			i -> new LldbModelTargetBreakpointLocationImpl(this, loc));
 	}
 

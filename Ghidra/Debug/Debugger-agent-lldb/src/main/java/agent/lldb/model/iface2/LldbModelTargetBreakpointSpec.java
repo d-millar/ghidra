@@ -43,19 +43,19 @@ public interface LldbModelTargetBreakpointSpec extends //
 
 	@Override
 	public default CompletableFuture<Void> delete() {
-		return getModel().gateFuture(getManager().deleteBreakpoints(getNumber()));
+		return getModel().gateFuture(getManager().deleteBreakpoints(getId()));
 	}
 
 	@Override
 	public default CompletableFuture<Void> disable() {
 		setEnabled(false, "Disabled");
-		return getModel().gateFuture(getManager().disableBreakpoints(getNumber()));
+		return getModel().gateFuture(getManager().disableBreakpoints(getId()));
 	}
 
 	@Override
 	public default CompletableFuture<Void> enable() {
 		setEnabled(true, "Enabled");
-		return getModel().gateFuture(getManager().enableBreakpoints(getNumber()));
+		return getModel().gateFuture(getManager().enableBreakpoints(getId()));
 	}
 
 	@Override
@@ -63,8 +63,8 @@ public interface LldbModelTargetBreakpointSpec extends //
 		return null; //getBreakpointInfo().getExpression();
 	}
 
-	public default long getNumber() {
-		return Long.parseLong(DebugClient.getId(getBreakpointInfo()));
+	public default String getId() {
+		return DebugClient.getId(getBreakpointInfo());
 	}
 
 	@Override

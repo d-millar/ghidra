@@ -82,8 +82,7 @@ public class LldbModelTargetBreakpointContainerImpl extends LldbModelTargetObjec
 
 	@Override
 	public void breakpointHit(Object bpt, LldbCause cause) {
-		LldbModelTargetThread targetThread =
-			getParentProcess().getThreads().getTargetThread(getManager().getEventThread());
+		TargetObject targetThread = getModel().getModelObject(getManager().getEventThread());
 		LldbModelTargetBreakpointSpec spec = getTargetBreakpointSpec(bpt);
 		listeners.fire.breakpointHit(getProxy(), targetThread, null, spec, spec);
 		spec.breakpointHit();

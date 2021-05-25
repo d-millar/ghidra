@@ -17,6 +17,7 @@ package agent.lldb.manager.cmd;
 
 import SWIG.*;
 import agent.lldb.manager.LldbCause;
+import agent.lldb.manager.breakpoint.LldbBreakpointInfo;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 /**
@@ -24,26 +25,35 @@ import agent.lldb.manager.impl.LldbManagerImpl;
  */
 public class LldbDeleteBreakpointsCommand extends AbstractLldbCommand<Void> {
 
-	private final long[] numbers;
+	private final String[] ids;
 
-	public LldbDeleteBreakpointsCommand(LldbManagerImpl manager, long... numbers) {
+	public LldbDeleteBreakpointsCommand(LldbManagerImpl manager, String... ids) {
 		super(manager);
-		this.numbers = numbers;
+		this.ids = ids;
+	}
+
+	@Override
+	public Void complete(LldbPendingCommand<?> pending) {
+		SBTarget currentSession = manager.getCurrentSession();
+		for (String id : ids) {
+			manager.doBreakpointDeleted(currentSession, id, pending);
+		}
+		return null;
 	}
 
 	@Override
 	public void invoke() {
 		SBTarget currentSession = manager.getCurrentSession();
-		for (long l : numbers) {
-			Object info = manager.getBreakpoint(currentSession, Long.toString(l));
+		for (String id : ids) {
+			Object info = manager.getBreakpoint(currentSession, id);
 			if (info instanceof SBBreakpoint) {
 				SBBreakpoint bpt = (SBBreakpoint) info;
 				currentSession.BreakpointDelete(bpt.GetID());
-				manager.getEventListeners().fire.breakpointDeleted(bpt, LldbCause.Causes.UNCLAIMED);
+				//manager.getEventListeners().fire.breakpointDeleted(bpt, LldbCause.Causes.UNCLAIMED);
 			} else {
 				SBWatchpoint wpt = (SBWatchpoint) info;
 				currentSession.DeleteWatchpoint(wpt.GetID());
-				manager.getEventListeners().fire.breakpointDeleted(wpt, LldbCause.Causes.UNCLAIMED);
+				//manager.getEventListeners().fire.breakpointDeleted(wpt, LldbCause.Causes.UNCLAIMED);
 			}
 		}
 	}

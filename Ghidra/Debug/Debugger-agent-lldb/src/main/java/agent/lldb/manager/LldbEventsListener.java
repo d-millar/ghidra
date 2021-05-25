@@ -15,14 +15,8 @@
  */
 package agent.lldb.manager;
 
-import SWIG.SBBreakpoint;
-import SWIG.SBFrame;
-import SWIG.SBProcess;
-import SWIG.SBTarget;
-import SWIG.SBThread;
-import SWIG.StateType;
+import SWIG.*;
 import agent.lldb.lldb.DebugModuleInfo;
-import agent.lldb.manager.breakpoint.LldbBreakpointInfo;
 
 public interface LldbEventsListener {
 

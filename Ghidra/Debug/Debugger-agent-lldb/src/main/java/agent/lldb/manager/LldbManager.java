@@ -396,7 +396,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * @param numbers the dbgeng-assigned breakpoint numbers
 	 * @return a future that completes when dbgeng has executed the command
 	 */
-	CompletableFuture<Void> disableBreakpoints(long... numbers);
+	CompletableFuture<Void> disableBreakpoints(String... ids);
 
 	/**
 	 * Enable the given breakpoints
@@ -406,7 +406,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * @param numbers the dbgeng-assigned breakpoint numbers
 	 * @return a future that completes when dbgeng has executed the command
 	 */
-	CompletableFuture<Void> enableBreakpoints(long... numbers);
+	CompletableFuture<Void> enableBreakpoints(String... ids);
 
 	/**
 	 * Delete a breakpoint
@@ -416,7 +416,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * @param numbers the dbgeng-assigned breakpoint numbers
 	 * @return a future that completes when dbgeng has executed the command
 	 */
-	CompletableFuture<Void> deleteBreakpoints(long... numbers);
+	CompletableFuture<Void> deleteBreakpoints(String... ids);
 
 	CompletableFuture<?> launch(List<String> args);
 
