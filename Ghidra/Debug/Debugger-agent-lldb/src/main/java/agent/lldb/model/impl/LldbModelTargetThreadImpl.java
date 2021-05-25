@@ -30,9 +30,7 @@ import agent.lldb.model.iface1.LldbModelTargetFocusScope;
 import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetEnvironment;
 import ghidra.dbg.target.TargetFocusScope;
-import ghidra.dbg.target.schema.TargetAttributeType;
-import ghidra.dbg.target.schema.TargetElementType;
-import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.target.schema.*;
 import ghidra.dbg.util.PathUtils;
 
 @TargetObjectSchemaInfo(name = "Thread", elements = {
@@ -68,7 +66,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 	protected final LldbModelTargetStackImpl stack;
 
 	private LldbModelTargetProcess process;
-	//private Integer base = 16;
+	private Integer base = 16;
 
 	public LldbModelTargetThreadImpl(LldbModelTargetThreadContainer threads,
 			LldbModelTargetProcess process, SBThread thread) {
