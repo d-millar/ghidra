@@ -62,7 +62,7 @@ public abstract class AbstractModelForLldbFrameActivationTest
 	// TODO: Should probably assert default focus/activation here
 
 	@Override
-	@Ignore("dbgeng.dll has no event for frame activation")
+	@Ignore("lldb has no event for frame activation")
 	public void testActivateEachViaInterpreter() throws Throwable {
 	}
 

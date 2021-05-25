@@ -17,10 +17,10 @@ package agent.lldb.model.invm;
 
 import org.junit.Ignore;
 
-import agent.lldb.model.AbstractModelForLldbessionActivationTest;
+import agent.lldb.model.AbstractModelForLldbSessionActivationTest;
 
 @Ignore("Don't know how to make multiple sessions")
-public class InVmModelForLldbSessionActivationTest extends AbstractModelForLldbessionActivationTest {
+public class InVmModelForLldbSessionActivationTest extends AbstractModelForLldbSessionActivationTest {
 	@Override
 	public ModelHost modelHost() throws Throwable {
 		return new InVmLldbModelHost();
