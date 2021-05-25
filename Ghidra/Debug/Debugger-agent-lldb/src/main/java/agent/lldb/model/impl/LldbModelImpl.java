@@ -111,7 +111,7 @@ public class LldbModelImpl extends AbstractLldbModel implements DebuggerObjectMo
 	@Override
 	public void terminate() throws IOException {
 		listeners.fire.modelClosed(DebuggerModelClosedReason.NORMAL);
-		root.invalidateSubtree(root, "Dbgeng is terminating");
+		root.invalidateSubtree(root, "LLDB is terminating");
 		manager.terminate();
 	}
 
@@ -178,7 +178,7 @@ public class LldbModelImpl extends AbstractLldbModel implements DebuggerObjectMo
 		return super.gateFuture(future).exceptionally(ex -> {
 			for (Throwable cause = ex; cause != null; cause = cause.getCause()) {
 				if (cause instanceof RejectedExecutionException) {
-					throw new DebuggerModelTerminatingException("dbgeng is terminating", ex);
+					throw new DebuggerModelTerminatingException("LLDB is terminating", ex);
 				}
 			}
 			return ExceptionUtils.rethrow(ex);

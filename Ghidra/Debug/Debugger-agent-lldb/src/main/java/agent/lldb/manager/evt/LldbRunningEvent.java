@@ -26,7 +26,7 @@ public class LldbRunningEvent extends AbstractLldbEvent<String> {
 	/**
 	 * Construct a new event, parsing the tail for information
 	 * 
-	 * A thread ID must be specified by dbgeng.
+	 * A thread ID must be specified by lldb.
 	 * 
 	 * @param id the event info
 	 */

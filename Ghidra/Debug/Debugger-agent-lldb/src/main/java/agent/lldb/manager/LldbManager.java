@@ -66,15 +66,15 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	}
 
 	/**
-	 * Launch dbgeng
+	 * Launch lldb
 	 * 
 	 * @param args cmd plus args
-	 * @return a future which completes when dbgeng is ready to accept commands
+	 * @return a future which completes when lldb is ready to accept commands
 	 */
 	CompletableFuture<Void> start(String[] args);
 
 	/**
-	 * Terminate dbgeng
+	 * Terminate lldb
 	 */
 	void terminate();
 
@@ -89,7 +89,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	boolean isRunning();
 
 	/**
-	 * Add a listener for dbgeng's state
+	 * Add a listener for lldb's state
 	 * 
 	 * @see #getState()
 	 * @param listener the listener to add
@@ -97,7 +97,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	void addStateListener(LldbStateListener listener);
 
 	/**
-	 * Remove a listener for dbgeng's state
+	 * Remove a listener for lldb's state
 	 * 
 	 * @see #getState()
 	 * @param listener the listener to remove
@@ -119,20 +119,20 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	void removeEventsListener(LldbEventsListener listener);
 
 	/**
-	 * Get a thread by its dbgeng-assigned ID
+	 * Get a thread by its lldb-assigned ID
 	 * 
-	 * dbgeng numbers its threads using a global counter. These IDs are unrelated to the OS-assigned
+	 * lldb numbers its threads using a global counter. These IDs are unrelated to the OS-assigned
 	 * TID. This method can retrieve a thread by its ID no matter which inferior it belongs to.
 	 * 
-	 * @param id the dbgeng-asigned thread ID
+	 * @param id the lldb-asigned thread ID
 	 * @return a handle to the thread, if it exists
 	 */
 	SBThread getThread(SBProcess process, String id);
 
 	/**
-	 * Get an process by its dbgeng-assigned ID
+	 * Get an process by its lldb-assigned ID
 	 * 
-	 * dbgeng numbers processes incrementally. All inferiors and created and destroyed by the user.
+	 * lldb numbers processes incrementally. All inferiors and created and destroyed by the user.
 	 * See {@link #addProcess()}.
 	 * 
 	 * @param id the process ID
@@ -141,9 +141,9 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	SBProcess getProcess(SBTarget session, String id);
 
 	/**
-	 * Get an session by its dbgeng-assigned ID
+	 * Get an session by its lldb-assigned ID
 	 * 
-	 * dbgeng numbers processes incrementally. All inferiors and created and destroyed by the user.
+	 * lldb numbers processes incrementally. All inferiors and created and destroyed by the user.
 	 * See {@link #addSession()}.
 	 * 
 	 * @param id the process ID
@@ -152,9 +152,9 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	SBTarget getSession(String id);
 
 	/**
-	 * Get an session by its dbgeng-assigned ID
+	 * Get an session by its lldb-assigned ID
 	 * 
-	 * dbgeng numbers processes incrementally. All inferiors and created and destroyed by the user.
+	 * lldb numbers processes incrementally. All inferiors and created and destroyed by the user.
 	 * See {@link #addSession()}.
 	 * 
 	 * @param id the process ID
@@ -165,18 +165,18 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	/**
 	 * Get all threads known to the manager
 	 * 
-	 * This does not ask dbgeng to lists its known threads. Rather it returns a read-only view of
-	 * the manager's understanding of the current threads based on its tracking of dbgeng events.
+	 * This does not ask lldb to lists its known threads. Rather it returns a read-only view of
+	 * the manager's understanding of the current threads based on its tracking of lldb events.
 	 * 
-	 * @return a map of dbgeng-assigned thread IDs to corresponding thread handles
+	 * @return a map of lldb-assigned thread IDs to corresponding thread handles
 	 */
 	Map<String, SBThread> getKnownThreads(SBProcess process);
 
 	/**
 	 * Get all processes known to the manager
 	 * 
-	 * This does not ask dbgeng to list its processes. Rather it returns a read-only view of the
-	 * manager's understanding of the current processes based on its tracking of dbgeng events.
+	 * This does not ask lldb to list its processes. Rather it returns a read-only view of the
+	 * manager's understanding of the current processes based on its tracking of lldb events.
 	 * 
 	 * @return a map of process IDs to corresponding process handles
 	 */
@@ -185,8 +185,8 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	/**
 	 * Get all sessions known to the manager
 	 * 
-	 * This does not ask dbgeng to list its processes. Rather it returns a read-only view of the
-	 * manager's understanding of the current inferiors based on its tracking of dbgeng events.
+	 * This does not ask lldb to list its processes. Rather it returns a read-only view of the
+	 * manager's understanding of the current inferiors based on its tracking of lldb events.
 	 * 
 	 * @return a map of session IDs to corresponding session handles
 	 */
@@ -195,8 +195,8 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	/**
 	 * Get all sessions known to the manager
 	 * 
-	 * This does not ask dbgeng to list its processes. Rather it returns a read-only view of the
-	 * manager's understanding of the current inferiors based on its tracking of dbgeng events.
+	 * This does not ask lldb to list its processes. Rather it returns a read-only view of the
+	 * manager's understanding of the current inferiors based on its tracking of lldb events.
 	 * 
 	 * @return a map of session IDs to corresponding session handles
 	 */
@@ -205,15 +205,15 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	/**
 	 * Get all breakpoints known to the manager
 	 * 
-	 * This does not ask dbgeng to list its breakpoints. Rather it returns a read-only view of the
-	 * manager's understanding of the current breakpoints based on its tracking of dbgeng events.
+	 * This does not ask lldb to list its breakpoints. Rather it returns a read-only view of the
+	 * manager's understanding of the current breakpoints based on its tracking of lldb events.
 	 * 
-	 * @return a map of dbgeng-assigned breakpoint IDs to corresponding breakpoint information
+	 * @return a map of lldb-assigned breakpoint IDs to corresponding breakpoint information
 	 */
 	Map<String, Object> getKnownBreakpoints(SBTarget session);
 
 	/**
-	 * Send an interrupt to dbgeng regardless of other queued commands
+	 * Send an interrupt to lldb regardless of other queued commands
 	 * 
 	 * This may be useful if the manager's command queue is stalled because an inferior is running.
 	 * 
@@ -221,10 +221,10 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	void sendInterruptNow();
 
 	/**
-	 * Get the state of the dbgeng session
+	 * Get the state of the lldb session
 	 * 
-	 * In all-stop mode, if any thread is running, dbgeng is said to be in the running state and is
-	 * unable to process commands. Otherwise, if all threads are stopped, then dbgeng is said to be
+	 * In all-stop mode, if any thread is running, lldb is said to be in the running state and is
+	 * unable to process commands. Otherwise, if all threads are stopped, then lldb is said to be
 	 * in the stopped state and can accept and process commands. This manager has not been tested in
 	 * non-stop mode.
 	 * 
@@ -243,7 +243,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * Remove a process
 	 * 
 	 * @param process the process to remove
-	 * @return a future which completes then dbgeng has executed the command
+	 * @return a future which completes then lldb has executed the command
 	 */
 	CompletableFuture<Void> removeProcess(SBProcess process);
 
@@ -258,7 +258,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * Remove a session
 	 * 
 	 * @param process the session to remove
-	 * @return a future which completes then dbgeng has executed the command
+	 * @return a future which completes then lldb has executed the command
 	 */
 	CompletableFuture<Void> removeSession(SBTarget session);
 
@@ -269,7 +269,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * {@link DbgThread#console(String)}.
 	 * 
 	 * @param command the command to execute
-	 * @return a future that completes when dbgeng has executed the command
+	 * @return a future that completes when lldb has executed the command
 	 */
 	CompletableFuture<Void> console(String command);
 
@@ -281,19 +281,19 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * {@link DbgProcess#consoleCapture(String)}.
 	 * 
 	 * @param command the command to execute
-	 * @return a future that completes with the captured output when dbgeng has executed the command
+	 * @return a future that completes with the captured output when lldb has executed the command
 	 */
 	CompletableFuture<String> consoleCapture(String command);
 
 	/**
-	 * List dbgeng's threads
+	 * List lldb's threads
 	 * 
 	 * @return a future that completes with a map of process IDs to process handles
 	 */
 	CompletableFuture<Map<String, SBThread>> listThreads(SBProcess process);
 
 	/**
-	 * List dbgeng's processes
+	 * List lldb's processes
 	 * 
 	 * @return a future that completes with a map of process IDs to process handles
 	 */
@@ -307,56 +307,56 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	CompletableFuture<List<Pair<String, String>>> listAvailableProcesses();
 
 	/**
-	 * List dbgeng's sessions
+	 * List lldb's sessions
 	 * 
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
 	CompletableFuture<Map<String, SBTarget>> listSessions();
 
 	/**
-	 * List dbgeng's stack frames
+	 * List lldb's stack frames
 	 * 
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
 	CompletableFuture<Map<String, SBFrame>> listStackFrames(SBThread thread);
 
 	/**
-	 * List dbgeng's stack frames
+	 * List lldb's stack frame register banks
 	 * 
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
 	CompletableFuture<Map<String, SBValue>> listStackFrameRegisterBanks(SBFrame frame);
 
 	/**
-	 * List dbgeng's stack frames
+	 * List lldb's stack frame registers
 	 * 
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
 	CompletableFuture<Map<String, SBValue>> listStackFrameRegisters(SBValue bank);
 
 	/**
-	 * List dbgeng's stack frames
+	 * List lldb's modules
 	 * 
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
 	public CompletableFuture<Map<String, SBModule>> listModules(SBTarget session);
 	
 	/**
-	 * List dbgeng's stack frames
+	 * List lldb's module sections
 	 * 
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
 	public CompletableFuture<Map<String, SBSection>> listModuleSections(SBModule module);
 	
 	/**
-	 * List dbgeng's stack frames
+	 * List lldb's module symbols
 	 * 
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
 	public CompletableFuture<Map<String, SBSymbol>> listModuleSymbols(SBModule module);
 		
 	/**
-	 * List dbgeng's stack frames
+	 * List lldb's memory
 	 * 
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
@@ -380,8 +380,8 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * This is equivalent to the CLI command {@code disable breakpoint [NUMBER]}.
 	 * 
-	 * @param numbers the dbgeng-assigned breakpoint numbers
-	 * @return a future that completes when dbgeng has executed the command
+	 * @param numbers the lldb-assigned breakpoint numbers
+	 * @return a future that completes when lldb has executed the command
 	 */
 	CompletableFuture<Void> disableBreakpoints(String... ids);
 
@@ -390,8 +390,8 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * This is equivalent to the CLI command {@code enable breakpoint [NUMBER]}.
 	 * 
-	 * @param numbers the dbgeng-assigned breakpoint numbers
-	 * @return a future that completes when dbgeng has executed the command
+	 * @param numbers the lldb-assigned breakpoint numbers
+	 * @return a future that completes when lldb has executed the command
 	 */
 	CompletableFuture<Void> enableBreakpoints(String... ids);
 
@@ -400,8 +400,8 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * 
 	 * This is equivalent to the CLI command {@code delete breakpoint [NUMBER]}.
 	 * 
-	 * @param numbers the dbgeng-assigned breakpoint numbers
-	 * @return a future that completes when dbgeng has executed the command
+	 * @param numbers the lldb-assigned breakpoint numbers
+	 * @return a future that completes when lldb has executed the command
 	 */
 	CompletableFuture<Void> deleteBreakpoints(String... ids);
 

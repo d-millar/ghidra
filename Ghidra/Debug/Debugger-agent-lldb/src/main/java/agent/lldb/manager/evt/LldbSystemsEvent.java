@@ -21,9 +21,9 @@ package agent.lldb.manager.evt;
 public class LldbSystemsEvent extends AbstractLldbEvent<Long> {
 
 	/**
-	 * The selected target ID must be specified by dbgeng.
+	 * The selected target ID must be specified by lldb.
 	 * 
-	 * @param targetID dbgeng-provided id
+	 * @param targetID lldb-provided id
 	 */
 	public LldbSystemsEvent(Long targetID) {
 		super(targetID);

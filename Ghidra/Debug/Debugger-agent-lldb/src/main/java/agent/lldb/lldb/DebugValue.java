@@ -23,9 +23,6 @@ import java.util.Arrays;
 
 import ghidra.util.NumericUtilities;
 
-/**
- * Data copied from a {@code DEBUG_VALUE} as defined in {dbgeng.h}.
- */
 //@ForDebugValueType(DebugValueType.INVALID)
 public interface DebugValue {
 	@Retention(RetentionPolicy.RUNTIME)

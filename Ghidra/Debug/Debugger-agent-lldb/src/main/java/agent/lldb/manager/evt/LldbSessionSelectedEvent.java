@@ -26,9 +26,9 @@ public class LldbSessionSelectedEvent extends AbstractLldbEvent<String> {
 	private SBTarget session;
 
 	/**
-	 * The selected session ID must be specified by dbgeng.
+	 * The selected session ID must be specified by lldb.
 	 * 
-	 * @param session dbgeng-defined session
+	 * @param session lldb-defined session
 	 */
 	public LldbSessionSelectedEvent(SBTarget session) {
 		super(DebugClient.getId(session));

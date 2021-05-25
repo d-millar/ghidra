@@ -29,7 +29,7 @@ import agent.lldb.manager.evt.AbstractLldbCompletedCommandEvent;
 import agent.lldb.manager.evt.LldbCommandErrorEvent;
 
 /**
- * A command queued on the dbgeng manager
+ * A command queued on the lldb manager
  *
  * A {@link DbgCommand} is queued by wrapping it in a {@link LldbPendingCommand} and submitting it to
  * the manager implementation's executor. This object also keep track of claimed/stolen events and

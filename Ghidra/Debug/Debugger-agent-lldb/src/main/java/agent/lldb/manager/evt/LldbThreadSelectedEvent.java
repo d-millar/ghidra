@@ -30,10 +30,10 @@ public class LldbThreadSelectedEvent extends AbstractLldbEvent<String> {
 	private SBFrame frame;
 
 	/**
-	 * The selected thread ID must be specified by dbgeng.
+	 * The selected thread ID must be specified by lldb.
 	 * 
 	 * @param frame
-	 * @param id dbgeng-provided id
+	 * @param id lldb-provided id
 	 */
 	public LldbThreadSelectedEvent(StateType state, SBThread thread, SBFrame frame) {
 		super(DebugClient.getId(thread));

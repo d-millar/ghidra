@@ -63,15 +63,15 @@ public class LldbOpenDumpCommand extends AbstractLldbCommand<SBThread> {
 
 	@Override
 	public void invoke() {
-		DebugClient dbgeng = manager.getClient();
-		//DebugControl control = dbgeng.getControl();
 
 		String f = (String) args.get("TraceOrDump");
 		if (f.startsWith("/")) {
 			f = f.substring(1);
 		}
 		f = f.replace("/", "\\");
-		dbgeng.openDumpFileWide(f);
+
+		DebugClient client = manager.getClient();
+		client.openDumpFileWide(f);
 		manager.waitForEventEx();
 	}
 }

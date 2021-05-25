@@ -178,7 +178,7 @@ public interface LldbEventsListener {
 	/**
 	 * A breakpoint has effectively been applied to an process
 	 * 
-	 * dbgeng has a robust (read "complicated") breakpoint model. A breakpoint may apply to multiple
+	 * lldb has a robust (read "complicated") breakpoint model. A breakpoint may apply to multiple
 	 * processes, and even within a single process, it may have multiple locations. Consider, e.g.,
 	 * an inlined function or a C++ template function. If the breakpoint is specified as a line
 	 * number, it may correspond to several locations in the compiled binary. Worse yet, a
@@ -188,10 +188,10 @@ public interface LldbEventsListener {
 	 * more locations. Even worse yet, if another library gets loaded that also matches the
 	 * specification, new locations may be appended.
 	 * 
-	 * Thus, the dbgeng manager attempts to interpret the information about a breakpoint provided by
-	 * dbgeng and builds a set of "effective breakpoints" each corresponding to a single location in
+	 * Thus, the lldb manager attempts to interpret the information about a breakpoint provided by
+	 * lldb and builds a set of "effective breakpoints" each corresponding to a single location in
 	 * a single process image, i.e., process. Consider for example: A new library is loaded and an
-	 * existing dbgeng breakpoint must be applied within. dbgeng will emit a breakpoint modified
+	 * existing lldb breakpoint must be applied within. lldb will emit a breakpoint modified
 	 * event, which the manager will parse and pass to
 	 * {@link #breakpointModified(DbgBreakpointInfo, DbgBreakpointInfo, DbgCause)}. The manager will
 	 * also interpret that event and, seeing a new location, emit an
@@ -230,8 +230,8 @@ public interface LldbEventsListener {
 	/**
 	 * TODO: This is not yet implemented
 	 * 
-	 * It is not clear whether dbgeng detects when a target writes into its own memory, or if this
-	 * event is emitted when dbgeng changes the target's memory, or both.
+	 * It is not clear whether lldb detects when a target writes into its own memory, or if this
+	 * event is emitted when lldb changes the target's memory, or both.
 	 * 
 	 * @param process the process whose memory changed
 	 * @param addr the address of the change

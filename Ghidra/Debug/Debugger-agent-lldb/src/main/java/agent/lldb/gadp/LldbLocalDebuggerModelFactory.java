@@ -22,8 +22,8 @@ import ghidra.dbg.util.ConfigurableFactory.FactoryDescription;
 import ghidra.util.classfinder.ExtensionPointProperties;
 
 @FactoryDescription( //
-		brief = "MS dbgeng.dll (WinDbg) local agent via GADP/TCP", //
-		htmlDetails = "Launch a new agent using the Microsoft Debug Engine." //
+		brief = "LLDB (OSX) local agent via GADP/TCP", //
+		htmlDetails = "Launch a new agent using OSX lldb." //
 )
 @ExtensionPointProperties(priority = 100)
 public class LldbLocalDebuggerModelFactory extends AbstractGadpLocalDebuggerModelFactory {
@@ -41,7 +41,7 @@ public class LldbLocalDebuggerModelFactory extends AbstractGadpLocalDebuggerMode
 	@Override
 	public boolean isCompatible() {
 		// TODO: Might instead look for the DLL
-		return System.getProperty("os.name").toLowerCase().contains("windows");
+		return System.getProperty("os.name").toLowerCase().contains("macos");
 	}
 
 	public String getAgentTransport() {
@@ -62,7 +62,7 @@ public class LldbLocalDebuggerModelFactory extends AbstractGadpLocalDebuggerMode
 
 	@Override
 	protected String getThreadName() {
-		return "Local dbgeng.dll Agent stdout";
+		return "Local LLDB Agent stdout";
 	}
 
 	protected Class<?> getServerClass() {
