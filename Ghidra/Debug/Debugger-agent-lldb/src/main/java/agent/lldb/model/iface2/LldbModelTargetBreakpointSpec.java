@@ -15,24 +15,18 @@
  */
 package agent.lldb.model.iface2;
 
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import SWIG.SBBreakpoint;
-import SWIG.SBWatchpoint;
 import agent.lldb.lldb.DebugClient;
-import agent.lldb.model.iface1.LldbModelTargetBptHelper;
 import ghidra.dbg.target.*;
 import ghidra.dbg.target.TargetBreakpointSpecContainer.TargetBreakpointKindSet;
-import ghidra.program.model.address.*;
+import ghidra.util.datastruct.ListenerSet;
 
 public interface LldbModelTargetBreakpointSpec extends //
 		LldbModelTargetObject, //
 		TargetBreakpointSpec, //
 		TargetBreakpointLocation, //
-		TargetDeletable, //
-		LldbModelTargetBptHelper {
+		TargetDeletable {
 
 	String BPT_ACCESS_ATTRIBUTE_NAME = "Access";
 	String BPT_DISP_ATTRIBUTE_NAME = "Enabled";
@@ -64,19 +58,11 @@ public interface LldbModelTargetBreakpointSpec extends //
 	}
 
 	public default String getId() {
-		return DebugClient.getId(getBreakpointInfo());
+		return DebugClient.getId(getModelObject());
 	}
 
 	@Override
-	public default TargetBreakpointKindSet getKinds() {
-		Object modelObject = getModelObject();
-		if (modelObject instanceof SBBreakpoint) {
-			return TargetBreakpointKindSet.of(TargetBreakpointKind.SW_EXECUTE);
-		} else {
-			SBWatchpoint wpt = (SBWatchpoint) modelObject;
-		}
-		return TargetBreakpointKindSet.of();
-	}
+	public TargetBreakpointKindSet getKinds();
 
 	public void updateInfo(Object info, String reason);
 
@@ -90,16 +76,9 @@ public interface LldbModelTargetBreakpointSpec extends //
 	 * @param enabled true if enabled, false if disabled
 	 * @param reason a description of the cause (not really used, yet)
 	 */
-	public default void setEnabled(boolean enabled, String reason) {
-		setBreakpointEnabled(enabled);
-		changeAttributes(List.of(), Map.of(ENABLED_ATTRIBUTE_NAME, enabled //
-		), reason);
-	}
+	public void setEnabled(boolean enabled, String reason);
 
-	@Override
-	public default boolean isEnabled() {
-		return isBreakpointEnabled();
-	}
+	public ListenerSet<TargetBreakpointAction> getActions();
 
 	@Override
 	public default void addAction(TargetBreakpointAction action) {

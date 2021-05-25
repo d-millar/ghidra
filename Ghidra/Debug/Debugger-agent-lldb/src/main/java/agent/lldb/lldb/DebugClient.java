@@ -366,8 +366,8 @@ public interface DebugClient extends DebugClientReentrant {
 			return Integer.toHexString(spec.GetID());
 		}
 		if (modelObject instanceof SBBreakpointLocation) {
-			SBBreakpointLocation loc= (SBBreakpointLocation) modelObject;
-			return Long.toHexString(loc.GetAddress().GetOffset().longValue());
+			SBBreakpointLocation loc = (SBBreakpointLocation) modelObject;
+			return Long.toHexString(loc.GetLoadAddress().longValue());
 		}
 		throw new RuntimeException("Unknown object "+modelObject.getClass());
 	}

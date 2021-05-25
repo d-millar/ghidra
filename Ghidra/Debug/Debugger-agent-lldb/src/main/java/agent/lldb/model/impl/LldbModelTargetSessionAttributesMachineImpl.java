@@ -40,6 +40,7 @@ import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 		@TargetAttributeType(name = "Debugger", type = String.class),
 		@TargetAttributeType(name = "OS", type = String.class),
 		@TargetAttributeType(name = "Mode", type = String.class),
+		@TargetAttributeType(name = "Version", type = String.class),
 		@TargetAttributeType(type = Void.class)
 	})
 public class LldbModelTargetSessionAttributesMachineImpl extends LldbModelTargetObjectImpl

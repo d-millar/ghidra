@@ -21,7 +21,6 @@ import java.util.Map;
 import SWIG.*;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.LldbModelTargetBreakpointLocation;
-import agent.lldb.model.iface2.LldbModelTargetBreakpointSpec;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 import ghidra.dbg.util.PathUtils;
@@ -30,30 +29,47 @@ import ghidra.program.model.address.Address;
 @TargetObjectSchemaInfo(
 	name = "BreakpointLocation", 
 	attributes = {
-		@TargetAttributeType(type = Void.class) })
+		@TargetAttributeType(type = Void.class) 
+	})
 public class LldbModelTargetBreakpointLocationImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetBreakpointLocation {
 
 	protected static String keyLocation(SBBreakpointLocation loc) {
 		return PathUtils.makeKey(DebugClient.getId(loc));
 	}
+	protected static String keyLocation(SBWatchpoint wpt) {
+		return PathUtils.makeKey(DebugClient.getId(wpt)+".0");
+	}
 
-	private LldbModelTargetBreakpointSpec spec;
 	protected SBBreakpointLocation loc;
 	
 	protected Address address;
 	protected Integer length;
 	protected String display;
 
-	public LldbModelTargetBreakpointLocationImpl(LldbModelTargetBreakpointSpecImpl spec,
+	public LldbModelTargetBreakpointLocationImpl(LldbModelTargetAbstractXpointSpec spec,
 			SBBreakpointLocation loc) {
 		super(spec.getModel(), spec, keyLocation(loc), loc, "BreakpointLocation");
-		this.spec = spec;
 		this.loc = loc;
 		
 		doChangeAttributes("Initialization");
 	}
 
+	public LldbModelTargetBreakpointLocationImpl(LldbModelTargetAbstractXpointSpec spec,
+			SBWatchpoint wpt) {
+		super(spec.getModel(), spec, keyLocation(wpt), wpt, "BreakpointLocation");
+		this.loc = null;
+		
+		address = getModel().getAddress("ram", wpt.GetWatchAddress().longValue());
+		this.changeAttributes(List.of(), Map.of(
+			SPEC_ATTRIBUTE_NAME, parent,
+			ADDRESS_ATTRIBUTE_NAME, address,
+			LENGTH_ATTRIBUTE_NAME, length = (int) wpt.GetWatchSize(),
+			DISPLAY_ATTRIBUTE_NAME, display = getDescription(0)),
+		"Initialization");
+		placeLocations();
+	}
+	
 	public String getDescription(int level) {
 		SBStream stream = new SBStream();
 		SBBreakpointLocation loc = (SBBreakpointLocation) getModelObject();		
