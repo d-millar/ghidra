@@ -15,8 +15,6 @@
  */
 package agent.lldb.lldb;
 
-import SWIG.SBBreakpoint;
-
 /**
  * Information about a module (program or library image).
  * 
@@ -26,15 +24,15 @@ import SWIG.SBBreakpoint;
  */
 public class DebugBreakpointInfo {
 
-	public SBBreakpoint bpt;
-	public Integer id;
+	public Object pt;
+	public String id;
 
-	public DebugBreakpointInfo(SBBreakpoint bpt) {
-		this.bpt = bpt;
-		this.id = bpt.GetID();
+	public DebugBreakpointInfo(Object pt) {
+		this.pt = pt;
+		this.id = DebugClient.getId(pt);
 	}
 
 	public String toString() {
-		return Integer.toHexString(id);
+		return id;
 	}
 }

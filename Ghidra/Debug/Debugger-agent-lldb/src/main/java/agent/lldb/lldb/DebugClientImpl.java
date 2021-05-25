@@ -216,7 +216,7 @@ public class DebugClientImpl implements DebugClient {
 		if (SBTarget.EventIsTargetEvent(evt)) {
 			if ((type & SBTarget.eBroadcastBitBreakpointChanged) != 0) {
 				Msg.info(this, "*** Breakpoint Changed: " + evt.GetType());
-				processEvent(new LldbBreakpointModifiedEvent(null));
+				processEvent(new LldbBreakpointModifiedEvent(new DebugBreakpointInfo(evt)));
 			}
 			if ((type & SBTarget.eBroadcastBitModulesLoaded) != 0) {
 				Msg.info(this, "*** Module Loaded: " + evt.GetType());

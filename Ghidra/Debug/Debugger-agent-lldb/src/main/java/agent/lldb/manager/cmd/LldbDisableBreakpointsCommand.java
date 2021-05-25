@@ -26,20 +26,19 @@ import agent.lldb.manager.impl.LldbManagerImpl;
  */
 public class LldbDisableBreakpointsCommand extends AbstractLldbCommand<Void> {
 
-	private final long[] numbers;
+	private final String[] ids;
 
-	public LldbDisableBreakpointsCommand(LldbManagerImpl manager, long... numbers) {
+	public LldbDisableBreakpointsCommand(LldbManagerImpl manager, String... ids) {
 		super(manager);
-		this.numbers = numbers;
+		this.ids = ids;
 	}
 
 	@Override
 	public void invoke() {
 		Map<String, Object> knownBreakpoints = manager.getKnownBreakpoints(manager.getCurrentSession());
-		for (long l : numbers) {
-			String key = Long.toString(l);
-			if (knownBreakpoints.containsKey(key)) {
-				Object obj = knownBreakpoints.get(key);
+		for (String id : ids) {
+			if (knownBreakpoints.containsKey(id)) {
+				Object obj = knownBreakpoints.get(id);
 				if (obj instanceof SBBreakpoint) {
 					((SBBreakpoint)obj).SetEnabled(false);
 				}	
