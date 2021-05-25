@@ -22,7 +22,7 @@ import ghidra.dbg.util.ConfigurableFactory.FactoryDescription;
 import ghidra.util.classfinder.ExtensionPointProperties;
 
 @FactoryDescription( //
-		brief = "LLDB (OSX) local agent via GADP/TCP", //
+		brief = "OSX lldb local agent via GADP/TCP", //
 		htmlDetails = "Launch a new agent using OSX lldb." //
 )
 @ExtensionPointProperties(priority = 100)

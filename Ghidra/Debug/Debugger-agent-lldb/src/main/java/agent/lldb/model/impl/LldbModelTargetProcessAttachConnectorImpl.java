@@ -18,6 +18,8 @@ package agent.lldb.model.impl;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
+import SWIG.SBProcess;
+import agent.lldb.manager.cmd.LldbAttachCommand;
 import agent.lldb.model.iface2.LldbModelTargetConnector;
 import ghidra.async.AsyncUtils;
 import ghidra.async.TypeSpec;
@@ -76,12 +78,8 @@ public class LldbModelTargetProcessAttachConnectorImpl extends LldbModelTargetOb
 	@Override
 	public CompletableFuture<Void> launch(Map<String, ?> args) {
 		String pidstr = (String) args.get("Pid");
-		int pid = Integer.decode(pidstr);
 		return AsyncUtils.sequence(TypeSpec.VOID).then(seq -> {
-			/*
-			SBProcess process = new SBProcess(getManager());
-			process.attach(pid).handle(seq::nextIgnore);
-			*/
+			getManager().attach(pidstr, null).handle(seq::nextIgnore);
 		}).finish().exceptionally((exc) -> {
 			throw new DebuggerUserException("Launch failed for " + args);
 		});

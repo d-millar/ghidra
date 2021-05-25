@@ -22,9 +22,11 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.commons.lang3.tuple.Pair;
 
 import SWIG.*;
+import agent.lldb.lldb.DebugClient.DebugAttachFlags;
 import agent.lldb.lldb.DebugClient.DebugStatus;
 import agent.lldb.manager.breakpoint.LldbBreakpointInsertions;
 import agent.lldb.manager.impl.LldbManagerImpl;
+import ghidra.comm.util.BitmaskSet;
 
 public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 
@@ -404,6 +406,8 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * @return a future that completes when lldb has executed the command
 	 */
 	CompletableFuture<Void> deleteBreakpoints(String... ids);
+
+	CompletableFuture<?> attach(String pid, BitmaskSet<DebugAttachFlags> flags);
 
 	CompletableFuture<?> launch(List<String> args);
 
