@@ -40,17 +40,12 @@ public class LldbModelTargetSessionContainerImpl extends LldbModelTargetObjectIm
 
 	@Override
 	public void sessionAdded(SBTarget sess, LldbCause cause) {
-		System.err.println(sess+" added");
 		LldbModelTargetSession session = getTargetSession(sess);
 		changeElements(List.of(), List.of(session), Map.of(), "Added");
 	}
 
 	@Override
 	public void sessionRemoved(String sessionId, LldbCause cause) {
-		//synchronized (this) {
-		//	sessionsById.remove(sessionId);
-		//}
-		System.err.println(sessionId+" removed");
 		changeElements(List.of( //
 			sessionId //
 		), List.of(), Map.of(), "Removed");

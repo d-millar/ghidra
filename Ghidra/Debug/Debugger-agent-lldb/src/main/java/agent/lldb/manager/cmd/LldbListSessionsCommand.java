@@ -15,21 +15,16 @@
  */
 package agent.lldb.manager.cmd;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import SWIG.SBTarget;
-import agent.lldb.manager.LldbCause.Causes;
 import agent.lldb.manager.impl.LldbManagerImpl;
-import ghidra.util.Msg;
 
 /**
  * Implementation of {@link DbgManager#listSessions()}
  */
 public class LldbListSessionsCommand extends AbstractLldbCommand<Map<String, SBTarget>> {
-	private List<String> updatedSessionIds = new ArrayList<>();
+	//private List<String> updatedSessionIds = new ArrayList<>();
 
 	public LldbListSessionsCommand(LldbManagerImpl manager) {
 		super(manager);
@@ -37,6 +32,7 @@ public class LldbListSessionsCommand extends AbstractLldbCommand<Map<String, SBT
 
 	@Override
 	public Map<String, SBTarget> complete(LldbPendingCommand<?> pending) {
+		/*
 		Map<String, SBTarget> knownSessions = manager.getKnownSessions();
 		Set<String> cur = knownSessions.keySet();
 		for (String id : updatedSessionIds) {
@@ -54,6 +50,7 @@ public class LldbListSessionsCommand extends AbstractLldbCommand<Map<String, SBT
 			Msg.warn(this, "Resync: Had extra group: i" + id);
 			manager.removeSession(id, Causes.UNCLAIMED);
 		}
+		*/
 		return manager.getKnownSessions();
 	}
 
