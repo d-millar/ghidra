@@ -21,14 +21,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import SWIG.SBSymbol;
-import agent.lldb.lldb.DebugClient;
-import agent.lldb.model.iface2.LldbModelTargetRegisterBank;
 import agent.lldb.model.iface2.LldbModelTargetSymbolContainer;
 import ghidra.dbg.target.TargetObject;
-import ghidra.dbg.target.schema.TargetAttributeType;
-import ghidra.dbg.target.schema.TargetElementType;
+import ghidra.dbg.target.schema.*;
 import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
-import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 
 @TargetObjectSchemaInfo(
 	name = "SymbolContainer",

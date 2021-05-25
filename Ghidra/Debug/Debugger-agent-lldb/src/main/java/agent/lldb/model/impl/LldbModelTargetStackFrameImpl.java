@@ -20,21 +20,13 @@ import java.util.List;
 import java.util.Map;
 
 import SWIG.*;
-import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface1.LldbModelTargetFocusScope;
-import agent.lldb.model.iface2.LldbModelTargetProcess;
-import agent.lldb.model.iface2.LldbModelTargetStack;
-import agent.lldb.model.iface2.LldbModelTargetStackFrame;
-import agent.lldb.model.iface2.LldbModelTargetStackFrameRegisterContainer;
-import agent.lldb.model.iface2.LldbModelTargetThread;
+import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetFocusScope;
 import ghidra.dbg.target.TargetObject;
-import ghidra.dbg.target.TargetExecutionStateful.TargetExecutionState;
-import ghidra.dbg.target.schema.TargetAttributeType;
-import ghidra.dbg.target.schema.TargetElementType;
-import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.target.schema.*;
 import ghidra.dbg.util.PathUtils;
 import ghidra.program.model.address.Address;
 

@@ -18,7 +18,6 @@ package agent.lldb.model.impl;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-import SWIG.SBStream;
 import SWIG.StateType;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
@@ -26,16 +25,10 @@ import agent.lldb.manager.LldbStateListener;
 import agent.lldb.model.AbstractLldbModel;
 import agent.lldb.model.iface1.LldbModelTargetAccessConditioned;
 import agent.lldb.model.iface1.LldbModelTargetExecutionStateful;
-import agent.lldb.model.iface2.LldbModelTargetObject;
-import agent.lldb.model.iface2.LldbModelTargetProcess;
-import agent.lldb.model.iface2.LldbModelTargetSession;
-import agent.lldb.model.iface2.LldbModelTargetThread;
+import agent.lldb.model.iface2.*;
 import ghidra.dbg.agent.DefaultTargetObject;
-import ghidra.dbg.target.TargetAccessConditioned;
+import ghidra.dbg.target.*;
 import ghidra.dbg.target.TargetExecutionStateful.TargetExecutionState;
-import ghidra.dbg.target.TargetObject;
-import ghidra.dbg.target.TargetProcess;
-import ghidra.dbg.target.TargetThread;
 import ghidra.dbg.target.schema.TargetObjectSchema;
 
 public class LldbModelTargetObjectImpl extends DefaultTargetObject<TargetObject, TargetObject>

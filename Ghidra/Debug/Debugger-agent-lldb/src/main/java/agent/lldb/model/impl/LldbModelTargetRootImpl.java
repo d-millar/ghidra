@@ -15,29 +15,18 @@
  */
 package agent.lldb.model.impl;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-import SWIG.SBProcess;
 import SWIG.SBThread;
 import SWIG.StateType;
-import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface1.LldbModelSelectableObject;
-import agent.lldb.model.iface2.LldbModelTargetConnector;
-import agent.lldb.model.iface2.LldbModelTargetRoot;
-import agent.lldb.model.iface2.LldbModelTargetThread;
+import agent.lldb.model.iface2.*;
 import ghidra.dbg.error.DebuggerUserException;
-import ghidra.dbg.target.TargetEventScope;
-import ghidra.dbg.target.TargetFocusScope;
-import ghidra.dbg.target.TargetMethod;
-import ghidra.dbg.target.schema.TargetAttributeType;
-import ghidra.dbg.target.schema.TargetElementType;
-import ghidra.dbg.target.schema.TargetObjectSchema;
-import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.target.*;
+import ghidra.dbg.target.schema.*;
 import ghidra.dbg.util.PathUtils;
 
 @TargetObjectSchemaInfo(name = "Debugger", elements = {

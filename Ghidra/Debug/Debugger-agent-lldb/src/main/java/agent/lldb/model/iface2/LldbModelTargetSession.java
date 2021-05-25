@@ -17,21 +17,12 @@ package agent.lldb.model.iface2;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
-import SWIG.SBTarget;
 import agent.lldb.manager.LldbEventsListenerAdapter;
-import agent.lldb.manager.impl.LldbManagerImpl;
-import agent.lldb.model.iface1.LldbModelSelectableObject;
-import agent.lldb.model.iface1.LldbModelTargetAccessConditioned;
-import agent.lldb.model.iface1.LldbModelTargetExecutionStateful;
-import agent.lldb.model.iface1.LldbModelTargetInterpreter;
-import agent.lldb.model.iface1.LldbModelTargetInterruptible;
-import agent.lldb.model.iface1.LldbModelTargetResumable;
+import agent.lldb.model.iface1.*;
 import ghidra.dbg.target.TargetAggregate;
 import ghidra.dbg.target.TargetConsole;
 import ghidra.dbg.target.TargetConsole.Channel;
-import ghidra.dbg.util.PathUtils;
 
 public interface LldbModelTargetSession extends //
 		LldbModelTargetAccessConditioned, //

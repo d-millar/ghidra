@@ -73,10 +73,9 @@ public class LldbManagerImpl implements LldbManager {
 
 	protected final AsyncReference<StateType, LldbCause> state =
 		new AsyncReference<>(StateType.eStateInvalid);
-	//private StateType state = StateType.eStateInvalid;
 	private final HandlerMap<LldbEvent<?>, Void, DebugStatus> handlerMap = new HandlerMap<>();
 	private final Map<Class<?>, DebugStatus> statusMap = new LinkedHashMap<>();
-	private final Map<String, DebugStatus> statusByNameMap = new LinkedHashMap<>();
+	//private final Map<String, DebugStatus> statusByNameMap = new LinkedHashMap<>();
 	private final ListenerSet<LldbEventsListener> listenersEvent =
 		new ListenerSet<>(LldbEventsListener.class);
 
@@ -125,7 +124,7 @@ public class LldbManagerImpl implements LldbManager {
 	public void addThreadIfAbsent(SBProcess process, SBThread thread) {
 		synchronized (threads) {
 			if (!process.IsValid()) return;
-			Map<String, SBThread> map = threads.get(process);
+			Map<String, SBThread> map = threads.get(DebugClient.getId(process));
 			if (map == null) {
 				map = new HashMap<>();
 				threads.put(DebugClient.getId(process), map);
@@ -449,7 +448,7 @@ public class LldbManagerImpl implements LldbManager {
 			engThread = new LldbClientThreadExecutor(() -> DebugClient.debugCreate().createClient());
 		}
 		else {
-			String remoteOptions = String.join(" ", args);
+			//String remoteOptions = String.join(" ", args);
 			engThread = new LldbClientThreadExecutor(() -> DebugClient.debugCreate().createClient());
 			create = false;
 		}
@@ -1291,72 +1290,6 @@ public class LldbManagerImpl implements LldbManager {
 		doBreakpointModifiedSameLocations(session, info, cause);
 	}
 
-	private void changeBreakpoints() {
-		/*
-		Set<Integer> retained = new HashSet<>();
-		DebugSystemObjects so = getSystemObjects();
-		try (SavedFocus focus = new SavedFocus(so)) {
-			for (DebugProcessId pid : so.getProcesses()) {
-				try {
-					Msg.debug(this, "BREAKPOINTS: Changing current process to " + pid);
-					so.setCurrentProcessId(pid);
-				}
-				catch (COMException e) {
-					Msg.debug(this, e.getMessage());
-					continue;
-				}
-				List<Integer> tids = so.getThreads();
-				for (DebugBreakpoint bpt : getControl().getBreakpoints()) {
-					BitmaskSet<BreakFlags> f = bpt.getFlags();
-					if (!f.contains((BreakFlags.ENABLED)) || f.contains(BreakFlags.DEFERRED)) {
-						continue;
-					}
-					if (bpt.getType().breakType != BreakType.CODE) {
-						continue; // TODO: Extend SCTL to handle R/W breakpoints
-					}
-					int id = bpt.getId();
-					retained.add(id);
-					long newOffset = orZero(bpt.getOffset());
-					BreakpointTag tag = breaksById.get(id);
-					if (tag == null) {
-						for (Integer tid : tids) {
-							Msg.debug(this, "TRAP Added: " + id + " on " + tid);
-							if (!claimsBreakpointAdded.satisfy(tid)) {
-							}
-							else {
-								Msg.debug(this, "  claimed");
-							}
-							breaksById.put(id, new BreakpointTag(newOffset));
-						}
-					}
-					else if (tag.offset != newOffset) {
-						tag.offset = newOffset;
-					} // else the breakpoint is unchanged
-				}
-				Iterator<Integer> it = breaksById.keySet().iterator();
-				while (it.hasNext()) {
-					int id = it.next();
-					if (retained.contains(id)) {
-						continue;
-					}
-					for (Integer tid : tids) {
-						Msg.debug(this, "TRAP Removed: " + id + " on " + tid);
-						if (!claimsBreakpointRemoved.satisfy(new BreakId(tid, id))) {
-						}
-						else {
-							Msg.debug(this, "  claimed");
-						}
-					}
-					it.remove();
-				}
-			}
-		}
-		catch (COMException e) {
-			Msg.error(this, "Error retrieving processes: " + e);
-		}
-		*/
-	}
-
 	@Override
 	public CompletableFuture<Map<String, SBThread>> listThreads(SBProcess process) {
 		return execute(new LldbListThreadsCommand(this, process));
@@ -1676,4 +1609,72 @@ public class LldbManagerImpl implements LldbManager {
 	public void setCurrentEvent(SBEvent evt) {
 		this.currentEvent = evt;
 	}
+	
+	/*
+	private void changeBreakpoints() {
+		Set<Integer> retained = new HashSet<>();
+		DebugSystemObjects so = getSystemObjects();
+		try (SavedFocus focus = new SavedFocus(so)) {
+			for (DebugProcessId pid : so.getProcesses()) {
+				try {
+					Msg.debug(this, "BREAKPOINTS: Changing current process to " + pid);
+					so.setCurrentProcessId(pid);
+				}
+				catch (COMException e) {
+					Msg.debug(this, e.getMessage());
+					continue;
+				}
+				List<Integer> tids = so.getThreads();
+				for (DebugBreakpoint bpt : getControl().getBreakpoints()) {
+					BitmaskSet<BreakFlags> f = bpt.getFlags();
+					if (!f.contains((BreakFlags.ENABLED)) || f.contains(BreakFlags.DEFERRED)) {
+						continue;
+					}
+					if (bpt.getType().breakType != BreakType.CODE) {
+						continue; // TODO: Extend SCTL to handle R/W breakpoints
+					}
+					int id = bpt.getId();
+					retained.add(id);
+					long newOffset = orZero(bpt.getOffset());
+					BreakpointTag tag = breaksById.get(id);
+					if (tag == null) {
+						for (Integer tid : tids) {
+							Msg.debug(this, "TRAP Added: " + id + " on " + tid);
+							if (!claimsBreakpointAdded.satisfy(tid)) {
+							}
+							else {
+								Msg.debug(this, "  claimed");
+							}
+							breaksById.put(id, new BreakpointTag(newOffset));
+						}
+					}
+					else if (tag.offset != newOffset) {
+						tag.offset = newOffset;
+					} // else the breakpoint is unchanged
+				}
+				Iterator<Integer> it = breaksById.keySet().iterator();
+				while (it.hasNext()) {
+					int id = it.next();
+					if (retained.contains(id)) {
+						continue;
+					}
+					for (Integer tid : tids) {
+						Msg.debug(this, "TRAP Removed: " + id + " on " + tid);
+						if (!claimsBreakpointRemoved.satisfy(new BreakId(tid, id))) {
+						}
+						else {
+							Msg.debug(this, "  claimed");
+						}
+					}
+					it.remove();
+				}
+			}
+		}
+		catch (COMException e) {
+			Msg.error(this, "Error retrieving processes: " + e);
+		}
+	}
+	*/
+
+
 }

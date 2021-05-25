@@ -21,13 +21,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import SWIG.SBTarget;
-import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetObject;
-import ghidra.dbg.target.schema.TargetAttributeType;
-import ghidra.dbg.target.schema.TargetElementType;
-import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.target.schema.*;
 
 @TargetObjectSchemaInfo(name = "SessionContainer", elements = {
 	@TargetElementType(type = LldbModelTargetSessionImpl.class) }, attributes = {

@@ -22,16 +22,11 @@ import java.util.stream.Collectors;
 
 import SWIG.SBFrame;
 import SWIG.StateType;
-import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetObject;
-import ghidra.dbg.target.TargetExecutionStateful.TargetExecutionState;
-import ghidra.dbg.target.schema.TargetAttributeType;
-import ghidra.dbg.target.schema.TargetElementType;
-import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.target.schema.*;
 import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
-import ghidra.util.Msg;
 import ghidra.util.datastruct.WeakValueHashMap;
 
 @TargetObjectSchemaInfo(

@@ -22,9 +22,9 @@ import java.util.stream.Collectors;
 
 import SWIG.SBValue;
 import SWIG.StateType;
-import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbReason;
-import agent.lldb.model.iface2.*;
+import agent.lldb.model.iface2.LldbModelTargetRegisterBank;
+import agent.lldb.model.iface2.LldbModelTargetStackFrameRegisterContainer;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.*;
 import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;

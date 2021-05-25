@@ -20,17 +20,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 import SWIG.SBTarget;
-import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbEventsListenerAdapter;
 import agent.lldb.manager.breakpoint.LldbBreakpointType;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import ghidra.async.AsyncFence;
-import ghidra.dbg.target.TargetBreakpointLocationContainer;
 import ghidra.dbg.target.TargetBreakpointSpec.TargetBreakpointKind;
 import ghidra.dbg.target.TargetBreakpointSpecContainer;
-import ghidra.dbg.target.schema.TargetAttributeType;
-import ghidra.dbg.target.schema.TargetElementType;
-import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.target.schema.*;
 import ghidra.program.model.address.AddressRange;
 
 @TargetObjectSchemaInfo(

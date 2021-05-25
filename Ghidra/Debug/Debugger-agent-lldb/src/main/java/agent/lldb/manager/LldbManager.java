@@ -21,21 +21,8 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import SWIG.SBBreakpoint;
-import SWIG.SBBreakpointLocation;
-import SWIG.SBEvent;
-import SWIG.SBFrame;
-import SWIG.SBMemoryRegionInfo;
-import SWIG.SBModule;
-import SWIG.SBProcess;
-import SWIG.SBSection;
-import SWIG.SBSymbol;
-import SWIG.SBTarget;
-import SWIG.SBThread;
-import SWIG.SBValue;
-import SWIG.StateType;
+import SWIG.*;
 import agent.lldb.lldb.DebugClient.DebugStatus;
-import agent.lldb.manager.LldbManager.ExecSuffix;
 import agent.lldb.manager.breakpoint.LldbBreakpointInsertions;
 import agent.lldb.manager.impl.LldbManagerImpl;
 

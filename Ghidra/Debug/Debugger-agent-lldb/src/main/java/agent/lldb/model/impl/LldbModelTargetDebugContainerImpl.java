@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 import agent.lldb.model.iface2.LldbModelTargetDebugContainer;
-import agent.lldb.model.iface2.LldbModelTargetSession;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 
@@ -38,11 +37,9 @@ public class LldbModelTargetDebugContainerImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetDebugContainer {
 
 	protected final LldbModelTargetBreakpointContainerImpl breakpoints;
-	private LldbModelTargetSessionImpl session;
 
 	public LldbModelTargetDebugContainerImpl(LldbModelTargetSessionImpl session) {
 		super(session.getModel(), session, "Debug", "DebugContainer");
-		this.session = session;
 
 		this.breakpoints = new LldbModelTargetBreakpointContainerImpl(this, session.getSession());
 

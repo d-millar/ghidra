@@ -15,12 +15,9 @@
  */
 package agent.lldb.model.impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-import SWIG.SBProcess;
 import agent.lldb.model.iface2.LldbModelTargetConnector;
 import ghidra.async.AsyncUtils;
 import ghidra.async.TypeSpec;
@@ -28,9 +25,7 @@ import ghidra.dbg.error.DebuggerUserException;
 import ghidra.dbg.target.TargetMethod;
 import ghidra.dbg.target.TargetMethod.ParameterDescription;
 import ghidra.dbg.target.TargetMethod.TargetParameterMap;
-import ghidra.dbg.target.schema.TargetAttributeType;
-import ghidra.dbg.target.schema.TargetElementType;
-import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.target.schema.*;
 
 @TargetObjectSchemaInfo(
 	name = "ProcessAttachConnector",

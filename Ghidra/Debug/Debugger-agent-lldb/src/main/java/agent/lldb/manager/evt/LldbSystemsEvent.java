@@ -19,7 +19,6 @@ package agent.lldb.manager.evt;
  * The event corresponding with "{@code =thread-selected}"
  */
 public class LldbSystemsEvent extends AbstractLldbEvent<Long> {
-	private final long id;
 
 	/**
 	 * The selected target ID must be specified by dbgeng.
@@ -28,7 +27,6 @@ public class LldbSystemsEvent extends AbstractLldbEvent<Long> {
 	 */
 	public LldbSystemsEvent(Long targetID) {
 		super(targetID);
-		this.id = targetID;
 	}
 
 }

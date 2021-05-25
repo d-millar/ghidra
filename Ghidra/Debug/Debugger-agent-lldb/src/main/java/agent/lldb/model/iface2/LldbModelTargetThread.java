@@ -22,15 +22,9 @@ import SWIG.StateType;
 import agent.lldb.manager.*;
 import agent.lldb.manager.cmd.LldbSetActiveThreadCommand;
 import agent.lldb.manager.impl.LldbManagerImpl;
-import agent.lldb.model.iface1.LldbModelSelectableObject;
-import agent.lldb.model.iface1.LldbModelTargetAccessConditioned;
-import agent.lldb.model.iface1.LldbModelTargetExecutionStateful;
-import agent.lldb.model.iface1.LldbModelTargetSteppable;
+import agent.lldb.model.iface1.*;
 import agent.lldb.model.impl.LldbModelTargetStackImpl;
-import ghidra.dbg.target.TargetRegisterBank;
-import ghidra.dbg.target.TargetRegisterContainer;
-import ghidra.dbg.target.TargetThread;
-import ghidra.dbg.util.PathUtils;
+import ghidra.dbg.target.*;
 
 public interface LldbModelTargetThread extends //
 		TargetThread, //
@@ -42,26 +36,7 @@ public interface LldbModelTargetThread extends //
 		LldbModelSelectableObject {
 
 	public default SBThread getThread() {
-		LldbManagerImpl manager = getManager();
-		try {
-			String index = PathUtils.parseIndex(getName());
-			int tid = Integer.decode(index);
-			/*
-			DebugSystemObjects so = manager.getSystemObjects();
-			DebugThreadId id = so.getThreadIdBySystemId(tid);
-			if (id == null) {
-				id = so.getCurrentThreadId();
-			}
-			LldbModelTargetProcess parentProcess = getParentProcess();
-			SBProcess process = (SBProcess) parentProcess.getProcess();
-			SBThread thread = manager.getThreadComputeIfAbsent(id, process, tid);
-			return thread;
-			*/
-			return null;
-		}
-		catch (IllegalArgumentException e) {
-			return manager.getCurrentThread();
-		}
+		return (SBThread) getModelObject();
 	}
 
 	public default void threadStateChangedSpecific(StateType state, LldbReason reason) {
