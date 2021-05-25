@@ -63,10 +63,10 @@ public class LldbAttachKernelCommand extends AbstractLldbCommand<SBThread> {
 	@Override
 	public void invoke() {
 		/*
-		DebugClient dbgeng = manager.getClient();
+		DebugClient client = manager.getClient();
 		long flags = (Long) args.get("Flags");
 		String options = (String) args.get("Options");
-		dbgeng.attachKernel(flags, options);
+		client.attachKernel(flags, options);
 		*/
 		manager.waitForEventEx();
 	}

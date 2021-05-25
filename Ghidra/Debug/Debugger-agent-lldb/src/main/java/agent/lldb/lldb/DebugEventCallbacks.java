@@ -35,7 +35,7 @@ import ghidra.comm.util.BitmaskUniverse;
  * 
  * Note: Even though {@link #changeDebuggeeState(BitmaskSet, long)},
  * {@link #changeEngineState(BitmaskSet, long)} and {@link #changeSymbolState(BitmaskSet, long)}
- * purport to return a {@link DebugStatus}, the returned value is ignored by {@code dbgeng.dll}.
+ * purport to return a {@link DebugStatus}, the returned value is ignored by {@code lldb}.
  */
 public interface DebugEventCallbacks {
 	public static enum DebugEvent implements BitmaskUniverse {

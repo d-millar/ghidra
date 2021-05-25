@@ -53,6 +53,6 @@ public class DebugServerId implements Comparable<DebugServerId> {
 
 	@Override
 	public String toString() {
-		return "<dbgeng.dll Server ID " + id + ">";
+		return "<LLDB Server ID " + id + ">";
 	}
 }

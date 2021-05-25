@@ -33,7 +33,7 @@ public interface LldbGadpServer extends AutoCloseable {
 	public static final String DEFAULT_LLDBSRV_TRANSPORT = "tcp:port=11200";
 
 	/**
-	 * The entry point for the SCTL-DBGENG server in stand-alone mode
+	 * The entry point for the LLDB server in stand-alone mode
 	 * 
 	 * Run it to see help.
 	 * 
@@ -43,7 +43,7 @@ public interface LldbGadpServer extends AutoCloseable {
 	 * @throws InterruptedException
 	 */
 	public static void main(String[] args) throws Exception {
-		new DbgEngRunner().run(args);
+		new LldbRunner().run(args);
 	}
 
 	/**
@@ -51,7 +51,7 @@ public interface LldbGadpServer extends AutoCloseable {
 	 * 
 	 * @param addr the address to bind the SCTL server to
 	 * @param busId the client ID the server should use on the bus for synthesized commands
-	 * @param lldbSrvTransport the transport specification for the {@code dbgeng.dll} server
+	 * @param lldbSrvTransport the transport specification for the {@code lldb} server
 	 * @return the server instance
 	 * @throws IOException
 	 */
@@ -62,14 +62,14 @@ public interface LldbGadpServer extends AutoCloseable {
 	/**
 	 * Runs the server from the command line
 	 */
-	public class DbgEngRunner {
+	public class LldbRunner {
 		protected InetSocketAddress bindTo;
 		protected List<String> lldbArgs = new ArrayList<>();
 		protected byte busId = 1;
 		protected String lldbSrvTransport = DEFAULT_LLDBSRV_TRANSPORT;
 		protected String remote = null;
 
-		public DbgEngRunner() {
+		public LldbRunner() {
 		}
 
 		public void run(String args[])
@@ -79,11 +79,11 @@ public interface LldbGadpServer extends AutoCloseable {
 			try (LldbGadpServer server = newInstance(bindTo)) {
 				//TODO: fix/test the debugConnect case when args are passed
 				server.startLLDB(lldbArgs.toArray(new String[] {})).exceptionally(e -> {
-					Msg.error(this, "Error starting dbgeng/GADP", e);
+					Msg.error(this, "Error starting lldb/GADP", e);
 					System.exit(-1);
 					return null;
 				});
-				new AgentWindow("dbgeng.dll Agent for Ghidra", server.getLocalAddress());
+				new AgentWindow("LLDB Agent for Ghidra", server.getLocalAddress());
 				while (server.isRunning()) {
 					// TODO: Put consoleLoop back?
 					Thread.sleep(1000);
@@ -136,7 +136,6 @@ public interface LldbGadpServer extends AutoCloseable {
 					String busIdStr = ait.next();
 					try {
 						busId = Byte.parseByte(busIdStr);
-						//dbgengArgs.add(busIdStr);
 					}
 					catch (NumberFormatException e) {
 						System.err.println("Byte required. Got " + busIdStr);
@@ -174,7 +173,7 @@ public interface LldbGadpServer extends AutoCloseable {
 		}
 
 		protected void printUsage() {
-			System.out.println("This is the GADP server for Windows dbgeng.dll.  Usage:");
+			System.out.println("This is the GADP server for OSX lldb.  Usage:");
 			System.out.println();
 			System.out.println("     [-H HOST/ADDR] [-p PORT] [-i ID] [-t TRANSPORT] [-r REMOTE]");
 			System.out.println();
@@ -209,7 +208,7 @@ public interface LldbGadpServer extends AutoCloseable {
 	SocketAddress getLocalAddress();
 
 	/**
-	 * Starts the dbgeng manager's console loop
+	 * Starts the lldb manager's console loop
 	 * 
 	 * @throws IOException if an I/O error occurs
 	 */

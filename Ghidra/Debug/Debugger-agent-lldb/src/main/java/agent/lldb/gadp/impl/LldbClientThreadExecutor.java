@@ -21,7 +21,7 @@ import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbManager;
 
 /**
- * A single-threaded executor which creates and exclusively accesses the {@code dbgeng.dll} client.
+ * A single-threaded executor which creates and exclusively accesses the {@code lldb} client.
  * 
  * The executor also has a priority mechanism, so that callbacks may register follow-on handlers
  * which take precedence over other tasks in the queue (which could trigger additional callbacks).

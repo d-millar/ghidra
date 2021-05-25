@@ -34,7 +34,7 @@ import agent.lldb.manager.LldbManager;
 import ghidra.util.Msg;
 
 /**
- * A single-threaded executor which creates and exclusively accesses the {@code dbgeng.dll} client.
+ * A single-threaded executor which creates and exclusively accesses the {@code lldb} client.
  * 
  * <p>
  * The executor also has a priority mechanism, so that callbacks may register follow-on handlers

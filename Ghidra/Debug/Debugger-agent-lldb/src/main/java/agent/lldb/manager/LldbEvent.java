@@ -55,7 +55,7 @@ public interface LldbEvent<T> {
 	public boolean isStolen();
 
 	/**
-	 * If this event implies a new dbgeng state, get that state
+	 * If this event implies a new lldb state, get that state
 	 * 
 	 * @return the new state, or null for no change
 	 */

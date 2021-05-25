@@ -43,9 +43,9 @@ public interface LldbBreakpointInsertions {
 	 * Insert a (usually software) execution breakpoint
 	 * 
 	 * @param loc string version of address
-	 * @return a future that completes when dbgeng has executed the command
+	 * @return a future that completes when lldb has executed the command
 	 * 
-	 * @see #insertBreakpoint(String, DbgBreakpointType)
+	 * @see #insertBreakpoint(String location)
 	 */
 	default CompletableFuture<LldbBreakpointInfo> insertBreakpoint(String loc) {
 		return insertBreakpoint(loc, LldbBreakpointType.BREAKPOINT);
@@ -54,12 +54,12 @@ public interface LldbBreakpointInsertions {
 	/**
 	 * Insert a (usually software) execution breakpoint at the given address offset
 	 * 
-	 * Note, this uses the "Address Notation" specified by Dbg.
+	 * Note, this uses the "Address Notation" specified by lldb.
 	 * 
 	 * @param addr breakpoint address
-	 * @return a future that completes when dbgeng has executed the command
+	 * @return a future that completes when lldb has executed the command
 	 * 
-	 * @see #insertBreakpoint(String, DbgBreakpointType)
+	 * @see #insertBreakpoint(long address)
 	 */
 	default CompletableFuture<LldbBreakpointInfo> insertBreakpoint(long addr) {
 		return insertBreakpoint(addr, 1, LldbBreakpointType.BREAKPOINT);
@@ -75,8 +75,8 @@ public interface LldbBreakpointInsertions {
 	 * @param addr the starting address
 	 * @param len the length of the range
 	 * @param type the type of breakpoint (usually a watchpoint)
-	 * @return a future that completes when dbgeng has executed the command
-	 * @see #insertBreakpoint(String, DbgBreakpointType)
+	 * @return a future that completes when lldb has executed the command
+	 * @see #insertBreakpoint(String, LldbBreakpointType)
 	 */
 	CompletableFuture<LldbBreakpointInfo> insertBreakpoint(long addr, int len,
 			LldbBreakpointType type);
