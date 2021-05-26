@@ -15,7 +15,9 @@
  */
 package agent.lldb.manager.cmd;
 
+import SWIG.SBDebugger;
 import SWIG.SBProcess;
+import agent.lldb.lldb.DebugClientImpl;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 public class LldbSetActiveProcessCommand extends AbstractLldbCommand<Void> {
@@ -35,6 +37,8 @@ public class LldbSetActiveProcessCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public void invoke() {
-		// TODO?
+		DebugClientImpl client = (DebugClientImpl) manager.getClient();
+		SBDebugger debugger = client.getDebugger();
+		debugger.SetSelectedTarget(process.GetTarget());
 	}
 }
