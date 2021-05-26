@@ -15,7 +15,9 @@
  */
 package agent.lldb.manager.cmd;
 
+import SWIG.SBDebugger;
 import SWIG.SBTarget;
+import agent.lldb.lldb.DebugClientImpl;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 public class LldbSetActiveSessionCommand extends AbstractLldbCommand<Void> {
@@ -34,6 +36,8 @@ public class LldbSetActiveSessionCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public void invoke() {
-		// TODO?
+		DebugClientImpl client = (DebugClientImpl) manager.getClient();
+		SBDebugger debugger = client.getDebugger();
+		debugger.SetSelectedTarget(session);
 	}
 }
