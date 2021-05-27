@@ -378,6 +378,13 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	CompletableFuture<Map<String, SBBreakpointLocation>> listBreakpointLocations(SBBreakpoint spec);
 
 	/**
+	 * List information for all env vars
+	 * 
+	 * @return a future that completes with a list of information for all env vars
+	 */
+	CompletableFuture<Map<String, String>> listEnvironment(SBTarget session);
+	
+	/**
 	 * Disable the given breakpoints
 	 * 
 	 * This is equivalent to the CLI command {@code disable breakpoint [NUMBER]}.

@@ -17,7 +17,7 @@ package agent.lldb.model.iface2;
 
 import agent.lldb.manager.LldbEventsListenerAdapter;
 
-public interface LldbModelTargetSessionAttributesMachine extends //
+public interface LldbModelTargetSessionAttributesEnvironment extends //
 		LldbModelTargetObject, //
 		LldbEventsListenerAdapter {
 
