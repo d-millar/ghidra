@@ -224,7 +224,8 @@ public class DebugClientImpl implements DebugClient {
 		if (SBTarget.EventIsTargetEvent(evt)) {
 			if ((type & SBTarget.eBroadcastBitBreakpointChanged) != 0) {
 				Msg.info(this, "*** Breakpoint Changed: " + evt.GetType());
-				processEvent(new LldbBreakpointModifiedEvent(new DebugBreakpointInfo(evt)));
+				SBBreakpoint bpt = SBBreakpoint.GetBreakpointFromEvent(evt);
+				processEvent(new LldbBreakpointModifiedEvent(new DebugBreakpointInfo(evt, bpt)));
 			}
 			if ((type & SBTarget.eBroadcastBitModulesLoaded) != 0) {
 				Msg.info(this, "*** Module Loaded: " + evt.GetType());
@@ -232,165 +233,170 @@ public class DebugClientImpl implements DebugClient {
 			}
 			if ((type & SBTarget.eBroadcastBitModulesUnloaded) != 0) {
 				Msg.info(this, "*** Module Unloaded: " + evt.GetType());
-				processEvent(new LldbModuleUnloadedEvent(null));
+				processEvent(new LldbModuleUnloadedEvent(new DebugModuleInfo(evt)));
 			}
 			if ((type & SBTarget.eBroadcastBitWatchpointChanged) != 0) {
 				Msg.info(this, "*** Watchpoint Changed: " + evt.GetType());
-				//fireEvent(new LldbWatchpointModifiedEvent(null));
+				SBWatchpoint wpt = SBWatchpoint.GetWatchpointFromEvent(evt);
+				processEvent(new LldbBreakpointModifiedEvent(new DebugBreakpointInfo(evt, wpt)));
 			}
 			if ((type & SBTarget.eBroadcastBitSymbolsLoaded) != 0) {
 				Msg.info(this, "*** Symbols Loaded: " + evt.GetType());
-				//fireEvent(new LldbSymbolsLoadedEvent(null));
+				processEvent(new LldbSymbolsLoadedEvent(new DebugEventInfo(evt)));
 			}
 		}
 		
 		if (SBProcess.EventIsProcessEvent(evt)) {
+			DebugProcessInfo info = new DebugProcessInfo(evt);
 			if ((type & SBProcess.eBroadcastBitStateChanged) != 0) {
 				Msg.info(this, "*** State Changed: " + evt.GetType());
-				processEvent(new LldbStateChangedEvent(new DebugEventInfo(evt)));
+				processEvent(new LldbStateChangedEvent(info));
 			}
 			if ((type & SBProcess.eBroadcastBitInterrupt) != 0) {
 				Msg.info(this, "*** Interrupt: " + evt.GetType());
-				//fireEvent(new LldbInterrupt(null));
+				processEvent(new LldbInterruptEvent(info));
 			}
 			if ((type & SBProcess.eBroadcastBitSTDOUT) != 0) {
 				Msg.info(this, "*** Console STDOU: " + evt.GetType());
-				processEvent(new LldbConsoleOutputEvent(0, null));
+				processEvent(new LldbConsoleOutputEvent(info));
 			}
 			if ((type & SBProcess.eBroadcastBitSTDERR) != 0) {
 				Msg.info(this, "*** Console STDERR: " + evt.GetType());
-				processEvent(new LldbConsoleOutputEvent(0, null));
+				processEvent(new LldbConsoleOutputEvent(info));
 			}
 			if ((type & SBProcess.eBroadcastBitProfileData) != 0) {
 				Msg.info(this, "*** Profile Data Added: " + evt.GetType());
-				//fireEvent(new LldbProfileDataEvent(null));
+				processEvent(new LldbProfileDataEvent(info));
 			}
 			if ((type & SBProcess.eBroadcastBitStructuredData) != 0) {
 				Msg.info(this, "*** Structured Data Added: " + evt.GetType());
-				//fireEvent(new LldbStructuredDataEvent(null));
+				processEvent(new LldbStructuredDataEvent(info));
 			}
 		}
 		
 		if (SBThread.EventIsThreadEvent(evt)) {
+			DebugThreadInfo info = new DebugThreadInfo(evt);
 			if ((type & SBThread.eBroadcastBitStackChanged) != 0) {
 				Msg.info(this, "*** Stack Changed: " + evt.GetType());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbThreadStackChangedEvent(info));
 			}
 			if ((type & SBThread.eBroadcastBitThreadSuspended) != 0) {
 				Msg.info(this, "*** Thread Suspended: " + evt.GetType());
-				//fireEvent(new LldbThreadSuspendedEvent(null));
+				processEvent(new LldbThreadSuspendedEvent(info));
 			}
 			if ((type & SBThread.eBroadcastBitThreadResumed) != 0) {
 				Msg.info(this, "*** Thread Resumed: " + evt.GetType());
-				//fireEvent(new LldbThreadResumedEvent(null));
+				processEvent(new LldbThreadResumedEvent(info));
 			}
 			if ((type & SBThread.eBroadcastBitSelectedFrameChanged) != 0) {
 				Msg.info(this, "*** Frame Selected: " + evt.GetType());
-				//fireEvent(new LldbSelectedFrameChangedEvent(null));
+				processEvent(new LldbSelectedFrameChangedEvent(info));
 			}
 			if ((type & SBThread.eBroadcastBitThreadSelected) != 0) {
 				Msg.info(this, "*** Thread Selected: " + evt.GetType());
-				processEvent(new LldbThreadSelectedEvent(null, null, null));
+				processEvent(new LldbThreadSelectedEvent(info));
 			}
 		}
 		if (SBBreakpoint.EventIsBreakpointEvent(evt)) {
 			BreakpointEventType btype = SBBreakpoint.GetBreakpointEventTypeFromEvent(evt);
 			SBBreakpoint bpt = SBBreakpoint.GetBreakpointFromEvent(evt);
+			DebugBreakpointInfo info = new DebugBreakpointInfo(evt, bpt);
 			if (btype.equals(BreakpointEventType.eBreakpointEventTypeAdded)) {
 				Msg.info(this, "*** Breakpoint Added: " + bpt.GetID());
-				processEvent(new LldbBreakpointCreatedEvent(new DebugBreakpointInfo(bpt)));
+				processEvent(new LldbBreakpointCreatedEvent(info));
 			}
 			if (btype.equals(BreakpointEventType.eBreakpointEventTypeAutoContinueChanged)) {
 				Msg.info(this, "*** Breakpoint Auto Continue: " + bpt.GetID());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbBreakpointAutoContinueChangedEvent(info));
 			}
 			if (btype.equals(BreakpointEventType.eBreakpointEventTypeCommandChanged)) {
 				Msg.info(this, "*** Breakpoint Command Changed: " + bpt.GetID());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbBreakpointCommandChangedEvent(info));
 			}
 			if (btype.equals(BreakpointEventType.eBreakpointEventTypeConditionChanged)) {
 				Msg.info(this, "*** Breakpoint Condition Changed: " + bpt.GetID());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbBreakpointConditionChangedEvent(info));
 			}
 			if (btype.equals(BreakpointEventType.eBreakpointEventTypeDisabled)) {
 				Msg.info(this, "*** Breakpoint Disabled: " + bpt.GetID());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbBreakpointDisabledEvent(info));
 			}
 			if (btype.equals(BreakpointEventType.eBreakpointEventTypeEnabled)) {
 				Msg.info(this, "*** Breakpoint Enabled: " + bpt.GetID());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbBreakpointEnabledEvent(info));
 			}
 			if (btype.equals(BreakpointEventType.eBreakpointEventTypeIgnoreChanged)) {
 				Msg.info(this, "*** Breakpoint Ignore Changed: " + bpt.GetID());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbBreakpointIgnoreChangedEvent(info));
 			}
 			if (btype.equals(BreakpointEventType.eBreakpointEventTypeInvalidType)) {
 				Msg.info(this, "*** Breakpoint Invalid Type: " + bpt.GetID());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbBreakpointInvalidatedEvent(info));
 			}
 			if (btype.equals(BreakpointEventType.eBreakpointEventTypeLocationsAdded)) {
 				Msg.info(this, "*** Breakpoint Locations Added: " + bpt.GetID());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbBreakpointLocationsAddedEvent(info));
 			}
 			if (btype.equals(BreakpointEventType.eBreakpointEventTypeLocationsRemoved)) {
 				Msg.info(this, "*** Breakpoint Locations Removed: " + bpt.GetID());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbBreakpointLocationsRemovedEvent(info));
 			}
 			if (btype.equals(BreakpointEventType.eBreakpointEventTypeLocationsResolved)) {
 				Msg.info(this, "*** Breakpoint Locations Resolved: " + bpt.GetID());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbBreakpointLocationsResolvedEvent(info));
 			}
 			if (btype.equals(BreakpointEventType.eBreakpointEventTypeRemoved)) {
 				Msg.info(this, "*** Breakpoint Removed: " + bpt.GetID());
-				processEvent(new LldbBreakpointDeletedEvent(new DebugBreakpointInfo(bpt)));
+				processEvent(new LldbBreakpointDeletedEvent(info));
 			}
 			if (btype.equals(BreakpointEventType.eBreakpointEventTypeThreadChanged)) {
 				Msg.info(this, "*** Breakpoint Thread Changed: " + bpt.GetID());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbBreakpointThreadChangedEvent(info));
 			}		
 		}
 		if (SBWatchpoint.EventIsWatchpointEvent(evt)) {
 			WatchpointEventType wtype = SBWatchpoint.GetWatchpointEventTypeFromEvent(evt);
 			SBWatchpoint wpt = SBWatchpoint.GetWatchpointFromEvent(evt);
+			DebugBreakpointInfo info = new DebugBreakpointInfo(evt, wpt);
 			if (wtype.equals(WatchpointEventType.eWatchpointEventTypeAdded)) {
 				Msg.info(this, "*** Watchpoint Added: " + wpt.GetID());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbBreakpointCreatedEvent(info));
 			}
 			if (wtype.equals(WatchpointEventType.eWatchpointEventTypeCommandChanged)) {
 				Msg.info(this, "*** Watchpoint Command Changed: " + wpt.GetID());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbBreakpointCommandChangedEvent(info));
 			}
 			if (wtype.equals(WatchpointEventType.eWatchpointEventTypeConditionChanged)) {
 				Msg.info(this, "*** Watchpoint Condition Changed: " + wpt.GetID());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbBreakpointConditionChangedEvent(info));
 			}
 			if (wtype.equals(WatchpointEventType.eWatchpointEventTypeDisabled)) {
 				Msg.info(this, "*** Watchpoint Disabled: " + wpt.GetID());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbBreakpointDisabledEvent(info));
 			}
 			if (wtype.equals(WatchpointEventType.eWatchpointEventTypeEnabled)) {
 				Msg.info(this, "*** Watchpoint Enabled: " + wpt.GetID());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbBreakpointEnabledEvent(info));
 			}
 			if (wtype.equals(WatchpointEventType.eWatchpointEventTypeIgnoreChanged)) {
 				Msg.info(this, "*** Watchpoint Ignore Changed: " + wpt.GetID());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbBreakpointIgnoreChangedEvent(info));
 			}
 			if (wtype.equals(WatchpointEventType.eWatchpointEventTypeInvalidType)) {
 				Msg.info(this, "*** Watchpoint Invalid Type: " + wpt.GetID());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbBreakpointInvalidatedEvent(info));
 			}
 			if (wtype.equals(WatchpointEventType.eWatchpointEventTypeRemoved)) {
 				Msg.info(this, "*** Watchpoint Removed: " + wpt.GetID());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbBreakpointDeletedEvent(info));
 			}
 			if (wtype.equals(WatchpointEventType.eWatchpointEventTypeThreadChanged)) {
 				Msg.info(this, "*** Watchpoint Thread Changed: " + wpt.GetID());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbBreakpointThreadChangedEvent(info));
 			}
 			if (wtype.equals(WatchpointEventType.eWatchpointEventTypeTypeChanged)) {
 				Msg.info(this, "*** Watchpoint Type Changed: " + wpt.GetID());
-				//fireEvent(new LldbStackChangedEvent(null));
+				processEvent(new LldbBreakpointTypeChangedEvent(info));
 			}		
 		}
 	}

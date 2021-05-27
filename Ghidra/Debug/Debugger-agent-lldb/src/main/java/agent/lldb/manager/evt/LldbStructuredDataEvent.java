@@ -15,36 +15,20 @@
  */
 package agent.lldb.manager.evt;
 
-import SWIG.*;
 import agent.lldb.lldb.DebugProcessInfo;
 
-public class LldbStateChangedEvent extends AbstractLldbEvent<DebugProcessInfo> {
+/**
+ * The event corresponding with "{@code =thread-selected}"
+ */
+public class LldbStructuredDataEvent extends AbstractLldbEvent<DebugProcessInfo> {
 
-	private long argument;
-	private StateType state = null;
-
-	public LldbStateChangedEvent(DebugProcessInfo info) {
+	/**
+	 * The selected target ID must be specified by lldb.
+	 * 
+	 * @param targetID lldb-provided id
+	 */
+	public LldbStructuredDataEvent(DebugProcessInfo info) {
 		super(info);
 	}
 
-	public long getArgument() {
-		return argument;
-	}
-
-	public void setArgument(long argument) {
-		this.argument = argument;
-	}
-
-	public SBFrame getFrame(SBThread thread) {
-		return null;
-	}
-
-	@Override
-	public StateType newState() {
-		return state;
-	}
-
-	public void setState(StateType state) {
-		this.state = state;
-	}
 }

@@ -15,7 +15,8 @@
  */
 package agent.lldb.lldb;
 
-import SWIG.SBThread;
+import SWIG.*;
+import ghidra.comm.util.BitmaskSet;
 
 /**
  * Information about a module (program or library image).
@@ -26,11 +27,21 @@ import SWIG.SBThread;
  */
 public class DebugThreadInfo {
 	
+	public SBEvent event;
 	public SBThread thread;
+	public SBFrame frame;
 	public String id;
+
+	public DebugThreadInfo(SBEvent event) {
+		this.event = event;
+		this.thread = SBThread.GetThreadFromEvent(event);
+		this.frame = SBThread.GetStackFrameFromEvent(event);
+		this.id = DebugClient.getId(thread);
+	}
 
 	public DebugThreadInfo(SBThread thread) {
 		this.thread = thread;
+		this.frame = thread.GetSelectedFrame();
 		this.id = DebugClient.getId(thread);
 	}
 
@@ -38,4 +49,7 @@ public class DebugThreadInfo {
 		return id;
 	}
 
+	public BitmaskSet<?> getFlags() {
+		return new BitmaskSet<>(DebugClient.ChangeThreadState.class, event.GetType());
+	}
 }

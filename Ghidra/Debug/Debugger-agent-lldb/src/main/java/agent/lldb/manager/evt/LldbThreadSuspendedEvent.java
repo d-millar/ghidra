@@ -15,36 +15,11 @@
  */
 package agent.lldb.manager.evt;
 
-import SWIG.*;
-import agent.lldb.lldb.DebugProcessInfo;
+import agent.lldb.lldb.DebugThreadInfo;
 
-public class LldbStateChangedEvent extends AbstractLldbEvent<DebugProcessInfo> {
+public class LldbThreadSuspendedEvent extends AbstractLldbEvent<DebugThreadInfo> {
 
-	private long argument;
-	private StateType state = null;
-
-	public LldbStateChangedEvent(DebugProcessInfo info) {
+	public LldbThreadSuspendedEvent(DebugThreadInfo info) {
 		super(info);
-	}
-
-	public long getArgument() {
-		return argument;
-	}
-
-	public void setArgument(long argument) {
-		this.argument = argument;
-	}
-
-	public SBFrame getFrame(SBThread thread) {
-		return null;
-	}
-
-	@Override
-	public StateType newState() {
-		return state;
-	}
-
-	public void setState(StateType state) {
-		this.state = state;
 	}
 }

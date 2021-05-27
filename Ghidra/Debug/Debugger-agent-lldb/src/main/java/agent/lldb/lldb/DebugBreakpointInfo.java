@@ -15,6 +15,8 @@
  */
 package agent.lldb.lldb;
 
+import SWIG.SBEvent;
+
 /**
  * Information about a module (program or library image).
  * 
@@ -24,10 +26,12 @@ package agent.lldb.lldb;
  */
 public class DebugBreakpointInfo {
 
+	public SBEvent event;
 	public Object pt;
 	public String id;
 
-	public DebugBreakpointInfo(Object pt) {
+	public DebugBreakpointInfo(SBEvent event, Object pt) {
+		this.event = event;
 		this.pt = pt;
 		this.id = DebugClient.getId(pt);
 	}
