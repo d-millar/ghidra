@@ -21,8 +21,6 @@ import java.util.concurrent.CompletableFuture;
 
 import SWIG.*;
 import agent.lldb.lldb.DebugClient;
-import agent.lldb.manager.cmd.LldbSetActiveSessionCommand;
-import agent.lldb.manager.impl.LldbManagerImpl;
 import agent.lldb.model.iface1.LldbModelTargetInterpreter;
 import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.schema.*;
