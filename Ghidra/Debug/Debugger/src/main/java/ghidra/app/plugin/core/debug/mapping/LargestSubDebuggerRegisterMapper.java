@@ -153,7 +153,7 @@ public class LargestSubDebuggerRegisterMapper extends DefaultDebuggerRegisterMap
 			 * cache is invalidated fairly frequently -- every step, at least. Nevertheless, this
 			 * should not have happened.
 			 */
-			Msg.warn(this, "Potential register cache aliasing: " + lReg + " vs " + subs.last());
+			//Msg.warn(this, "Potential register cache aliasing: " + lReg + " vs " + subs.last());
 			/**
 			 * After testing, there is a problem with data truncation. If, e.g., EAX is sent,
 			 * followed by AX, and we expand to fill RAX, the we're going to truncate the upper 16

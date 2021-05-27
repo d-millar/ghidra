@@ -640,6 +640,7 @@ public class LldbManagerImpl implements LldbManager {
 		handlerMap.putVoid(LldbBreakpointCreatedEvent.class, this::processBreakpointCreated);
 		handlerMap.putVoid(LldbBreakpointModifiedEvent.class, this::processBreakpointModified);
 		handlerMap.putVoid(LldbBreakpointDeletedEvent.class, this::processBreakpointDeleted);
+		handlerMap.putVoid(LldbBreakpointLocationsResolvedEvent.class, this::processBreakpointLocationsResolved);
 
 		statusMap.put(LldbBreakpointEvent.class, DebugStatus.BREAK);
 		statusMap.put(LldbExceptionEvent.class, DebugStatus.BREAK);
@@ -1172,7 +1173,7 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	protected void processConsoleOutput(LldbConsoleOutputEvent evt, Void v) {
-		if (evt.getInfo() != null) {
+		if (evt.getOutput() != null) {
 			getEventListeners().fire.consoleOutput(evt.getOutput(), evt.getMask());
 		}
 	}
@@ -1210,6 +1211,18 @@ public class LldbManagerImpl implements LldbManager {
 	protected void processBreakpointDeleted(LldbBreakpointDeletedEvent evt, Void v) {
 		SBTarget session = getCurrentSession();
 		doBreakpointDeleted(session, evt.getInfo().id, evt.getCause());
+	}
+
+	/**
+	 * Handler for breakpoint-modified event
+	 * 
+	 * @param evt the event
+	 * @param v nothing
+	 */
+	protected void processBreakpointLocationsResolved(LldbBreakpointLocationsResolvedEvent evt, Void v) {
+		SBTarget session = getCurrentSession();
+		Object info = evt.getBreakpointInfo();
+		doBreakpointModified(session, info, evt.getCause());
 	}
 
 	/**
