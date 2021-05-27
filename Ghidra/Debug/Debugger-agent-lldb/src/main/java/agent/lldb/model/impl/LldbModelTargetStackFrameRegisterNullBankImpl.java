@@ -22,12 +22,11 @@ import java.util.stream.Collectors;
 
 import SWIG.*;
 import agent.lldb.manager.LldbReason;
-import agent.lldb.model.iface2.LldbModelTargetRegister;
-import agent.lldb.model.iface2.LldbModelTargetStackFrameRegisterBank;
+import agent.lldb.model.iface2.*;
 import ghidra.async.AsyncUtils;
 import ghidra.dbg.DebuggerModelListener;
 import ghidra.dbg.error.DebuggerRegisterAccessException;
-import ghidra.dbg.target.TargetObject;
+import ghidra.dbg.target.*;
 import ghidra.dbg.target.schema.*;
 import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
 import ghidra.dbg.util.PathUtils;
@@ -43,9 +42,9 @@ import ghidra.util.datastruct.ListenerSet;
 		@TargetAttributeType(type = Void.class) 
 	},
 	canonicalContainer = true)
-public class LldbModelTargetStackFrameRegisterBankImpl
+public class LldbModelTargetStackFrameRegisterNullBankImpl
 		extends LldbModelTargetObjectImpl
-		implements LldbModelTargetStackFrameRegisterBank {
+		implements LldbModelTargetStackFrameRegisterNullBank {
 	public static final String NAME = "Registers";
 
 	protected static String keyValue(SBValue value) {
@@ -54,13 +53,13 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 
 	protected final LldbModelTargetStackFrameRegisterContainerImpl container;
 
-	public LldbModelTargetStackFrameRegisterBankImpl(LldbModelTargetStackFrameRegisterContainerImpl container, SBValue val) {
+	public LldbModelTargetStackFrameRegisterNullBankImpl(LldbModelTargetStackFrameRegisterContainerImpl container, SBValue val) {
 		super(container.getModel(), container, keyValue(val), val, "StackFrameRegisterBank");
 		this.container = container;
 		
 		changeAttributes(List.of(), List.of(), Map.of(
 			DISPLAY_ATTRIBUTE_NAME, getName(), 
-			DESCRIPTIONS_ATTRIBUTE_NAME, container
+			TargetRegisterBank.DESCRIPTIONS_ATTRIBUTE_NAME, container
 		), "Initialized");
 		
 		requestElements(false);
@@ -111,7 +110,6 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 		}
 	}
 
-	@Override
 	public CompletableFuture<? extends Map<String, byte[]>> readRegistersNamed(
 		Collection<String> names) {
 		Map<String, byte []> result = new HashMap<>();
@@ -133,14 +131,14 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 		return CompletableFuture.completedFuture(result);
 	}
 	
-	@Override
 	public CompletableFuture<Void> writeRegistersNamed(Map<String, byte[]> values) {
 		Map<String, TargetObject> elements = getCachedElements();
 		for (Map.Entry<String, byte[]> ent : values.entrySet()) {
 			String regname = ent.getKey();
 			LldbModelTargetStackFrameRegisterImpl reg = (LldbModelTargetStackFrameRegisterImpl) elements.get(regname);
 			if (reg == null) {
-				throw new DebuggerRegisterAccessException("No such register: " + regname);
+				continue;
+				//throw new DebuggerRegisterAccessException("No such register: " + regname);
 			}
 			BigInteger val = new BigInteger(1, ent.getValue());
 			reg.getRegister().SetValueFromCString(val.toString());

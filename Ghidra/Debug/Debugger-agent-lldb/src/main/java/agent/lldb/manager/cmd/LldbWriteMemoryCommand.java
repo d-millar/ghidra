@@ -15,21 +15,27 @@
  */
 package agent.lldb.manager.cmd;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
+import SWIG.*;
 import agent.lldb.manager.impl.LldbManagerImpl;
+import ghidra.program.model.address.Address;
+import ghidra.util.Msg;
 
 /**
  * Implementation of {@link DbgThread#writeMemory(long, ByteBuffer, int)}
  */
 public class LldbWriteMemoryCommand extends AbstractLldbCommand<Void> {
 
-	private final long addr;
+	private final SBProcess process;
+	private final Address addr;
 	private final ByteBuffer buf;
 	private final int len;
 
-	public LldbWriteMemoryCommand(LldbManagerImpl manager, long addr, ByteBuffer buf, int len) {
+	public LldbWriteMemoryCommand(LldbManagerImpl manager, SBProcess process, Address addr, ByteBuffer buf, int len) {
 		super(manager);
+		this.process = process;
 		this.addr = addr;
 		this.buf = buf.duplicate();
 		this.len = len;
@@ -37,7 +43,16 @@ public class LldbWriteMemoryCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public void invoke() {
-		//manager.getDataSpaces().writeVirtual(addr, buf, buf.remaining());
+		BigInteger offset = addr.getOffsetAsBigInteger();
+		byte[] byteArray = buf.array();
+		SBError error = new SBError();
+		// TODO: how to get byteArray -> SWIGTYPE_p_void?
+		process.WriteMemory(offset, null, len, error);
+		if (!error.Success()) {
+			SBStream stream = new SBStream();
+			error.GetDescription(stream);
+			Msg.error(this, error.GetType()+":"+stream.GetData());
+		}
 	}
 
 }

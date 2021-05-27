@@ -23,8 +23,7 @@ import java.util.stream.Collectors;
 import SWIG.SBValue;
 import SWIG.StateType;
 import agent.lldb.manager.LldbReason;
-import agent.lldb.model.iface2.LldbModelTargetRegisterBank;
-import agent.lldb.model.iface2.LldbModelTargetStackFrameRegisterContainer;
+import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.*;
 import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
@@ -68,14 +67,18 @@ public class LldbModelTargetStackFrameRegisterContainerImpl
 
 
 	@Override
-	public LldbModelTargetRegisterBank getTargetRegisterBank(SBValue val) {
+	public LldbModelTargetObject getTargetRegisterBank(SBValue val) {
 		TargetObject targetObject = getMapObject(val);
 		if (targetObject != null) {
 			LldbModelTargetRegisterBank targetBank = (LldbModelTargetRegisterBank) targetObject;
 			targetBank.setModelObject(val);
 			return targetBank;
 		}
-		return new LldbModelTargetStackFrameRegisterBankImpl(this, val);
+		if (val.GetName().contains("General")) {
+			return new LldbModelTargetStackFrameRegisterBankImpl(this, val);
+		} else {
+			return new LldbModelTargetStackFrameRegisterNullBankImpl(this, val);
+		}
 	}
 
 	public void threadStateChangedSpecific(StateType state, LldbReason reason) {

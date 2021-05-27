@@ -23,6 +23,7 @@ import com.google.common.collect.*;
 import SWIG.*;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import ghidra.program.model.address.Address;
+import ghidra.util.Msg;
 
 /**
  * Implementation of {@link DbgThread#readMemory(long, ByteBuffer, int)}
@@ -60,6 +61,12 @@ public class LldbReadMemoryCommand extends AbstractLldbCommand<RangeSet<Long>> {
 			byte[] bytes = res.toByteArray();
 			for (int j = 0; j < bytes.length; j++) {	
 				buf.put(i + j, bytes[bytes.length - j - 1]);
+			}
+			if (!error.Success()) {
+				SBStream stream = new SBStream();
+				error.GetDescription(stream);
+				Msg.error(this, error.GetType()+":"+stream.GetData());
+				break;
 			}
 		}
 	}

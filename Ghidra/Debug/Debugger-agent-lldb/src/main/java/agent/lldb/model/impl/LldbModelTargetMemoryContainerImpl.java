@@ -114,52 +114,6 @@ public class LldbModelTargetMemoryContainerImpl extends LldbModelTargetObjectImp
 						return readAssist(address, buf, offset, set);
 					});
 		}
-		if (address.getAddressSpace().getName().equals("phys")) {
-			return manager
-					.execute(
-						new LldbReadPhysicalMemoryCommand(manager, offset, buf, buf.remaining()))
-					.thenApply(set -> {
-						return readAssist(address, buf, offset, set);
-					});
-		}
-		if (address.getAddressSpace().getName().equals("ctrl")) {
-			int processor = 0;
-			return manager
-					.execute(
-						new LldbReadControlCommand(manager, offset, buf, buf.remaining(), processor))
-					.thenApply(set -> {
-						return readAssist(address, buf, offset, set);
-					});
-		}
-		if (address.getAddressSpace().getName().equals("bus")) {
-			int busDataType = 0;
-			int busNumber = 0;
-			int slotNumber = 0;
-			return manager
-					.execute(new LldbReadBusDataCommand(manager, offset, buf, buf.remaining(),
-						busDataType, busNumber, slotNumber))
-					.thenApply(set -> {
-						return readAssist(address, buf, offset, set);
-					});
-		}
-		if (address.getAddressSpace().getName().equals("io")) {
-			int interfaceType = 0;
-			int busNumber = 0;
-			int addresSpace = 0;
-			return manager
-					.execute(new LldbReadIoCommand(manager, offset, buf, buf.remaining(),
-						interfaceType, busNumber, addresSpace))
-					.thenApply(set -> {
-						return readAssist(address, buf, offset, set);
-					});
-		}
-		if (address.getAddressSpace().getName().equals("debug")) {
-			return manager
-					.execute(new LldbReadDebuggerDataCommand(manager, offset, buf, buf.remaining()))
-					.thenApply(set -> {
-						return readAssist(address, buf, offset, set);
-					});
-		}
 		return CompletableFuture.completedFuture(new byte[length]);
 	}
 
@@ -175,48 +129,8 @@ public class LldbModelTargetMemoryContainerImpl extends LldbModelTargetObjectImp
 				"Cannot process command writeMemory while engine is waiting for events");
 		}
 		ByteBuffer buf = ByteBuffer.wrap(data);
-		long offset = address.getOffset();
 		if (!manager.isKernelMode() || address.getAddressSpace().getName().equals("ram")) {
-			return manager.execute(new LldbWriteMemoryCommand(manager, offset, buf, buf.remaining()))
-					.thenAccept(___ -> {
-						writeAssist(address, data);
-					});
-		}
-		if (address.getAddressSpace().getName().equals("phys")) {
-			return manager
-					.execute(
-						new LldbWritePhysicalMemoryCommand(manager, offset, buf, buf.remaining()))
-					.thenAccept(___ -> {
-						writeAssist(address, data);
-					});
-		}
-		if (address.getAddressSpace().getName().equals("ctrl")) {
-			int processor = 0;
-			return manager
-					.execute(new LldbWriteControlCommand(manager, offset, buf, buf.remaining(),
-						processor))
-					.thenAccept(___ -> {
-						writeAssist(address, data);
-					});
-		}
-		if (address.getAddressSpace().getName().equals("bus")) {
-			int busDataType = 0;
-			int busNumber = 0;
-			int slotNumber = 0;
-			return manager
-					.execute(new LldbWriteBusDataCommand(manager, offset, buf, buf.remaining(),
-						busDataType, busNumber, slotNumber))
-					.thenAccept(___ -> {
-						writeAssist(address, data);
-					});
-		}
-		if (address.getAddressSpace().getName().equals("io")) {
-			int interfaceType = 0;
-			int busNumber = 0;
-			int addresSpace = 0;
-			return manager
-					.execute(new LldbWriteIoCommand(manager, offset, buf, buf.remaining(),
-						interfaceType, busNumber, addresSpace))
+			return manager.execute(new LldbWriteMemoryCommand(manager, process.getProcess(), address, buf, buf.remaining()))
 					.thenAccept(___ -> {
 						writeAssist(address, data);
 					});

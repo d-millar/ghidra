@@ -17,9 +17,9 @@ package agent.lldb.model.iface2;
 
 import SWIG.SBValue;
 
-public interface LldbModelTargetStackFrameRegisterContainer
-		extends LldbModelTargetRegisterContainer {
+public interface LldbModelTargetStackFrameRegisterNullBank
+		extends LldbModelTargetObject {
 
-	public LldbModelTargetObject getTargetRegisterBank(SBValue val);
+	public LldbModelTargetRegister getTargetRegister(SBValue register);
 
 }
