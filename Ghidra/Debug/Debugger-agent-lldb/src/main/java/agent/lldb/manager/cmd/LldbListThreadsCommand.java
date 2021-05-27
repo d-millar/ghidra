@@ -15,16 +15,12 @@
  */
 package agent.lldb.manager.cmd;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import SWIG.SBProcess;
 import SWIG.SBThread;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.impl.LldbManagerImpl;
-import ghidra.util.Msg;
 
 public class LldbListThreadsCommand extends AbstractLldbCommand<Map<String, SBThread>> {
 

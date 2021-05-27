@@ -20,8 +20,6 @@ import java.util.Map;
 
 import SWIG.SBModule;
 import SWIG.SBSection;
-import SWIG.SBValue;
-import SWIG.SBValueList;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.impl.LldbManagerImpl;
 

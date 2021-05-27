@@ -15,17 +15,12 @@
  */
 package agent.lldb.manager.cmd;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import SWIG.SBFileSpec;
 import SWIG.SBModule;
 import SWIG.SBTarget;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.impl.LldbManagerImpl;
-import ghidra.util.Msg;
 
 public class LldbListModulesCommand extends AbstractLldbCommand<Map<String, SBModule>> {
 	protected final SBTarget session;
