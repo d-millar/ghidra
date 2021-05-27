@@ -32,9 +32,9 @@ public class LldbConsoleOutputEvent extends AbstractLldbEvent<DebugProcessInfo> 
 		this.text = SBEvent.GetCStringFromEvent(info.event);
 	}
 
-	public LldbConsoleOutputEvent(int mask2, String text) {
+	public LldbConsoleOutputEvent(int mask, String text) {
 		super(null);
-		this.mask = 0;
+		this.mask = mask;
 		this.text = text;
 	}
 

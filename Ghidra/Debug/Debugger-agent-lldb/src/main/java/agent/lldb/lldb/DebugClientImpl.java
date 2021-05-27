@@ -18,7 +18,7 @@ public class DebugClientImpl implements DebugClient {
 	private SBTarget session;
 	private SBEvent event;
 	private DebugOutputCallbacks ocb;
-	private DebugEventCallbacks ecb;
+	//private DebugEventCallbacks ecb;
 	private SBCommandInterpreter cmd;
 
 	public DebugClientImpl() {
@@ -249,7 +249,7 @@ public class DebugClientImpl implements DebugClient {
 		if (SBProcess.EventIsProcessEvent(evt)) {
 			DebugProcessInfo info = new DebugProcessInfo(evt);
 			if ((type & SBProcess.eBroadcastBitStateChanged) != 0) {
-				Msg.info(this, "*** State Changed: " + evt.GetType());
+				Msg.info(this, "*** State Changed: " + evt.GetType());  // Seen & handled
 				processEvent(new LldbStateChangedEvent(info));
 			}
 			if ((type & SBProcess.eBroadcastBitInterrupt) != 0) {
@@ -302,7 +302,7 @@ public class DebugClientImpl implements DebugClient {
 			SBBreakpoint bpt = SBBreakpoint.GetBreakpointFromEvent(evt);
 			DebugBreakpointInfo info = new DebugBreakpointInfo(evt, bpt);
 			if (btype.equals(BreakpointEventType.eBreakpointEventTypeAdded)) {
-				Msg.info(this, "*** Breakpoint Added: " + bpt.GetID());
+				Msg.info(this, "*** Breakpoint Added: " + bpt.GetID());  // Seen & handled
 				processEvent(new LldbBreakpointCreatedEvent(info));
 			}
 			if (btype.equals(BreakpointEventType.eBreakpointEventTypeAutoContinueChanged)) {
@@ -342,7 +342,7 @@ public class DebugClientImpl implements DebugClient {
 				processEvent(new LldbBreakpointLocationsRemovedEvent(info));
 			}
 			if (btype.equals(BreakpointEventType.eBreakpointEventTypeLocationsResolved)) {
-				Msg.info(this, "*** Breakpoint Locations Resolved: " + bpt.GetID());
+				Msg.info(this, "*** Breakpoint Locations Resolved: " + bpt.GetID());  // Seen & handled?
 				processEvent(new LldbBreakpointLocationsResolvedEvent(info));
 			}
 			if (btype.equals(BreakpointEventType.eBreakpointEventTypeRemoved)) {
@@ -418,7 +418,7 @@ public class DebugClientImpl implements DebugClient {
 
 	@Override
 	public void setEventCallbacks(DebugEventCallbacks cb) {
-		this.ecb = cb;
+		//this.ecb = cb;
 	}
 
 	@Override
