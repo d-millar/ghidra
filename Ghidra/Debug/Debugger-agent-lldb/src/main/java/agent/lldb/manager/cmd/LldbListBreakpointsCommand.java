@@ -20,8 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import SWIG.SBBreakpoint;
-import SWIG.SBTarget;
+import SWIG.*;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
@@ -32,7 +31,7 @@ import agent.lldb.manager.impl.LldbManagerImpl;
 public class LldbListBreakpointsCommand extends AbstractLldbCommand<Map<String, Object>> {
 
 	protected final SBTarget session;
-	private Map<String, SBBreakpoint> updatedBreakpoints = new HashMap<>();
+	private Map<String, Object> updatedBreakpoints = new HashMap<>();
 
 	public LldbListBreakpointsCommand(LldbManagerImpl manager, SBTarget session) {
 		super(manager);
@@ -64,6 +63,11 @@ public class LldbListBreakpointsCommand extends AbstractLldbCommand<Map<String, 
 		long n = session.GetNumBreakpoints();
 		for (int i = 0; i < n; i++) {
 			SBBreakpoint bpt = session.GetBreakpointAtIndex(i);
+			updatedBreakpoints.put(DebugClient.getId(bpt), bpt);
+		}
+		n = session.GetNumWatchpoints();
+		for (int i = 0; i < n; i++) {
+			SBWatchpoint bpt = session.GetWatchpointAtIndex(i);
 			updatedBreakpoints.put(DebugClient.getId(bpt), bpt);
 		}
 	}

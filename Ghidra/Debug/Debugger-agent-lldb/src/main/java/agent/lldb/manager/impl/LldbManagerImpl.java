@@ -299,7 +299,7 @@ public class LldbManagerImpl implements LldbManager {
 		}
 	}
 
-	public void addBreakpointIfAbsent(SBTarget session, SBBreakpoint bpt) {
+	public void addBreakpointIfAbsent(SBTarget session, Object bpt) {
 		synchronized (breakpoints) {
 			if (!session.IsValid()) return;
 			String sessionId = DebugClient.getId(session);
@@ -1343,6 +1343,11 @@ public class LldbManagerImpl implements LldbManager {
 	@Override
 	public CompletableFuture<List<SBMemoryRegionInfo>> listMemory(SBProcess process) {
 		return execute(new LldbListMemoryRegionsCommand(this, process));
+	}
+
+	@Override
+	public CompletableFuture<Map<String, String>> listEnvironment(SBTarget session) {
+		return execute(new LldbListEnvironmentCommand(this, session));
 	}
 
 	@Override

@@ -72,7 +72,7 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 	protected final LldbModelTargetModuleContainer modules;
 	protected final LldbModelTargetSessionAttributesImpl attributes;
 	protected final LldbModelTargetProcessContainerImpl processes;
-	private LldbModelSelectableObject focus;
+	//private LldbModelSelectableObject focus;
 
 	protected String debugger = "kd"; // Used by LldbModelTargetEnvironment
 
@@ -85,7 +85,7 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 		this.attributes = new LldbModelTargetSessionAttributesImpl(this);
 		this.processes = new LldbModelTargetProcessContainerImpl(this);
 		this.modules = new LldbModelTargetModuleContainerImpl(this);
-
+		
 		changeAttributes(List.of(), List.of( //
 			debug, //
 			attributes, //

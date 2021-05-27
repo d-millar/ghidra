@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import SWIG.ByteOrder;
+import SWIG.SBTarget;
 import agent.lldb.model.iface2.LldbModelTargetSession;
 import agent.lldb.model.iface2.LldbModelTargetSessionAttributes;
 import ghidra.dbg.target.schema.TargetAttributeType;
@@ -33,27 +35,44 @@ import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 	attributes = {
 		@TargetAttributeType(
 			name = "Machine",
-			type = LldbModelTargetSessionAttributesMachineImpl.class,
+			type = LldbModelTargetSessionAttributesPlatformImpl.class,
 			fixed = true),
 		@TargetAttributeType(type = Void.class)
 	})
 public class LldbModelTargetSessionAttributesImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetSessionAttributes {
 
-	protected final LldbModelTargetSessionAttributesMachineImpl machineAttributes;
+	protected final LldbModelTargetSessionAttributesPlatformImpl platformAttributes;
+	protected final LldbModelTargetSessionAttributesEnvironmentImpl environment;
 
 	public LldbModelTargetSessionAttributesImpl(LldbModelTargetSession session) {
 		super(session.getModel(), session, "Attributes", "SessionAttributes");
 
-		this.machineAttributes = new LldbModelTargetSessionAttributesMachineImpl(this);
+		this.platformAttributes = new LldbModelTargetSessionAttributesPlatformImpl(this);
+		this.environment = new LldbModelTargetSessionAttributesEnvironmentImpl(this);
+
+		SBTarget target = (SBTarget) session.getModelObject();
+		String[] triple = target.GetTriple().split("-");
+		ByteOrder order = target.GetByteOrder();
+		String orderStr = "invalid";
+		if (order.equals(ByteOrder.eByteOrderLittle)) {
+			orderStr = "little";
+		}
+		if (order.equals(ByteOrder.eByteOrderBig)) {
+			orderStr = "big";
+		}
+		if (order.equals(ByteOrder.eByteOrderPDP)) {
+			orderStr = "pdp";
+		}
 
 		changeAttributes(List.of(), List.of( //
-			machineAttributes //
+			platformAttributes, //
+			environment //
 		), Map.of( //
-			ARCH_ATTRIBUTE_NAME, "x86_64", //
+			ARCH_ATTRIBUTE_NAME, triple[0], //
 			DEBUGGER_ATTRIBUTE_NAME, "lldb", //
-			OS_ATTRIBUTE_NAME, "OSX", //
-			ENDIAN_ATTRIBUTE_NAME, "little" //
+			OS_ATTRIBUTE_NAME, triple[2], //
+			ENDIAN_ATTRIBUTE_NAME, orderStr //
 		), "Initialized");
 
 		getManager().addEventsListener(this);
@@ -64,27 +83,9 @@ public class LldbModelTargetSessionAttributesImpl extends LldbModelTargetObjectI
 		return CompletableFuture.completedFuture(null);
 	}
 
-	/*
-	@Override
-	public String getArchitecture() {
-		return machineAttributes.getTypedAttributeNowByName(ARCH_ATTRIBUTE_NAME, String.class, "");
-	}
-	
-	@Override
-	public String getDebugger() {
-		return machineAttributes.getTypedAttributeNowByName(DEBUGGER_ATTRIBUTE_NAME, String.class,
-			"");
-	}
-	
-	@Override
-	public String getOperatingSystem() {
-		return machineAttributes.getTypedAttributeNowByName(OS_ATTRIBUTE_NAME, String.class, "");
-	}
-	*/
-
 	@Override
 	public void refreshInternal() {
-		machineAttributes.refreshInternal();
+		platformAttributes.refreshInternal();
 	}
 
 }
