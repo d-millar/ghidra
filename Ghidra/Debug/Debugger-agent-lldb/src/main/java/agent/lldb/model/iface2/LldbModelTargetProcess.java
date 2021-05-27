@@ -17,23 +17,9 @@ package agent.lldb.model.iface2;
 
 import java.util.concurrent.CompletableFuture;
 
-import SWIG.SBProcess;
-import SWIG.SBThread;
-import SWIG.StateType;
+import SWIG.*;
 import agent.lldb.manager.LldbEventsListenerAdapter;
-import agent.lldb.model.iface1.LldbModelSelectableObject;
-import agent.lldb.model.iface1.LldbModelTargetAccessConditioned;
-import agent.lldb.model.iface1.LldbModelTargetAttachable;
-import agent.lldb.model.iface1.LldbModelTargetAttacher;
-import agent.lldb.model.iface1.LldbModelTargetDeletable;
-import agent.lldb.model.iface1.LldbModelTargetDetachable;
-import agent.lldb.model.iface1.LldbModelTargetExecutionStateful;
-import agent.lldb.model.iface1.LldbModelTargetInterruptible;
-import agent.lldb.model.iface1.LldbModelTargetKillable;
-import agent.lldb.model.iface1.LldbModelTargetLauncher;
-import agent.lldb.model.iface1.LldbModelTargetResumable;
-import agent.lldb.model.iface1.LldbModelTargetSteppable;
-import ghidra.async.AsyncUtils;
+import agent.lldb.model.iface1.*;
 import ghidra.dbg.target.TargetAggregate;
 import ghidra.dbg.target.TargetProcess;
 
@@ -60,37 +46,9 @@ public interface LldbModelTargetProcess extends //
 
 	public void threadStateChangedSpecific(SBThread thread, StateType state);
 
-	public default SBProcess getProcess() {
-		/*
-		DbgManagerImpl manager = getManager();
-		DebugSystemObjects so = manager.getSystemObjects();
-		try {
-			String index = PathUtils.parseIndex(getName());
-			Integer pid = Integer.decode(index);
-			DebugProcessId id = so.getProcessIdBySystemId(pid);
-			if (id == null) {
-				id = so.getCurrentProcessId();
-			}
-			return manager.getProcessComputeIfAbsent(id, pid);
-		}
-		catch (IllegalArgumentException e) {
-			return manager.getCurrentProcess();
-		}
-		*/
-		return null;
-	}
+	public SBProcess getProcess();
 
 	@Override
-	public default CompletableFuture<Void> setActive() {
-		/*
-		DbgManagerImpl manager = getManager();
-		DbgProcess process = getProcess();
-		if (process == null) {
-			process = manager.getEventProcess();
-		}
-		return manager.setActiveProcess(process);
-		*/
-		return AsyncUtils.NIL;
-	}
+	public CompletableFuture<Void> setActive();
 
 }

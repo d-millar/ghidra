@@ -16,7 +16,29 @@
 package agent.lldb.model.iface2;
 
 import SWIG.SBValue;
+import ghidra.dbg.target.schema.TargetAttributeType;
+import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
 
+@TargetObjectSchemaInfo(
+	name = "RegisterContainerInterface",
+	attributeResync = ResyncMode.ALWAYS,
+	attributes = {
+		@TargetAttributeType(
+			name = "General Purpose Registers",
+			type = LldbModelTargetStackFrameRegisterBank.class,
+			required = true),
+		@TargetAttributeType(
+			name = "Exception State Registers",
+			type = LldbModelTargetStackFrameRegisterNullBank.class, 
+			required = true),
+		@TargetAttributeType(
+			name = "Floating Point Registers",
+			type = LldbModelTargetStackFrameRegisterNullBank.class, 
+			required = true),
+		@TargetAttributeType(type = Void.class) 
+	},
+	canonicalContainer = true)
 public interface LldbModelTargetStackFrameRegisterContainer
 		extends LldbModelTargetRegisterContainer {
 

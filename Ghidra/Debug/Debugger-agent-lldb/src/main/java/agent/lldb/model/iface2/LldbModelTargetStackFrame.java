@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 
 import SWIG.SBFrame;
 import SWIG.SBThread;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbEventsListenerAdapter;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import agent.lldb.model.iface1.LldbModelSelectableObject;
@@ -39,6 +40,7 @@ public interface LldbModelTargetStackFrame extends //
 	public static final String FRAME_OFFSET_ATTRIBUTE_NAME = "Frame Offset";
 	public static final String INST_OFFSET_ATTRIBUTE_NAME = "Inst. Offset";
 	public static final String RETURN_OFFSET_ATTRIBUTE_NAME = "Return Offset";
+	public static final String CALL_FRAME_OFFSET_ATTRIBUTE_NAME = "Call Frame Offset";
 	public static final String STACK_OFFSET_ATTRIBUTE_NAME = "Stack Offset";
 	public static final String VIRTUAL_ATTRIBUTE_NAME = "Virtual";
 	public static final String PARAM0_ATTRIBUTE_NAME = "Param[0]";
@@ -51,6 +53,7 @@ public interface LldbModelTargetStackFrame extends //
 	public default CompletableFuture<Void> setActive() {
 		LldbManagerImpl manager = getManager();
 		SBThread thread = manager.getCurrentThread();
+		String id = DebugClient.getId(thread);
 		String name = this.getName();
 		String stripped = name.substring(1, name.length() - 1);
 		int index = Integer.decode(stripped);

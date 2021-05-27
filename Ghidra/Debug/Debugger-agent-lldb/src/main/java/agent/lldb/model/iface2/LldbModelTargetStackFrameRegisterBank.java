@@ -16,7 +16,20 @@
 package agent.lldb.model.iface2;
 
 import SWIG.SBValue;
+import agent.lldb.model.impl.LldbModelTargetStackFrameRegisterImpl;
+import ghidra.dbg.target.schema.*;
+import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
 
+@TargetObjectSchemaInfo(
+	name = "RegisterValueBankInterface",
+	elementResync = ResyncMode.ALWAYS,
+	elements = {
+		@TargetElementType(type = LldbModelTargetStackFrameRegisterImpl.class)
+	},
+	attributes = {
+		@TargetAttributeType(type = Void.class) 
+	},
+	canonicalContainer = true)
 public interface LldbModelTargetStackFrameRegisterBank
 		extends LldbModelTargetRegisterBank {
 

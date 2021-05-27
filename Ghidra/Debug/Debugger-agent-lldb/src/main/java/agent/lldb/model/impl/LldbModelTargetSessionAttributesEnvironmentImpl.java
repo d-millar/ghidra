@@ -24,11 +24,8 @@ import ghidra.dbg.target.schema.*;
 
 @TargetObjectSchemaInfo(
 	name = "SessionAttributesEnvironment",
-	elements = {
-		@TargetElementType(type = String.class)
-	},
 	attributes = {
-		@TargetAttributeType(type = Void.class)
+		@TargetAttributeType(type = Object.class)
 	})
 public class LldbModelTargetSessionAttributesEnvironmentImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetSessionAttributesEnvironment {
@@ -36,7 +33,7 @@ public class LldbModelTargetSessionAttributesEnvironmentImpl extends LldbModelTa
 	SBTarget session;
 
 	public LldbModelTargetSessionAttributesEnvironmentImpl(LldbModelTargetSessionAttributes attributes) {
-		super(attributes.getModel(), attributes, "Environment", "SessionEnvironmentAttributes");
+		super(attributes.getModel(), attributes, "Environment", "SessionAttributesEnvironment");
 		
 		session = (SBTarget) getModelObject();
 		

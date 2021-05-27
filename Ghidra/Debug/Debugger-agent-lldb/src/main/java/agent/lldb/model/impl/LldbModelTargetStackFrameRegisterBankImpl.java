@@ -56,7 +56,7 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 	protected final LldbModelTargetStackFrameRegisterContainerImpl container;
 
 	public LldbModelTargetStackFrameRegisterBankImpl(LldbModelTargetStackFrameRegisterContainerImpl container, SBValue val) {
-		super(container.getModel(), container, keyValue(val), val, "StackFrameRegisterBank");
+		super(container.getModel(), container, val.GetName(), val, "StackFrameRegisterBank");
 		this.container = container;
 		
 		changeAttributes(List.of(), List.of(), Map.of(
