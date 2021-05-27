@@ -25,6 +25,7 @@ import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface2.LldbModelTargetRegister;
 import agent.lldb.model.iface2.LldbModelTargetStackFrameRegisterBank;
 import ghidra.async.AsyncUtils;
+import ghidra.async.TypeSpec;
 import ghidra.dbg.DebuggerModelListener;
 import ghidra.dbg.error.DebuggerRegisterAccessException;
 import ghidra.dbg.target.TargetObject;
@@ -145,6 +146,7 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 			BigInteger val = new BigInteger(1, ent.getValue());
 			reg.getRegister().SetValueFromCString(val.toString());
 		}
+		getListeners().fire.registersUpdated(getProxy(), values);
 		return AsyncUtils.NIL;
 	}
 
