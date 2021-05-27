@@ -15,7 +15,8 @@
  */
 package agent.lldb.lldb;
 
-import SWIG.SBProcess;
+import SWIG.*;
+import ghidra.comm.util.BitmaskSet;
 
 /**
  * Information about a module (program or library image).
@@ -26,15 +27,29 @@ import SWIG.SBProcess;
  */
 public class DebugProcessInfo {
 
+	public SBEvent event;
 	public SBProcess process;
+	public StateType state;
 	public String id;
+
+	public DebugProcessInfo(SBEvent event) {
+		this.event = event;
+		this.process = SBProcess.GetProcessFromEvent(event);
+		this.state = SBProcess.GetStateFromEvent(event);
+		this.id = DebugClient.getId(process);
+	}
 
 	public DebugProcessInfo(SBProcess process) {
 		this.process = process;
+		this.state = process.GetState();
 		this.id = DebugClient.getId(process);
 	}
 
 	public String toString() {
 		return id;
+	}
+
+	public BitmaskSet<?> getFlags() {
+		return new BitmaskSet<>(DebugClient.ChangeProcessState.class, event.GetType());
 	}
 }

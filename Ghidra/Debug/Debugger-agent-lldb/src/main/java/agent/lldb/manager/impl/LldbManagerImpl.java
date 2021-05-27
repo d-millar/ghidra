@@ -311,7 +311,7 @@ public class LldbManagerImpl implements LldbManager {
 			String id = DebugClient.getId(bpt);
 			if (!map.containsKey(id)) {
 				map.put(id, bpt);
-				getClient().processEvent(new LldbBreakpointCreatedEvent(new DebugBreakpointInfo(bpt)));
+				getClient().processEvent(new LldbBreakpointCreatedEvent(new DebugBreakpointInfo(null, bpt)));
 			}
 		}
 	}
@@ -1047,65 +1047,61 @@ public class LldbManagerImpl implements LldbManager {
 	 * @return retval handling/break status
 	 */
 	protected DebugStatus processStateChanged(LldbStateChangedEvent evt, Void v) {
-		DebugEventInfo info = evt.getInfo();
-		StateType state = SBProcess.GetStateFromEvent(info.event);
-		BitmaskSet<?> flags = info.getFlags();
-		if (flags.contains(ChangeProcessState.PROCESS_STATE_CHANGED)) {
-			//if (DebugStatus.isInsideWait(argument)) {
-			//	return DebugStatus.NO_CHANGE;
-			//}
-			status = DebugStatus.fromArgument(state);
+		StateType state = evt.getInfo().state;
+		BitmaskSet<?> flags = evt.getInfo().getFlags();
+		//if (DebugStatus.isInsideWait(argument)) {
+		//	return DebugStatus.NO_CHANGE;
+		//}
+		status = DebugStatus.fromArgument(state);
 
-			if (status.equals(DebugStatus.NO_DEBUGGEE)) {
-				waiting = false;
-				return DebugStatus.NO_DEBUGGEE;
-			}
-			/*
-			if (!threads.isEmpty()) {
-				//SBTargetImpl session = getCurrentSession();
-				//SBProcessImpl process = getCurrentProcess();
-				eventThread = getCurrentThread();
-				LldbState LldbState = null;
-				if (eventThread != null) {
-					if (status.threadState.equals(ExecutionState.STOPPED)) {
-						LldbState = LldbState.STOPPED;
-						//System.err.println("STOPPED " + id);
-						processEvent(new LldbStoppedEvent(eventThread.GetThreadID().intValue()));
-					}
-					if (status.threadState.equals(ExecutionState.RUNNING)) {
-						//System.err.println("RUNNING " + id);
-						LldbState = LldbState.RUNNING;
-						processEvent(new LldbRunningEvent(eventThread.GetThreadID().intValue()));
-					}
-					if (!threads.containsValue(eventThread)) {
-						LldbState = LldbState.EXIT;
-					}
-					// Don't fire 
-					if (LldbState != null && LldbState != LldbState.EXIT) {
-						processEvent(new LldbThreadSelectedEvent(eventProcess.GetState(), eventThread,
-							evt.getFrame(eventThread)));
-					}
-					return DebugStatus.NO_CHANGE;
-				}
-			}
-			*/
-			if (status.equals(DebugStatus.BREAK)) {
-				waiting = false;
-				processEvent(new LldbStoppedEvent(DebugClient.getId(eventThread)));
-				SBProcess process = getCurrentProcess();
-				if (process != null) {
-					processEvent(new LldbProcessSelectedEvent(process));
-				}
-				return DebugStatus.BREAK;
-			}
-			if (status.equals(DebugStatus.GO)) {
-				waiting = true;
-				processEvent(new LldbRunningEvent(DebugClient.getId(eventThread)));
-				return DebugStatus.GO;
-			}
+		if (status.equals(DebugStatus.NO_DEBUGGEE)) {
 			waiting = false;
-			return DebugStatus.NO_CHANGE;
+			return DebugStatus.NO_DEBUGGEE;
 		}
+		/*
+		if (!threads.isEmpty()) {
+			//SBTargetImpl session = getCurrentSession();
+			//SBProcessImpl process = getCurrentProcess();
+			eventThread = getCurrentThread();
+			LldbState LldbState = null;
+			if (eventThread != null) {
+				if (status.threadState.equals(ExecutionState.STOPPED)) {
+					LldbState = LldbState.STOPPED;
+					//System.err.println("STOPPED " + id);
+					processEvent(new LldbStoppedEvent(eventThread.GetThreadID().intValue()));
+				}
+				if (status.threadState.equals(ExecutionState.RUNNING)) {
+					//System.err.println("RUNNING " + id);
+					LldbState = LldbState.RUNNING;
+					processEvent(new LldbRunningEvent(eventThread.GetThreadID().intValue()));
+				}
+				if (!threads.containsValue(eventThread)) {
+					LldbState = LldbState.EXIT;
+				}
+				// Don't fire 
+				if (LldbState != null && LldbState != LldbState.EXIT) {
+					processEvent(new LldbThreadSelectedEvent(eventProcess.GetState(), eventThread,
+						evt.getFrame(eventThread)));
+				}
+				return DebugStatus.NO_CHANGE;
+			}
+		}
+		*/
+		if (status.equals(DebugStatus.BREAK)) {
+			waiting = false;
+			processEvent(new LldbStoppedEvent(DebugClient.getId(eventThread)));
+			SBProcess process = getCurrentProcess();
+			if (process != null) {
+				processEvent(new LldbProcessSelectedEvent(process));
+			}
+			return DebugStatus.BREAK;
+		}
+		if (status.equals(DebugStatus.GO)) {
+			waiting = true;
+			processEvent(new LldbRunningEvent(DebugClient.getId(eventThread)));
+			return DebugStatus.GO;
+		}
+		waiting = false;
 		/*
 		if (flags.contains(ChangeSessionState.SESSION_BREAKPOINT_CHANGED)) {
 			long bptId = evt.getArgument();
@@ -1177,7 +1173,7 @@ public class LldbManagerImpl implements LldbManager {
 
 	protected void processConsoleOutput(LldbConsoleOutputEvent evt, Void v) {
 		if (evt.getInfo() != null) {
-			getEventListeners().fire.consoleOutput(evt.getInfo(), evt.getMask());
+			getEventListeners().fire.consoleOutput(evt.getOutput(), evt.getMask());
 		}
 	}
 

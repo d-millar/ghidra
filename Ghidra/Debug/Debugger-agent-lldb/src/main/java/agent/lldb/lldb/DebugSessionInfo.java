@@ -15,7 +15,9 @@
  */
 package agent.lldb.lldb;
 
+import SWIG.SBEvent;
 import SWIG.SBTarget;
+import ghidra.comm.util.BitmaskSet;
 
 /**
  * Information about a session.
@@ -26,10 +28,18 @@ import SWIG.SBTarget;
  */
 public class DebugSessionInfo {
 
+	public SBEvent event;
 	public SBTarget session;
 	public String id;
 
+	public DebugSessionInfo(SBEvent event) {
+		this.event = event;
+		this.session = SBTarget.GetTargetFromEvent(event);
+		this.id = DebugClient.getId(session);
+	}
+
 	public DebugSessionInfo(SBTarget session) {
+		this.event = null;
 		this.session = session;
 		this.id = DebugClient.getId(session);
 	}
@@ -38,4 +48,7 @@ public class DebugSessionInfo {
 		return id;
 	}
 
+	public BitmaskSet<?> getFlags() {
+		return new BitmaskSet<>(DebugClient.ChangeSessionState.class, event.GetType());
+	}
 }

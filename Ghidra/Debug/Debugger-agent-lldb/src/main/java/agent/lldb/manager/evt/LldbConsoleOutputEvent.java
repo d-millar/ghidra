@@ -15,20 +15,31 @@
  */
 package agent.lldb.manager.evt;
 
+import SWIG.SBEvent;
+import agent.lldb.lldb.DebugProcessInfo;
+
 /**
  * The event corresponding with "{@code ~""}" output records
  */
-public class LldbConsoleOutputEvent extends AbstractLldbEvent<String> {
+public class LldbConsoleOutputEvent extends AbstractLldbEvent<DebugProcessInfo> {
 
 	private int mask;
+	private String text;
 
-	public LldbConsoleOutputEvent(int mask, String info) {
+	public LldbConsoleOutputEvent(DebugProcessInfo info) {
 		super(info);
-		this.mask = mask;
+		this.mask = 0;
+		this.text = SBEvent.GetCStringFromEvent(info.event);
+	}
+
+	public LldbConsoleOutputEvent(int mask2, String text) {
+		super(null);
+		this.mask = 0;
+		this.text = text;
 	}
 
 	public String getOutput() {
-		return getInfo();
+		return text;
 	}
 
 	public int getMask() {

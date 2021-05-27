@@ -24,7 +24,7 @@ import agent.lldb.lldb.DebugThreadInfo;
 /**
  * The event corresponding with "{@code =thread-selected}"
  */
-public class LldbThreadSelectedEvent extends AbstractLldbEvent<String> {
+public class LldbSelectedFrameChangedEvent extends AbstractLldbEvent<String> {
 	private final String id;
 	private StateType state;
 	private SBThread thread;
@@ -36,13 +36,14 @@ public class LldbThreadSelectedEvent extends AbstractLldbEvent<String> {
 	 * @param frame
 	 * @param id lldb-provided id
 	 */
-	public LldbThreadSelectedEvent(DebugThreadInfo info) {
+	public LldbSelectedFrameChangedEvent(DebugThreadInfo info) {
 		super(DebugClient.getId(info.thread));
 		this.id = DebugClient.getId(thread);
 		this.state = info.thread.GetProcess().GetState();
 		this.thread = info.thread;
 		this.frame = info.frame;
 	}
+
 
 	/**
 	 * Get the selected thread ID
