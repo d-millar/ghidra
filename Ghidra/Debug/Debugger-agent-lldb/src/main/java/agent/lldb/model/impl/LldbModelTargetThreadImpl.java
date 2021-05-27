@@ -140,8 +140,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public CompletableFuture<Void> setActive() {
-		LldbManagerImpl manager = getManager();
-		return manager.execute(new LldbSetActiveThreadCommand(manager, getThread(), -1L));
+		return getManager().setActiveThread(getThread());
 	}
 
 	@Override

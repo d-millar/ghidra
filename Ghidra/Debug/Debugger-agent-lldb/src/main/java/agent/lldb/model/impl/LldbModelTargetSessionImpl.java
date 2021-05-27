@@ -21,7 +21,8 @@ import java.util.concurrent.CompletableFuture;
 
 import SWIG.*;
 import agent.lldb.lldb.DebugClient;
-import agent.lldb.model.iface1.LldbModelSelectableObject;
+import agent.lldb.manager.cmd.LldbSetActiveSessionCommand;
+import agent.lldb.manager.impl.LldbManagerImpl;
 import agent.lldb.model.iface1.LldbModelTargetInterpreter;
 import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.schema.*;
@@ -111,10 +112,7 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 	
 	@Override
 	public CompletableFuture<Void> setActive() {
-		//LldbManagerImpl manager = getManager();
-		//LldbProcessImpl process = manager.getCurrentProcess();
-		//return manager.execute(new LldbProcessSelectCommand(manager, process));
-		return CompletableFuture.completedFuture(null);
+		return getManager().setActiveSession(getSession());
 	}
 
 	@Override
