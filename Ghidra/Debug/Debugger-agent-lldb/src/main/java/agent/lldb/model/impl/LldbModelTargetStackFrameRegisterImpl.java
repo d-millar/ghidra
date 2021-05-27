@@ -49,10 +49,24 @@ public class LldbModelTargetStackFrameRegisterImpl
 	public LldbModelTargetStackFrameRegisterImpl(LldbModelTargetStackFrameRegisterBankImpl bank,
 			SBValue register) {
 		super(bank.getModel(), bank, keyRegister(register), register, "Register");
-		value = register.GetValue();
+		value = getValue();
 		
 		changeAttributes(List.of(), Map.of( //
-			CONTAINER_ATTRIBUTE_NAME, bank, //
+			CONTAINER_ATTRIBUTE_NAME, bank.getContainer(), //
+			LENGTH_ATTRIBUTE_NAME, getBitLength(), //
+			DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
+			VALUE_ATTRIBUTE_NAME, value == null ? "" : value, //
+			MODIFIED_ATTRIBUTE_NAME, false //
+		), "Initialized");
+	}
+
+	public LldbModelTargetStackFrameRegisterImpl(LldbModelTargetStackFrameRegisterNullBankImpl bank,
+			SBValue register) {
+		super(bank.getModel(), bank, keyRegister(register), register, "Register");
+		value = getValue();
+		
+		changeAttributes(List.of(), Map.of( //
+			CONTAINER_ATTRIBUTE_NAME, bank.getContainer(), //
 			LENGTH_ATTRIBUTE_NAME, getBitLength(), //
 			DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
 			VALUE_ATTRIBUTE_NAME, value == null ? "" : value, //
@@ -74,7 +88,7 @@ public class LldbModelTargetStackFrameRegisterImpl
 
 	@Override
 	public String getValue() {
-		return getRegister().GetValue();
+		return getRegister().GetValue().substring(2);
 	}
 
 	@Override
