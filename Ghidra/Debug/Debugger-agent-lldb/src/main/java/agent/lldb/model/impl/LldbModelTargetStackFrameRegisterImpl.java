@@ -55,7 +55,7 @@ public class LldbModelTargetStackFrameRegisterImpl
 			CONTAINER_ATTRIBUTE_NAME, bank.getContainer(), //
 			LENGTH_ATTRIBUTE_NAME, getBitLength(), //
 			DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
-			VALUE_ATTRIBUTE_NAME, value == null ? "" : value, //
+			VALUE_ATTRIBUTE_NAME, value == null ? "0" : value, //
 			MODIFIED_ATTRIBUTE_NAME, false //
 		), "Initialized");
 	}
@@ -69,7 +69,7 @@ public class LldbModelTargetStackFrameRegisterImpl
 			CONTAINER_ATTRIBUTE_NAME, bank.getContainer(), //
 			LENGTH_ATTRIBUTE_NAME, getBitLength(), //
 			DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
-			VALUE_ATTRIBUTE_NAME, value == null ? "" : value, //
+			VALUE_ATTRIBUTE_NAME, value == null ? "0" : value, //
 			MODIFIED_ATTRIBUTE_NAME, false //
 		), "Initialized");
 	}
