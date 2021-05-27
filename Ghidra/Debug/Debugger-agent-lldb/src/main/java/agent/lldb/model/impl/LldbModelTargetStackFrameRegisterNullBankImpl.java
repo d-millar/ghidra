@@ -33,13 +33,13 @@ import ghidra.dbg.util.PathUtils;
 import ghidra.util.datastruct.ListenerSet;
 
 @TargetObjectSchemaInfo(
-	name = "RegisterValueBank",
+	name = "RegisterValueBankNull",
 	elementResync = ResyncMode.ALWAYS,
 	elements = {
 		@TargetElementType(type = LldbModelTargetStackFrameRegisterImpl.class)
 	},
 	attributes = {
-		@TargetAttributeType(type = Void.class) 
+		@TargetAttributeType(type = Object.class) 
 	},
 	canonicalContainer = true)
 public class LldbModelTargetStackFrameRegisterNullBankImpl
@@ -54,7 +54,7 @@ public class LldbModelTargetStackFrameRegisterNullBankImpl
 	protected final LldbModelTargetStackFrameRegisterContainerImpl container;
 
 	public LldbModelTargetStackFrameRegisterNullBankImpl(LldbModelTargetStackFrameRegisterContainerImpl container, SBValue val) {
-		super(container.getModel(), container, keyValue(val), val, "StackFrameRegisterBank");
+		super(container.getModel(), container, val.GetName(), val, "StackFrameRegisterBankNull");
 		this.container = container;
 		
 		changeAttributes(List.of(), List.of(), Map.of(

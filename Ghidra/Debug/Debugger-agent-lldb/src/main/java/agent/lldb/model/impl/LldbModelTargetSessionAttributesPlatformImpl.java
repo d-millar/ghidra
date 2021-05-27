@@ -35,16 +35,7 @@ import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 		@TargetElementType(type = Void.class)
 	},
 	attributes = {
-		@TargetAttributeType(name = "Arch", type = String.class),
-		@TargetAttributeType(name = "Manufacturer", type = String.class),
-		@TargetAttributeType(name = "OS", type = String.class),
-		@TargetAttributeType(name = "Major:Minor", type = String.class),
-		@TargetAttributeType(name = "Debugger", type = String.class),
-		@TargetAttributeType(name = "Major:Minor", type = String.class),
-		@TargetAttributeType(name = "Build", type = String.class),
-		@TargetAttributeType(name = "Endian", type = String.class),
-		@TargetAttributeType(name = "Working Dir", type = String.class),
-		@TargetAttributeType(type = Void.class)
+		@TargetAttributeType(type = Object.class)
 	})
 public class LldbModelTargetSessionAttributesPlatformImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetSessionAttributesPlatform {
@@ -62,7 +53,7 @@ public class LldbModelTargetSessionAttributesPlatformImpl extends LldbModelTarge
 	SBTarget session;
 
 	public LldbModelTargetSessionAttributesPlatformImpl(LldbModelTargetSessionAttributes attributes) {
-		super(attributes.getModel(), attributes, "Platform", "SessionPlatformAttributes");
+		super(attributes.getModel(), attributes, "Platform", "SessionAttributesPlatform");
 		
 		session = (SBTarget) getModelObject();
 		String[] triple = session.GetTriple().split("-");

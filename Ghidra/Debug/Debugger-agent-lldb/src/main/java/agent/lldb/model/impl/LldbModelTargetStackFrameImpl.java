@@ -27,11 +27,13 @@ import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetFocusScope;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.*;
+import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
 import ghidra.dbg.util.PathUtils;
 import ghidra.program.model.address.Address;
 
 @TargetObjectSchemaInfo(
 	name = "StackFrame",
+	elementResync = ResyncMode.ALWAYS,
 	elements = {
 		@TargetElementType(type = Void.class) },
 	attributes = {
@@ -49,6 +51,9 @@ import ghidra.program.model.address.Address;
 			type = String.class),
 		@TargetAttributeType(
 			name = LldbModelTargetStackFrame.RETURN_OFFSET_ATTRIBUTE_NAME,
+			type = String.class),
+		@TargetAttributeType(
+			name = LldbModelTargetStackFrame.CALL_FRAME_OFFSET_ATTRIBUTE_NAME,
 			type = String.class),
 		@TargetAttributeType(
 			name = LldbModelTargetStackFrame.STACK_OFFSET_ATTRIBUTE_NAME,
@@ -74,8 +79,9 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 	private final LldbModelTargetStackFrameRegisterContainerImpl registers;
 
 	private Long frameOffset = -1L;
-	//private Long returnOffset = -1L;
 	private Long stackOffset = -1L;
+	private Long callFrameOffset = -1L;
+	//private Long returnOffset = -1L;
 
 	public LldbModelTargetStackFrameImpl(LldbModelTargetStack stack, LldbModelTargetThread thread,
 			SBFrame frame) {
@@ -141,6 +147,7 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 		}
 		this.frameOffset = frame.GetFP().longValue();
 		this.stackOffset = frame.GetSP().longValue();
+		this.callFrameOffset = frame.GetCFA().longValue();
 
 		changeAttributes(List.of(), List.of(), Map.of( //
 			PC_ATTRIBUTE_NAME, pc, //
@@ -148,7 +155,8 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 			FUNC_ATTRIBUTE_NAME, func, //
 			INST_OFFSET_ATTRIBUTE_NAME, Long.toHexString(lval), //
 			FRAME_OFFSET_ATTRIBUTE_NAME, Long.toHexString(frameOffset), //
-			STACK_OFFSET_ATTRIBUTE_NAME, Long.toHexString(stackOffset) //
+			STACK_OFFSET_ATTRIBUTE_NAME, Long.toHexString(stackOffset), //
+			CALL_FRAME_OFFSET_ATTRIBUTE_NAME, Long.toHexString(callFrameOffset) //
 		), "Refreshed");
 	}
 

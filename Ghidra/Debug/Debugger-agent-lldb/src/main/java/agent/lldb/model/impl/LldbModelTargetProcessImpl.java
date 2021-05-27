@@ -79,7 +79,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 			breakpoints //
 		), Map.of( //
 			ACCESSIBLE_ATTRIBUTE_NAME, accessible = false, //
-			DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
+			DISPLAY_ATTRIBUTE_NAME, getDisplay(), //
 			TargetMethod.PARAMETERS_ATTRIBUTE_NAME, PARAMETERS, //
 			SUPPORTED_ATTACH_KINDS_ATTRIBUTE_NAME, SUPPORTED_KINDS, //
 			SUPPORTED_STEP_KINDS_ATTRIBUTE_NAME, LldbModelTargetThreadImpl.SUPPORTED_KINDS //

@@ -79,7 +79,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 			stack //
 		), Map.of( //
 			ACCESSIBLE_ATTRIBUTE_NAME, accessible = false, //
-			DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
+			DISPLAY_ATTRIBUTE_NAME, getDisplay(), //
 			SUPPORTED_STEP_KINDS_ATTRIBUTE_NAME, SUPPORTED_KINDS //
 		), "Initialized");
 
@@ -106,6 +106,9 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 			return "[PR" +  DebugClient.getId(getThread()) + "]";
 		}
 		String tidstr = DebugClient.getId(getThread());
+		if (base == 16) {
+			tidstr = "0x" + tidstr;
+		}
 		return "[" + tidstr + "]";
 	}
 

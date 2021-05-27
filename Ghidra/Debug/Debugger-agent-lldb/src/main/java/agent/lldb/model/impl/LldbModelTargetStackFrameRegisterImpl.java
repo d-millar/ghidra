@@ -88,7 +88,14 @@ public class LldbModelTargetStackFrameRegisterImpl
 
 	@Override
 	public String getValue() {
-		return getRegister().GetValue().substring(2);
+		String val = getRegister().GetValue();
+		if (val == null) {
+			return null;
+		}
+		if (!val.startsWith("0x")) {
+			return val;
+		}
+		return val.substring(2);
 	}
 
 	@Override
@@ -102,7 +109,7 @@ public class LldbModelTargetStackFrameRegisterImpl
 		if (value == null) {
 			return new byte[0];
 		}
-		BigInteger val = new BigInteger(value.substring(2), 16);
+		BigInteger val = new BigInteger(value, 16);
 		byte[] bytes = ConversionUtils.bigIntegerToBytes((int) getRegister().GetByteSize(), val);
 		changeAttributes(List.of(), Map.of( //
 			VALUE_ATTRIBUTE_NAME, value //

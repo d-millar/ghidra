@@ -25,16 +25,26 @@ import SWIG.StateType;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetObject;
-import ghidra.dbg.target.schema.*;
+import ghidra.dbg.target.schema.TargetAttributeType;
+import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
 
 @TargetObjectSchemaInfo(
 	name = "RegisterContainer",
-	elementResync = ResyncMode.ALWAYS,
-	elements = {
-		@TargetElementType(type = LldbModelTargetStackFrameRegisterBankImpl.class)
-	},
+	attributeResync = ResyncMode.ALWAYS,
 	attributes = {
+		@TargetAttributeType(
+			name = "General Purpose Registers",
+			type = LldbModelTargetStackFrameRegisterBank.class,
+			required = true),
+		@TargetAttributeType(
+			name = "Exception State Registers",
+			type = LldbModelTargetStackFrameRegisterNullBank.class, 
+			required = true),
+		@TargetAttributeType(
+			name = "Floating Point Registers",
+			type = LldbModelTargetStackFrameRegisterNullBank.class, 
+			required = true),
 		@TargetAttributeType(type = Void.class) 
 	},
 	canonicalContainer = true)
@@ -48,20 +58,20 @@ public class LldbModelTargetStackFrameRegisterContainerImpl
 	public LldbModelTargetStackFrameRegisterContainerImpl(LldbModelTargetStackFrameImpl frame) {
 		super(frame.getModel(), frame, NAME, "StackFrameRegisterContainer");
 		this.frame = frame;
-		requestElements(false);
+		requestAttributes(true);
 	}
 
 	/**
 	 * Does both descriptions and then populates values
 	 */
 	@Override
-	public CompletableFuture<Void> requestElements(boolean refresh) {
+	public CompletableFuture<Void> requestAttributes(boolean refresh) {
 		return getManager().listStackFrameRegisterBanks(frame.getFrame()).thenAccept(banks -> {
 			List<TargetObject> targetBanks;
 			synchronized (this) {
 				targetBanks = banks.values().stream().map(this::getTargetRegisterBank).collect(Collectors.toList());
 			}
-			setElements(targetBanks, Map.of(), "Refreshed");
+			changeAttributes(List.of(), targetBanks, Map.of(), "Refreshed");
 		}); 
 	}
 
@@ -70,7 +80,7 @@ public class LldbModelTargetStackFrameRegisterContainerImpl
 	public LldbModelTargetObject getTargetRegisterBank(SBValue val) {
 		TargetObject targetObject = getMapObject(val);
 		if (targetObject != null) {
-			LldbModelTargetRegisterBank targetBank = (LldbModelTargetRegisterBank) targetObject;
+			LldbModelTargetObject targetBank = (LldbModelTargetObject) targetObject;
 			targetBank.setModelObject(val);
 			return targetBank;
 		}
@@ -83,10 +93,14 @@ public class LldbModelTargetStackFrameRegisterContainerImpl
 
 	public void threadStateChangedSpecific(StateType state, LldbReason reason) {
 		if (state.equals(StateType.eStateStopped)) {
-			requestElements(false).thenAccept(__ -> {
+			requestAttributes(false).thenAccept(__ -> {
 				for (TargetObject element : getCachedElements().values()) {
 					if (element instanceof LldbModelTargetRegisterBank) {
 						LldbModelTargetRegisterBank bank = (LldbModelTargetRegisterBank) element;
+						bank.threadStateChangedSpecific(state, reason);
+					}
+					if (element instanceof LldbModelTargetStackFrameRegisterNullBank) {
+						LldbModelTargetStackFrameRegisterNullBankImpl bank = (LldbModelTargetStackFrameRegisterNullBankImpl) element;
 						bank.threadStateChangedSpecific(state, reason);
 					}
 				} 

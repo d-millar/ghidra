@@ -34,7 +34,11 @@ import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 	},
 	attributes = {
 		@TargetAttributeType(
-			name = "Machine",
+			name = "Environment",
+			type = LldbModelTargetSessionAttributesEnvironmentImpl.class,
+			fixed = true),
+		@TargetAttributeType(
+			name = "Platform",
 			type = LldbModelTargetSessionAttributesPlatformImpl.class,
 			fixed = true),
 		@TargetAttributeType(type = Void.class)
