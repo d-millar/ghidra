@@ -18,7 +18,6 @@ package agent.lldb.manager.cmd;
 import java.math.BigInteger;
 
 import SWIG.*;
-import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.breakpoint.*;
 import agent.lldb.manager.impl.LldbManagerImpl;
 

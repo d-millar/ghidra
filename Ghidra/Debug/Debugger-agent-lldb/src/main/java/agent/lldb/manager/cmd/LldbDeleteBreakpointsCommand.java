@@ -16,8 +16,6 @@
 package agent.lldb.manager.cmd;
 
 import SWIG.*;
-import agent.lldb.manager.LldbCause;
-import agent.lldb.manager.breakpoint.LldbBreakpointInfo;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 /**

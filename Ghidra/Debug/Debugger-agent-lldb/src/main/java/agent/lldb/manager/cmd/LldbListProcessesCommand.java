@@ -15,19 +15,14 @@
  */
 package agent.lldb.manager.cmd;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import SWIG.SBProcess;
 import SWIG.SBTarget;
-import agent.lldb.manager.LldbCause.Causes;
 import agent.lldb.lldb.DebugClient;
+import agent.lldb.manager.LldbCause.Causes;
 import agent.lldb.manager.LldbManager;
 import agent.lldb.manager.impl.LldbManagerImpl;
-import ghidra.util.Msg;
 
 /**
  * Implementation of {@link LldbManager#listProcesses()}
