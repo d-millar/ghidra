@@ -202,8 +202,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public CompletableFuture<Void> setActive() {
-		LldbManagerImpl manager = getManager();
-		return manager.setActiveProcess(getProcess());
+		return getManager().setActiveProcess(getProcess());
 	}
 
 	@Override

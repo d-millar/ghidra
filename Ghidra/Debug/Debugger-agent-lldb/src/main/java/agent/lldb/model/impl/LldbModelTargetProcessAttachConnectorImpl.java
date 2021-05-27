@@ -18,8 +18,6 @@ package agent.lldb.model.impl;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-import SWIG.SBProcess;
-import agent.lldb.manager.cmd.LldbAttachCommand;
 import agent.lldb.model.iface2.LldbModelTargetConnector;
 import ghidra.async.AsyncUtils;
 import ghidra.async.TypeSpec;
