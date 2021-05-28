@@ -125,8 +125,9 @@ public enum MacOSSpecimen implements DebuggerTestSpecimen, DebuggerModelTestUtil
 			throws Throwable {
 		// NB. ShellUtils.parseArgs removes the \s. Not good.
 		String expected = getBinModuleName();
+		TargetObject session = process.getParent().getParent();
 		Collection<TargetModule> modules =
-			test.m.findAll(TargetModule.class, process.getPath(), true).values();
+			test.m.findAll(TargetModule.class, session.getPath(), true).values();
 		return modules.stream()
 				.anyMatch(m -> expected.equalsIgnoreCase(getShortName(m.getModuleName())));
 	}

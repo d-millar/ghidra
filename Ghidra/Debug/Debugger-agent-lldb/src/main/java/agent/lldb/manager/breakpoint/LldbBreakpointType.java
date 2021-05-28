@@ -34,7 +34,7 @@ public enum LldbBreakpointType {
 	/**
 	 * A hardware (write) watchpoint, usually set via {@code watch}
 	 */
-	HW_WATCHPOINT,
+	WRITE_WATCHPOINT,
 	/**
 	 * A read watchpoint, usually set via {@code rwatch}
 	 */

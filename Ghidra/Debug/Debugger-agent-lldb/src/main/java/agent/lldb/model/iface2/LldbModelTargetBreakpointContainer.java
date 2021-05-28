@@ -65,7 +65,7 @@ public interface LldbModelTargetBreakpointContainer extends LldbModelTargetObjec
 			fence.include(placer.apply(LldbBreakpointType.READ_WATCHPOINT));
 		}
 		else if (kinds.contains(TargetBreakpointKind.WRITE)) {
-			fence.include(placer.apply(LldbBreakpointType.HW_WATCHPOINT));
+			fence.include(placer.apply(LldbBreakpointType.WRITE_WATCHPOINT));
 		}
 		if (kinds.contains(TargetBreakpointKind.HW_EXECUTE)) {
 			fence.include(placer.apply(LldbBreakpointType.HW_BREAKPOINT));

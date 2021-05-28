@@ -20,6 +20,7 @@ import java.math.BigInteger;
 import SWIG.*;
 import agent.lldb.manager.breakpoint.*;
 import agent.lldb.manager.impl.LldbManagerImpl;
+import ghidra.util.Msg;
 
 /**
  * Implementation of {@link LldbBreakpointInsertions#insertBreakpoint(String)}
@@ -57,9 +58,9 @@ public class LldbInsertBreakpointCommand extends AbstractLldbCommand<LldbBreakpo
 	}
 
 	@Override
-	public void invoke() {
+	public void invoke() {		
 		SBTarget currentSession = manager.getCurrentSession();
-		if (type.equals(LldbBreakpointType.BREAKPOINT)) {
+		if (type.equals(LldbBreakpointType.BREAKPOINT) || type.equals(LldbBreakpointType.HW_BREAKPOINT)) {
 			SBBreakpoint bpt;
 			if (loc != null) {
 				bpt = currentSession.BreakpointCreateByAddress(loc);
@@ -68,27 +69,30 @@ public class LldbInsertBreakpointCommand extends AbstractLldbCommand<LldbBreakpo
 			}
 			bpt.SetEnabled(true);
 			bkpt = new LldbBreakpointInfo(bpt, manager.getCurrentProcess());
-			//manager.getEventListeners().fire.breakpointCreated(bpt, LldbCause.Causes.UNCLAIMED);
 		} else {
-			boolean read = false;
-			boolean write = false;
+			boolean read = true;
+			boolean write = true;
 			SBError error = new SBError();
-			if (type.equals(LldbBreakpointType.ACCESS_WATCHPOINT)) {
-				read = write = true;
-			}
+			len = 8;
 			if (type.equals(LldbBreakpointType.READ_WATCHPOINT)) {
-				read = true;
+				write = false;
 			}
-			if (type.equals(LldbBreakpointType.HW_WATCHPOINT)) {
-				write = true;
-			}
-			if (type.equals(LldbBreakpointType.HW_BREAKPOINT)) {
-				len = 1;
+			if (type.equals(LldbBreakpointType.WRITE_WATCHPOINT)) {
+				read = false;
 			}
 			SBWatchpoint wpt = currentSession.WatchAddress(loc, len, read, write, error);	
+			if (!error.Success()) {
+				SBStream stream = new SBStream();
+				error.GetDescription(stream);
+				Msg.error(this, error.GetType() + ":" + stream.GetData());
+				return;
+			}
+			if (!wpt.IsValid()) {
+				Msg.error(this, "Error creating watchpoint");
+				return;
+			}
 			wpt.SetEnabled(true);
 			bkpt = new LldbBreakpointInfo(wpt, manager.getCurrentProcess());
-			//manager.getEventListeners().fire.breakpointCreated(wpt, LldbCause.Causes.UNCLAIMED);
 		}
 	}
 }
