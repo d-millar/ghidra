@@ -41,6 +41,9 @@ import ghidra.program.model.address.Address;
 			name = "Registers",
 			type = LldbModelTargetStackFrameRegisterContainerImpl.class),
 		@TargetAttributeType(
+			name = "Function",
+			type = LldbModelTargetFunctionImpl.class),
+		@TargetAttributeType(
 			name = LldbModelTargetStackFrame.FUNC_ATTRIBUTE_NAME,
 			type = String.class),
 		@TargetAttributeType(

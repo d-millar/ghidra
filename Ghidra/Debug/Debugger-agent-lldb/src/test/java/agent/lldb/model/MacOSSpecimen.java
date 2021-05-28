@@ -26,41 +26,59 @@ import ghidra.dbg.test.AbstractDebuggerModelTest.DebuggerTestSpecimen;
 import ghidra.dbg.testutil.DebuggerModelTestUtils;
 import ghidra.dbg.testutil.DummyProc;
 
-public enum WindowsSpecimen implements DebuggerTestSpecimen, DebuggerModelTestUtils {
+public enum MacOSSpecimen implements DebuggerTestSpecimen, DebuggerModelTestUtils {
+	ECHO_HW {
+		@Override
+		String getCommandLine() {
+			return "/bin/echo Hello, World!";
+		}
+	},
+	DD {
+		@Override
+		String getCommandLine() {
+			return "dd";
+		}
+	},
+	FORK_EXIT {
+		@Override
+		String getCommandLine() {
+			return DummyProc.which("expFork");
+		}
+	},
+	CLONE_EXIT {
+		@Override
+		String getCommandLine() {
+			return DummyProc.which("expCloneExit");
+		}
+	},
 	PRINT {
 		@Override
 		String getCommandLine() {
-			return DummyProc.which("expPrint.exe");
-		}
-	},
-	NOTEPAD {
-		@Override
-		String getCommandLine() {
-			return "C:\\Windows\\notepad.exe";
-		}
-	},
-	CREATE_PROCESS {
-		@Override
-		String getCommandLine() {
-			return DummyProc.which("expCreateProcess.exe");
-		}
-	},
-	CREATE_THREAD_EXIT {
-		@Override
-		String getCommandLine() {
-			return DummyProc.which("expCreateThreadExit.exe");
+			return DummyProc.which("expPrint");
 		}
 	},
 	REGISTERS {
 		@Override
 		String getCommandLine() {
-			return DummyProc.which("expRegisters.exe");
+			return DummyProc.which("expRegisters");
 		}
 	},
 	STACK {
 		@Override
 		String getCommandLine() {
-			return DummyProc.which("expStack.exe");
+			return DummyProc.which("expStack");
+		}
+	},
+	CREATE_PROCESS {
+		@Override
+		String getCommandLine() {
+			return DummyProc.which("expCreateProcess");
+		}
+	},
+	CREATE_THREAD_EXIT {
+		@Override
+		String getCommandLine() {
+			return DummyProc.which("expCreateThreadExit");
 		}
 	};
 

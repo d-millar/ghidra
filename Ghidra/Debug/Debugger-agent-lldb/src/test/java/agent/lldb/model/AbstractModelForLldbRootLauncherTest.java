@@ -39,7 +39,7 @@ public abstract class AbstractModelForLldbRootLauncherTest
 
 	@Override
 	public DebuggerTestSpecimen getLaunchSpecimen() {
-		return WindowsSpecimen.PRINT;
+		return MacOSSpecimen.PRINT;
 	}
 
 	@Override

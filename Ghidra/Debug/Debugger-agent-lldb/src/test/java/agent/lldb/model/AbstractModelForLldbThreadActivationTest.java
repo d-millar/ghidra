@@ -32,7 +32,7 @@ public abstract class AbstractModelForLldbThreadActivationTest
 	protected abstract PathPattern getThreadPattern();
 
 	protected DebuggerTestSpecimen getSpecimen() {
-		return WindowsSpecimen.PRINT;
+		return MacOSSpecimen.PRINT;
 	}
 
 	protected int getCount() {

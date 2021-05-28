@@ -37,7 +37,7 @@ public class DummyProc implements AutoCloseable {
 		builder.environment()
 				.put("PATH",
 					System.getenv("PATH") + ":" + System.getProperty("user.dir") +
-						"/build/os/linux64");
+						"/build/os/osx64");
 		return builder;
 	}
 

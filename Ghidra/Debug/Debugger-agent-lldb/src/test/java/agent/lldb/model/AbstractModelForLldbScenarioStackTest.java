@@ -32,8 +32,8 @@ public abstract class AbstractModelForLldbScenarioStackTest
 	protected NavigableMap<Address, String> symbolsByAddress = new TreeMap<>();
 
 	@Override
-	protected WindowsSpecimen getSpecimen() {
-		return WindowsSpecimen.STACK;
+	protected MacOSSpecimen getSpecimen() {
+		return MacOSSpecimen.STACK;
 	}
 
 	@Override

@@ -41,7 +41,7 @@ public abstract class AbstractModelForLldbInterpreterTest
 
 	@Override
 	protected String getQuitCommand() {
-		return "q";
+		return "quit";
 	}
 
 	@Override
@@ -61,11 +61,11 @@ public abstract class AbstractModelForLldbInterpreterTest
 
 	@Override
 	public DebuggerTestSpecimen getAttachSpecimen() {
-		return WindowsSpecimen.NOTEPAD;
+		return MacOSSpecimen.DD;
 	}
 
 	@Override
 	public DebuggerTestSpecimen getLaunchSpecimen() {
-		return WindowsSpecimen.PRINT;
+		return MacOSSpecimen.ECHO_HW;
 	}
 }

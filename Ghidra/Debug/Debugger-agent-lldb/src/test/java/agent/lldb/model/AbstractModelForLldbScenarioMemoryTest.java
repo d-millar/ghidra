@@ -30,8 +30,8 @@ public abstract class AbstractModelForLldbScenarioMemoryTest
 		extends AbstractDebuggerModelScenarioMemoryTest {
 
 	@Override
-	protected WindowsSpecimen getSpecimen() {
-		return WindowsSpecimen.PRINT;
+	protected MacOSSpecimen getSpecimen() {
+		return MacOSSpecimen.PRINT;
 	}
 
 	protected String getSymbolName() {

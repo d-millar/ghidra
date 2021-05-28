@@ -26,7 +26,7 @@ public abstract class AbstractModelForlldbScenarioForkExitTest
 
 	@Override
 	protected DebuggerTestSpecimen getSpecimen() {
-		return WindowsSpecimen.CREATE_PROCESS;
+		return MacOSSpecimen.CREATE_PROCESS;
 	}
 
 	@Override

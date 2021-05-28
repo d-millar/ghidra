@@ -28,7 +28,7 @@ public abstract class AbstractModelForLldbScenarioX64RegistersTest
 
 	@Override
 	protected DebuggerTestSpecimen getSpecimen() {
-		return WindowsSpecimen.REGISTERS;
+		return MacOSSpecimen.REGISTERS;
 	}
 
 	@Override

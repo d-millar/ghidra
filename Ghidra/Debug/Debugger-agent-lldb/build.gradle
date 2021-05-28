@@ -5,7 +5,7 @@ apply from: "$rootProject.projectDir/gradle/nativeProject.gradle"
 apply from: "$rootProject.projectDir/gradle/distributableGhidraModule.gradle"
 apply plugin: 'eclipse'
 
-eclipse.project.name = 'Debug Debugger-agent-dbgeng'
+eclipse.project.name = 'Debug Debugger-agent-lldb'
 
 dependencies {
 	compile project(":Framework-AsyncComm")
@@ -31,7 +31,7 @@ def boolean filterJar(File jarfile) {
 
 jar {
 	manifest {
-		attributes['Main-Class'] = 'agent.dbgeng.gadp.DbgEngGadpServer'
+		attributes['Main-Class'] = 'agent.dbgeng.gadp.LldbGadpServer'
 	}
 }
 
@@ -52,15 +52,15 @@ task nodepJar(type: Jar) {
 	
 	appendix = 'nodep'
 	manifest {
-		attributes['Main-Class'] = 'agent.dbgeng.gadp.DbgEngGadpServer'
+		attributes['Main-Class'] = 'agent.dbgeng.gadp.LldbGadpServer'
 	}
 	
 	from(zipTree(jar.archivePath))
 }
 
 test {
-	jvmArgs('-Xrs') // TODO: Is this needed, or left over from trial-and-error
-	if ("win64".equals(getCurrentPlatformName())) {
-		dependsOn(":Framework-Debugging:testSpecimenWin64")
+	//jvmArgs('-Xrs') // TODO: Is this needed, or left over from trial-and-error
+	if ("osx64".equals(getCurrentPlatformName())) {
+		dependsOn(":Framework-Debugging:testSpecimenMacOS64")
 	}
 }

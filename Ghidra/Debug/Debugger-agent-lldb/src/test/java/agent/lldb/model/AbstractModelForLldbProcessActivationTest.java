@@ -36,7 +36,7 @@ public abstract class AbstractModelForLldbProcessActivationTest
 	}
 
 	protected DebuggerTestSpecimen getSpecimen() {
-		return WindowsSpecimen.PRINT;
+		return MacOSSpecimen.PRINT;
 	}
 
 	public abstract List<String> getExpectedSessionPath();

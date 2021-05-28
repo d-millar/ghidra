@@ -32,7 +32,7 @@ public abstract class AbstractModelForLldbFrameActivationTest
 	protected abstract PathPattern getStackPattern();
 
 	protected DebuggerTestSpecimen getSpecimen() {
-		return WindowsSpecimen.STACK;
+		return MacOSSpecimen.STACK;
 	}
 
 	@Override
