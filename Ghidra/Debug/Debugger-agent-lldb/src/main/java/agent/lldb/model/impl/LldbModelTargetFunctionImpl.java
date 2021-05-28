@@ -48,24 +48,26 @@ public class LldbModelTargetFunctionImpl extends LldbModelTargetObjectImpl
 		new WeakValueHashMap<>();
 
 	public LldbModelTargetFunctionImpl(LldbModelTargetStackFrame frame, SBFunction function) {
-		super(frame.getModel(), frame, keyFunction(function), function, "Function");
+		super(frame.getModel(), frame, "Function", function, "Function");
 		this.frame = frame;
 
-		AddressSpace space = getModel().getAddressSpace("ram");
-		Address min = space.getAddress(function.GetStartAddress().GetOffset().longValue());
-		Address max = space.getAddress(function.GetStartAddress().GetOffset().longValue());
-		
-		changeAttributes(List.of(), List.of(), Map.of( //
-			DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
-			"Start", min, //
-			"End", max, //
-			"Language", function.GetLanguage(), //
-			"Name", function.GetName(), //
-			"Display Name", function.GetDisplayName(), //
-			"Mangled Name", function.GetMangledName(), //
-			"Prolog Size", function.GetPrologueByteSize(), //
-			"Block", getBlockDescription(function.GetBlock()) //
-		), "Initialized");
+		if (function.IsValid()) {
+			AddressSpace space = getModel().getAddressSpace("ram");
+			Address min = space.getAddress(function.GetStartAddress().GetOffset().longValue());
+			Address max = space.getAddress(function.GetStartAddress().GetOffset().longValue());
+			
+			changeAttributes(List.of(), List.of(), Map.of( //
+				DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
+				"Start", min, //
+				"End", max, //
+				"Language", function.GetLanguage(), //
+				"Name", function.GetName(), //
+				"Display Name", function.GetDisplayName(), //
+				"Mangled Name", function.GetMangledName(), //
+				"Prolog Size", function.GetPrologueByteSize(), //
+				"Block", getBlockDescription(function.GetBlock()) //
+			), "Initialized");
+		}
 	}
 
 	public String getDescription(int level) {
