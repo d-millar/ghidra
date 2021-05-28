@@ -44,7 +44,7 @@ public class LldbInJvmDebuggerModelFactory implements DebuggerModelFactory {
 
 	@Override
 	public boolean isCompatible() {
-		return System.getProperty("os.name").toLowerCase().contains("osx");
+		return System.getProperty("os.name").contains("Mac OS X");
 	}
 
 }

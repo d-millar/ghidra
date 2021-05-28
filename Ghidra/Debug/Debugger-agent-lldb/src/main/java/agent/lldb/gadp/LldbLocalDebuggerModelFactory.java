@@ -40,8 +40,7 @@ public class LldbLocalDebuggerModelFactory extends AbstractGadpLocalDebuggerMode
 
 	@Override
 	public boolean isCompatible() {
-		// TODO: Might instead look for the DLL
-		return System.getProperty("os.name").toLowerCase().contains("macos");
+		return System.getProperty("os.name").contains("Mac OS X");
 	}
 
 	public String getAgentTransport() {

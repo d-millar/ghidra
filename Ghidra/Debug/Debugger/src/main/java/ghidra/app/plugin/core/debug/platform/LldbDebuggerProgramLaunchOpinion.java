@@ -55,7 +55,7 @@ public class LldbDebuggerProgramLaunchOpinion implements DebuggerProgramLaunchOp
 
 	protected class InVmLldbDebuggerProgramLaunchOffer
 			extends AbstractLldbDebuggerProgramLaunchOffer {
-		private static final String FACTORY_CLS_NAME = "agent.gdb.lldbInJvmDebuggerModelFactory";
+		private static final String FACTORY_CLS_NAME = "agent.lldb.LldbInJvmDebuggerModelFactory";
 
 		public InVmLldbDebuggerProgramLaunchOffer(Program program, PluginTool tool,
 				DebuggerModelFactory factory) {
