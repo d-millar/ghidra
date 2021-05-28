@@ -77,6 +77,7 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 	protected String display;
 
 	private final LldbModelTargetStackFrameRegisterContainerImpl registers;
+	private final LldbModelTargetFunctionImpl function;
 
 	private Long frameOffset = -1L;
 	private Long stackOffset = -1L;
@@ -90,9 +91,11 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 		this.pc = getModel().getAddressSpace("ram").getAddress(-1);
 
 		this.registers = new LldbModelTargetStackFrameRegisterContainerImpl(this);
+		this.function = new LldbModelTargetFunctionImpl(this, frame.GetFunction());
 
 		changeAttributes(List.of(), List.of(
-			registers //
+			registers, //
+			function //
 		), Map.of( //
 			DISPLAY_ATTRIBUTE_NAME, display = getDescription(0), //computeDisplay(frame), //
 			PC_ATTRIBUTE_NAME, pc //
