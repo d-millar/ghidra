@@ -71,10 +71,17 @@ public class LldbModelTargetBreakpointLocationImpl extends LldbModelTargetObject
 	}
 	
 	public String getDescription(int level) {
+		Object modelObject = getModelObject();
 		SBStream stream = new SBStream();
-		SBBreakpointLocation loc = (SBBreakpointLocation) getModelObject();		
 		DescriptionLevel detail = DescriptionLevel.swigToEnum(level);
-		loc.GetDescription(stream, detail);
+		if (modelObject instanceof SBBreakpoint) {
+			SBBreakpointLocation loc = (SBBreakpointLocation) getModelObject();		
+			loc.GetDescription(stream, detail);
+		} 
+		if (modelObject instanceof SBWatchpoint) {
+			SBWatchpoint wpt = (SBWatchpoint) getModelObject();		
+			wpt.GetDescription(stream, detail);
+		} 
 		return stream.GetData();
 	}
 	

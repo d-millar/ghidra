@@ -42,28 +42,12 @@ public class LldbModelTargetWatchpointSpecImpl extends LldbModelTargetAbstractXp
 		SBWatchpoint wpt = (SBWatchpoint) getModelObject();		
 		DescriptionLevel detail = DescriptionLevel.swigToEnum(level);
 		wpt.GetDescription(stream, detail);
-		return stream.GetData();
+		String data = stream.GetData();
+		return data.equals("No value") ? getName() : data;
 	}
 	
 	protected TargetBreakpointKindSet computeKinds(Object from) {
-		return TargetBreakpointKindSet.of(TargetBreakpointKind.HW_EXECUTE);
-		/*
-		switch (from.getType()) {
-			case BREAKPOINT:
-				return TargetBreakpointKindSet.of(TargetBreakpointKind.SW_EXECUTE);
-			case HW_BREAKPOINT:
-				return TargetBreakpointKindSet.of(TargetBreakpointKind.HW_EXECUTE);
-			case HW_WATCHPOINT:
-				return TargetBreakpointKindSet.of(TargetBreakpointKind.WRITE);
-			case READ_WATCHPOINT:
-				return TargetBreakpointKindSet.of(TargetBreakpointKind.READ);
-			case ACCESS_WATCHPOINT:
-				return TargetBreakpointKindSet.of(TargetBreakpointKind.READ,
-					TargetBreakpointKind.WRITE);
-			default:
-				return TargetBreakpointKindSet.of();
-		}
-		*/
+		return TargetBreakpointKindSet.of(TargetBreakpointKind.READ, TargetBreakpointKind.WRITE);
 	}
 
 	public void updateInfo(Object info, String reason) {
