@@ -20,7 +20,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 import SWIG.SBTarget;
+import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbEventsListenerAdapter;
+import agent.lldb.manager.breakpoint.LldbBreakpointInfo;
 import agent.lldb.manager.breakpoint.LldbBreakpointType;
 import agent.lldb.manager.impl.LldbManagerImpl;
 import ghidra.async.AsyncFence;
@@ -40,20 +42,17 @@ public interface LldbModelTargetBreakpointContainer extends LldbModelTargetObjec
 		TargetBreakpointSpecContainer, //
 		LldbEventsListenerAdapter {
 
-	/*
 	@Override
-	public void breakpointCreated(DbgBreakpointInfo info, DbgCause cause);
+	public void breakpointCreated(Object info, LldbCause cause);
 	
 	@Override
-	public void breakpointModified(DbgBreakpointInfo newInfo, DbgBreakpointInfo oldInfo,
-			DbgCause cause);
+	public void breakpointModified(Object info, LldbCause cause);
 	
 	@Override
-	public void breakpointDeleted(DbgBreakpointInfo info, DbgCause cause);
+	public void breakpointDeleted(Object info, LldbCause cause);
 	
 	@Override
-	public void breakpointHit(DbgBreakpointInfo info, DbgCause cause);
-	*/
+	public void breakpointHit(Object info, LldbCause cause);
 
 	public default CompletableFuture<Void> doPlaceBreakpoint(Set<TargetBreakpointKind> kinds,
 			Function<LldbBreakpointType, CompletableFuture<?>> placer) {
