@@ -321,11 +321,11 @@ public interface DebugClient extends DebugClientReentrant {
 			SBTarget session = (SBTarget) modelObject;
 			return Long.toHexString(session.GetProcess().GetUniqueID());
 		}
-		if (modelObject instanceof SBProcess) {
+		if (modelObject instanceof SBProcess) {  // global
 			SBProcess process = (SBProcess) modelObject;
 			return Integer.toHexString(process.GetProcessID().intValue());
 		}
-		if (modelObject instanceof SBThread) {
+		if (modelObject instanceof SBThread) {  // global
 			SBThread thread = (SBThread) modelObject;
 			return Integer.toHexString(thread.GetThreadID().intValue());
 		}
@@ -335,11 +335,7 @@ public interface DebugClient extends DebugClientReentrant {
 		}
 		if (modelObject instanceof SBValue) {
 			SBValue val = (SBValue) modelObject;
-			if (val.GetName().contains("Registers")) {
-				return getId(val.GetFrame())+":"+Long.toHexString(val.GetID().longValue());
-			} else {
-				return Long.toHexString(val.GetID().longValue());
-			}
+			return val.GetName();
 		}
 		if (modelObject instanceof SBModule) {
 			SBModule module = (SBModule) modelObject;
@@ -357,11 +353,11 @@ public interface DebugClient extends DebugClientReentrant {
 			SBSymbol sym = (SBSymbol) modelObject;
 			return sym.GetName();
 		}
-		if (modelObject instanceof SBBreakpoint) {
+		if (modelObject instanceof SBBreakpoint) {  // global
 			SBBreakpoint spec = (SBBreakpoint) modelObject;
 			return Integer.toHexString(spec.GetID());
 		}
-		if (modelObject instanceof SBWatchpoint) {
+		if (modelObject instanceof SBWatchpoint) {  // global
 			SBWatchpoint spec = (SBWatchpoint) modelObject;
 			return Integer.toHexString(spec.GetID());
 		}

@@ -28,6 +28,7 @@ import agent.lldb.model.iface1.LldbModelTargetFocusScope;
 import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.*;
 import ghidra.dbg.target.TargetEventScope.TargetEventType;
+import ghidra.dbg.target.TargetExecutionStateful.TargetExecutionState;
 import ghidra.dbg.target.schema.*;
 import ghidra.dbg.util.PathUtils;
 
@@ -80,6 +81,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 			ACCESSIBLE_ATTRIBUTE_NAME, accessible = false, //
 			DISPLAY_ATTRIBUTE_NAME, getDisplay(), //
 			TargetMethod.PARAMETERS_ATTRIBUTE_NAME, PARAMETERS, //
+			STATE_ATTRIBUTE_NAME, TargetExecutionState.ALIVE, //
 			SUPPORTED_ATTACH_KINDS_ATTRIBUTE_NAME, SUPPORTED_KINDS, //
 			SUPPORTED_STEP_KINDS_ATTRIBUTE_NAME, LldbModelTargetThreadImpl.SUPPORTED_KINDS //
 		), "Initialized");
@@ -180,7 +182,8 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 		if (proc != null) {
 			changeAttributes(List.of(), List.of(), Map.of( //
 				PID_ATTRIBUTE_NAME, getProcess().GetProcessID().longValue(), //
-				DISPLAY_ATTRIBUTE_NAME, getDescription(0)//
+				DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
+				STATE_ATTRIBUTE_NAME, TargetExecutionState.ALIVE //
 			), "Started");
 		}
 		setExecutionState(TargetExecutionState.ALIVE, "Started");

@@ -78,6 +78,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 		), Map.of( //
 			ACCESSIBLE_ATTRIBUTE_NAME, accessible = false, //
 			DISPLAY_ATTRIBUTE_NAME, getDisplay(), //
+			STATE_ATTRIBUTE_NAME, TargetExecutionState.ALIVE, //
 			SUPPORTED_STEP_KINDS_ATTRIBUTE_NAME, SUPPORTED_KINDS //
 		), "Initialized");
 

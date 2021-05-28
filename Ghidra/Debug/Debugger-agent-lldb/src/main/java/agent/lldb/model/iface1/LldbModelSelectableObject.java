@@ -18,37 +18,15 @@ package agent.lldb.model.iface1;
 import java.util.concurrent.CompletableFuture;
 
 import agent.lldb.model.iface2.LldbModelTargetObject;
+import ghidra.dbg.target.schema.*;
 
+@TargetObjectSchemaInfo(name = "SelectableObject", elements = {
+	@TargetElementType(type = Void.class)
+}, attributes = {
+	@TargetAttributeType(type = Void.class) 
+})
 public interface LldbModelSelectableObject extends LldbModelTargetObject {
 
-	public default CompletableFuture<Void> setActive() {
-		/*
-		if (this instanceof DbgModelTargetSession) {
-			DbgManagerImpl manager = getManager();
-			DbgProcess process = manager.getCurrentProcess();
-			return process.setActive();
-		}
-		if (this instanceof DbgModelTargetProcess) {
-			DbgModelTargetProcess tp = (DbgModelTargetProcess) this;
-			DbgProcess process = tp.getProcess();
-			return process.setActive();
-		}
-		if (this instanceof DbgModelTargetThread) {
-			DbgModelTargetThread tt = (DbgModelTargetThread) this;
-			DbgThread thread = tt.getThread();
-			return thread.setActive();
-		}
-		if (this instanceof DbgModelTargetStackFrame) {
-			DbgModelTargetStackFrame tf = (DbgModelTargetStackFrame) this;
-			TargetObject ref = tf.getThread();
-			if (ref instanceof DbgModelTargetThread) {
-				DbgModelTargetThread tt = (DbgModelTargetThread) ref;
-				DbgThread thread = tt.getThread();
-				return thread.setActive();
-			}
-		}
-		*/
-		return CompletableFuture.completedFuture(null);
-	}
+	public CompletableFuture<Void> setActive();
 
 }
