@@ -25,7 +25,6 @@ import ghidra.util.datastruct.ListenerSet;
 public interface LldbModelTargetBreakpointSpec extends //
 		LldbModelTargetObject, //
 		TargetBreakpointSpec, //
-		TargetBreakpointLocation, //
 		TargetDeletable {
 
 	String BPT_ACCESS_ATTRIBUTE_NAME = "Access";
@@ -94,7 +93,7 @@ public interface LldbModelTargetBreakpointSpec extends //
 		LldbModelTargetThread targetThread =
 			getParentProcess().getThreads().getTargetThread(getManager().getEventThread());
 		getActions().fire.breakpointHit((LldbModelTargetBreakpointSpec) getProxy(), targetThread,
-			null, this);
+			null, findLocation(targetThread));
 	}
 
 	public LldbModelTargetBreakpointLocation findLocation(Object object);

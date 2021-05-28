@@ -65,7 +65,7 @@ public class LldbModelTargetBreakpointLocationImpl extends LldbModelTargetObject
 			SPEC_ATTRIBUTE_NAME, parent,
 			ADDRESS_ATTRIBUTE_NAME, address,
 			LENGTH_ATTRIBUTE_NAME, length = (int) wpt.GetWatchSize(),
-			DISPLAY_ATTRIBUTE_NAME, display = getDescription(0)),
+			DISPLAY_ATTRIBUTE_NAME, display = getDescription(1)),
 		"Initialization");
 		placeLocations();
 	}
@@ -74,7 +74,7 @@ public class LldbModelTargetBreakpointLocationImpl extends LldbModelTargetObject
 		Object modelObject = getModelObject();
 		SBStream stream = new SBStream();
 		DescriptionLevel detail = DescriptionLevel.swigToEnum(level);
-		if (modelObject instanceof SBBreakpoint) {
+		if (modelObject instanceof SBBreakpointLocation) {
 			SBBreakpointLocation loc = (SBBreakpointLocation) getModelObject();		
 			loc.GetDescription(stream, detail);
 		} 
@@ -92,7 +92,7 @@ public class LldbModelTargetBreakpointLocationImpl extends LldbModelTargetObject
 			SPEC_ATTRIBUTE_NAME, parent,
 			ADDRESS_ATTRIBUTE_NAME, address,
 			LENGTH_ATTRIBUTE_NAME, length,
-			DISPLAY_ATTRIBUTE_NAME, display = getDescription(0)),
+			DISPLAY_ATTRIBUTE_NAME, display = getDescription(1)),
 			reason);
 		placeLocations();
 	}

@@ -21,7 +21,6 @@ import SWIG.*;
 import agent.lldb.model.iface2.LldbModelTargetBreakpointContainer;
 import agent.lldb.model.iface2.LldbModelTargetBreakpointLocation;
 import ghidra.dbg.target.TargetBreakpointSpecContainer.TargetBreakpointKindSet;
-import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 
@@ -65,7 +64,6 @@ public class LldbModelTargetWatchpointSpecImpl extends LldbModelTargetAbstractXp
 		SBWatchpoint wpt = (SBWatchpoint) getModelObject();
 		this.changeAttributes(List.of(), List.of(), Map.of( //
 			DISPLAY_ATTRIBUTE_NAME, display = getDescription(0), //
-			SPEC_ATTRIBUTE_NAME, this, //
 			KINDS_ATTRIBUTE_NAME, kinds = computeKinds(wpt), //
 			ENABLED_ATTRIBUTE_NAME, enabled = wpt.IsEnabled(), //
 			EXPRESSION_ATTRIBUTE_NAME, "" //

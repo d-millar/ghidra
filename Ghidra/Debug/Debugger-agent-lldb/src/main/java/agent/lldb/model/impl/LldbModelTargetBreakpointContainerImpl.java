@@ -86,7 +86,7 @@ public class LldbModelTargetBreakpointContainerImpl extends LldbModelTargetObjec
 			return;
 		}
 
-		LldbModelTargetBreakpointLocation loc = spec.findLocation(null);
+		LldbModelTargetBreakpointLocation loc = spec.findLocation(targetThread);
 		if (loc == null) {
 			Msg.warn(this, "Stopped for a breakpoint whose location is unknown to the agent: " + spec);
 			//return; // Not ideal, but eb == null should be fine, since the spec holds the actions 

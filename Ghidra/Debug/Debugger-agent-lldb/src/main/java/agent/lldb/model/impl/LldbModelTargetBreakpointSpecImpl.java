@@ -15,17 +15,20 @@
  */
 package agent.lldb.model.impl;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import SWIG.*;
-import agent.lldb.model.iface2.*;
+import SWIG.SBBreakpoint;
+import SWIG.SBStream;
+import agent.lldb.model.iface2.LldbModelTargetBreakpointContainer;
+import agent.lldb.model.iface2.LldbModelTargetBreakpointLocation;
 import ghidra.dbg.target.TargetBreakpointLocation;
 import ghidra.dbg.target.TargetBreakpointSpecContainer.TargetBreakpointKindSet;
 import ghidra.dbg.target.TargetObject;
+import ghidra.dbg.target.TargetBreakpointSpec.TargetBreakpointAction;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.util.datastruct.ListenerSet;
 
 @TargetObjectSchemaInfo(
 	name = "BreakpointSpec",
@@ -39,6 +42,14 @@ import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 	canonicalContainer = true)
 public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetAbstractXpointSpec {
 
+	protected final ListenerSet<TargetBreakpointAction> actions =
+			new ListenerSet<>(TargetBreakpointAction.class) {
+				// Use strong references on actions
+				protected Map<TargetBreakpointAction, TargetBreakpointAction> createMap() {
+					return Collections.synchronizedMap(new LinkedHashMap<>());
+				};
+			};
+			
 	public LldbModelTargetBreakpointSpecImpl(LldbModelTargetBreakpointContainer breakpoints,
 			Object info) {
 		super(breakpoints, info, "BreakpointSpec");
@@ -92,6 +103,10 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetAbstractXp
 				TargetBreakpointLocation.ADDRESS_ATTRIBUTE_NAME, loc.address //
 			), reason);
 		}
+	}
+	
+	public ListenerSet<TargetBreakpointAction> getActions() {
+		return actions;
 	}
 
 	public LldbModelTargetBreakpointLocation findLocation(Object obj) {
