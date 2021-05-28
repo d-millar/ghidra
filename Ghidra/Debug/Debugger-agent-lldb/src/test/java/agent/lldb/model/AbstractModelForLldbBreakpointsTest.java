@@ -46,7 +46,7 @@ public abstract class AbstractModelForLldbBreakpointsTest
 
 	@Override
 	public DebuggerTestSpecimen getLaunchSpecimen() {
-		return WindowsSpecimen.PRINT;
+		return MacOSSpecimen.PRINT;
 	}
 
 	@Override

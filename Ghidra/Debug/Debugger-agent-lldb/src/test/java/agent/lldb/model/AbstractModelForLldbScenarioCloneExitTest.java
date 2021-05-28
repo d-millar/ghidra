@@ -22,7 +22,7 @@ public abstract class AbstractModelForLldbScenarioCloneExitTest
 
 	@Override
 	protected DebuggerTestSpecimen getSpecimen() {
-		return WindowsSpecimen.CREATE_THREAD_EXIT;
+		return MacOSSpecimen.CREATE_THREAD_EXIT;
 	}
 
 	@Override

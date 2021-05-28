@@ -40,7 +40,7 @@ public abstract class AbstractModelForLldbRootAttacherTest
 
 	@Override
 	public DebuggerTestSpecimen getAttachSpecimen() {
-		return WindowsSpecimen.NOTEPAD;
+		return MacOSSpecimen.DD;
 	}
 
 	@Override

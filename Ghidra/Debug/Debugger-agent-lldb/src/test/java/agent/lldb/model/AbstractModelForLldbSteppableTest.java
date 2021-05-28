@@ -34,6 +34,6 @@ public abstract class AbstractModelForLldbSteppableTest extends AbstractDebugger
 
 	@Override
 	public DebuggerTestSpecimen getLaunchSpecimen() {
-		return WindowsSpecimen.PRINT;
+		return MacOSSpecimen.PRINT;
 	}
 }

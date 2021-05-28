@@ -47,6 +47,6 @@ public abstract class AbstractModelForLldbX64RegistersTest
 
 	@Override
 	public DebuggerTestSpecimen getLaunchSpecimen() {
-		return WindowsSpecimen.PRINT;
+		return MacOSSpecimen.PRINT;
 	}
 }

@@ -52,6 +52,15 @@ task testSpecimenLinux64 {
 	dependsOn 'expStackLinux64Executable'
 }
 
+task testSpecimenMacOS64 {
+	//dependsOn 'expCloneSpinExecutable'//Linux64Executable'
+	dependsOn 'expForkExecutable'//Linux64Executable'
+	dependsOn 'expPrintOsx64Executable'
+	//dependsOn 'expTypesExecutable'//Linux64Executable'
+	dependsOn 'expRegistersOsx64Executable'
+	dependsOn 'expStackOsx64Executable'
+}
+
 model {
 	platforms {
 		/*linux32 {
@@ -75,22 +84,27 @@ model {
 		}
 		expCloneExec(NativeExecutableSpec) {
 			targetPlatform "linux64"
+			//targetPlatform "osx64"
 			//targetPlatform "linux32" // TODO: Test on these
 		}
 		expCloneExit(NativeExecutableSpec) {
 			targetPlatform "linux64"
+			//targetPlatform "osx64"
 			//targetPlatform "linux32" // TODO: Test on these
 		}
 		expCloneSpin(NativeExecutableSpec) {
 			targetPlatform "linux64"
+			targetPlatform "osx64"
 			//targetPlatform "linux32" // TODO: Test on these
 		}
 		expFork(NativeExecutableSpec) {
 			targetPlatform "linux64"
+			//targetPlatform "osx64"
 			//targetPlatform "linux32" // TODO: Test on these
 		}
 		expPrint(NativeExecutableSpec) {
 			targetPlatform "linux64"
+			targetPlatform "osx64"
 			//targetPlatform "linux32" // TODO: Test on these
 			targetPlatform "win64"
 			targetPlatform "win32" // TODO: Test on these
@@ -101,6 +115,7 @@ model {
 		}
 		expTypes(NativeExecutableSpec) {
 			targetPlatform "linux64"
+			//targetPlatform "osx64"
 			//targetPlatform "linux32" // TODO: Test on these
 			binaries {
 				withType(NativeExecutableBinarySpec) {
@@ -112,12 +127,14 @@ model {
 		}
 		expRegisters(NativeExecutableSpec) {
 			targetPlatform "linux64"
+			targetPlatform "osx64"
 			//targetPlatform "linux32" // TODO: Test on these
 			targetPlatform "win64"
 			targetPlatform "win32" // TODO: Test on these
 		}
 		expStack(NativeExecutableSpec) {
 			targetPlatform "linux64"
+			//targetPlatform "osx64"
 			//targetPlatform "linux32" // TODO: Test on these
 			targetPlatform "win64"
 			targetPlatform "win32" // TODO: Test on these
