@@ -18,8 +18,8 @@ package agent.lldb;
 import java.util.concurrent.CompletableFuture;
 
 import agent.lldb.model.impl.LldbModelImpl;
+import ghidra.dbg.DebuggerModelFactory;
 import ghidra.dbg.DebuggerObjectModel;
-import ghidra.dbg.LocalDebuggerModelFactory;
 import ghidra.dbg.util.ConfigurableFactory.FactoryDescription;
 import ghidra.util.classfinder.ExtensionPointProperties;
 
@@ -32,7 +32,7 @@ import ghidra.util.classfinder.ExtensionPointProperties;
 	htmlDetails = "Launch a lldb session in this same JVM" //
 )
 @ExtensionPointProperties(priority = 80)
-public class LldbInJvmDebuggerModelFactory implements LocalDebuggerModelFactory {
+public class LldbInJvmDebuggerModelFactory implements DebuggerModelFactory {
 
 	// TODO remoteTransport option?
 

@@ -15,19 +15,11 @@
  */
 package agent.lldb.gadp.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.concurrent.AbstractExecutorService;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-import com.sun.jna.platform.win32.COM.COMException;
-
-import SWIG.SBDebugger;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.lldb.DebugClient.DebugStatus;
 import agent.lldb.manager.LldbManager;
@@ -138,21 +130,11 @@ public abstract class AbstractClientThreadExecutor extends AbstractExecutorServi
 				if (status.shouldWait && status != DebugStatus.NO_DEBUGGEE ||
 					waitRegistered.get()) {
 					waitRegistered.set(false);
-					try {
-						getManager().waitForEventEx();
+					getManager().waitForEventEx();
 						//client.getControl().waitForEvent();
-					}
-					catch (COMException e) {
-						Msg.error(this, "Error during WaitForEvents: " + e);
-					}
 				}
 				else {
-					try {
-						client.dispatchCallbacks(100); // TODO: Better synchronization
-					}
-					catch (COMException e) {
-						Msg.error(this, "Error during DispatchCallbacks: " + e);
-					}
+					client.dispatchCallbacks(100); // TODO: Better synchronization
 				}
 				
 			}

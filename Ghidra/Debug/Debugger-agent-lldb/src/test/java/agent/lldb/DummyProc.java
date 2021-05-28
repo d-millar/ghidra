@@ -15,16 +15,16 @@
  */
 package agent.lldb;
 
-import static org.junit.Assume.assumeTrue;
+import static org.junit.Assume.*;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import com.sun.jna.Pointer;
-import com.sun.jna.platform.win32.Kernel32;
-import com.sun.jna.platform.win32.WinNT.HANDLE;
+import org.fusesource.jansi.internal.Kernel32;
+
+import jnr.posix.HANDLE;
 
 public class DummyProc implements AutoCloseable {
 	final Process process;
@@ -39,7 +39,7 @@ public class DummyProc implements AutoCloseable {
 		Field handleFld = cls.getDeclaredField("handle");
 		handleFld.setAccessible(true);
 		long handle = handleFld.getLong(process);
-		pid = Kernel32.INSTANCE.GetProcessId(new HANDLE(new Pointer(handle)));
+		pid = 0; //Kernel32.INSTANCE.GetProcessId(new HANDLE(new Pointer(handle)));
 	}
 
 	@Override

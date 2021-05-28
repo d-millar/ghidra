@@ -1,21 +1,36 @@
+/* ###
+ * IP: GHIDRA
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 apply from: "$rootProject.projectDir/gradle/javaProject.gradle"
 apply from: "$rootProject.projectDir/gradle/jacocoProject.gradle"
 apply from: "$rootProject.projectDir/gradle/javaTestProject.gradle"
 apply from: "$rootProject.projectDir/gradle/nativeProject.gradle"
 apply from: "$rootProject.projectDir/gradle/distributableGhidraModule.gradle"
-apply plugin: 'eclipse'
 
+apply plugin: 'eclipse'
 eclipse.project.name = 'Debug Debugger-agent-lldb'
 
 dependencies {
-	compile project(":Framework-AsyncComm")
-	compile project(":Framework-Debugging")
-	compile project(":Debugger-gadp")
-	compile "net.java.dev.jna:jna:5.4.0"
-	compile "net.java.dev.jna:jna-platform:5.4.0"
+	api project(':Framework-AsyncComm')
+	api project(':Framework-Debugging')
+	api project(':Debugger-gadp')
+	api 'org.python:jython-standalone:2.7.1'
 
-	//testCompile project(":Base")
-	testCompile project(path: ":Debugger-gadp", configuration: 'testArtifacts')
+	testImplementation project(path: ':Framework-AsyncComm', configuration: 'testArtifacts')
+	testImplementation project(path: ':Framework-Debugging', configuration: 'testArtifacts')
+	testImplementation project(path: ':Debugger-gadp', configuration: 'testArtifacts')
 }
 
 def boolean filterJar(File jarfile) {
@@ -31,13 +46,13 @@ def boolean filterJar(File jarfile) {
 
 jar {
 	manifest {
-		attributes['Main-Class'] = 'agent.dbgeng.gadp.LldbGadpServer'
+		attributes['Main-Class'] = 'agent.gdb.gadp.LldbGadpServer'
 	}
 }
 
 task configureNodepJar {
 	doLast {
-		configurations.runtime.files.forEach {
+		configurations.default.files.forEach {
 			if (filterJar(it)) {
 				nodepJar.from(zipTree(it))
 			}
@@ -52,15 +67,38 @@ task nodepJar(type: Jar) {
 	
 	appendix = 'nodep'
 	manifest {
-		attributes['Main-Class'] = 'agent.dbgeng.gadp.LldbGadpServer'
+		attributes['Main-Class'] = 'agent.gdb.gadp.LldbGadpServer'
 	}
-	
+
 	from(zipTree(jar.archivePath))
 }
 
+task executableJar {
+	ext.execsh = file("src/main/sh/execjar.sh")
+	ext.jarfile = file(nodepJar.archivePath)
+	ext.outjar = file("${buildDir}/bin/gadp-agent-lldb")
+	dependsOn(nodepJar)
+	inputs.file(execsh)
+	inputs.file(jarfile)
+	outputs.file(outjar)
+	doLast {
+		outjar.parentFile.mkdirs()
+		outjar.withOutputStream { output ->
+			execsh.withInputStream { input ->
+				output << input
+			}
+			jarfile.withInputStream { input ->
+				output << input
+			}
+		}
+		exec {
+			commandLine("chmod", "+x", outjar)
+		}
+	}
+}
+
 test {
-	//jvmArgs('-Xrs') // TODO: Is this needed, or left over from trial-and-error
-	if ("osx64".equals(getCurrentPlatformName())) {
-		dependsOn(":Framework-Debugging:testSpecimenMacOS64")
+	if ("linux64".equals(getCurrentPlatformName())) {
+		dependsOn(":Framework-Debugging:testSpecimenOsx64")
 	}
 }

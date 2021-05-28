@@ -17,8 +17,6 @@ package agent.lldb.lldb;
 
 import java.math.BigInteger;
 
-import com.sun.jna.platform.win32.WinBase;
-
 import SWIG.*;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.LldbManager;
@@ -218,7 +216,8 @@ public interface DebugClient extends DebugClientReentrant {
 	}
 
 	public static enum DebugCreateFlags implements BitmaskUniverse {
-		DEBUG_PROCESS(WinBase.DEBUG_PROCESS), //
+		DEBUG_PROCESS(0), //
+		/*
 		DEBUG_ONLY_THIS_PROCESS(WinBase.DEBUG_ONLY_THIS_PROCESS), //
 		CREATE_SUSPENDED(WinBase.CREATE_SUSPENDED), //
 		DETACHED_PROCESS(WinBase.DETACHED_PROCESS), //
@@ -257,6 +256,7 @@ public interface DebugClient extends DebugClientReentrant {
 		//CREATE_IGNORE_SYSTEM_DEFAULT(WinBase.CREATE_IGNORE_SYSTEM_DEFAULT), //
 		DEBUG_CREATE_NO_DEBUG_HEAP(0x00000400), //
 		DEBUG_CREATE_THROUGH_RTL(0x00010000), //
+		*/
 		;
 
 		DebugCreateFlags(int mask) {

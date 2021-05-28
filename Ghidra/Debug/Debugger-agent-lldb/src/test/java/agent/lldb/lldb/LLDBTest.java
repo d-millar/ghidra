@@ -15,8 +15,8 @@
  */
 package agent.lldb.lldb;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.Assert.*;
+import static org.junit.Assume.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,16 +25,7 @@ import java.util.concurrent.CompletableFuture;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.sun.jna.Native;
-import com.sun.jna.NativeLibrary;
-import com.sun.jna.win32.StdCallLibrary;
-
-import SWIG.SBDebugger;
-import SWIG.SBProcess;
-import SWIG.SBProcessInfo;
-import SWIG.SBTarget;
-import SWIG.SBThread;
-import SWIG.StateType;
+import SWIG.*;
 import ghidra.test.AbstractGhidraHeadlessIntegrationTest;
 import ghidra.util.Msg;
 

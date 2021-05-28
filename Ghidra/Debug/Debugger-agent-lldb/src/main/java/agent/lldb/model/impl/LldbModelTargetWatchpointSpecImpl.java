@@ -19,6 +19,7 @@ import java.util.*;
 
 import SWIG.*;
 import agent.lldb.model.iface2.LldbModelTargetBreakpointContainer;
+import agent.lldb.model.iface2.LldbModelTargetBreakpointLocation;
 import ghidra.dbg.target.TargetBreakpointSpecContainer.TargetBreakpointKindSet;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.TargetAttributeType;
@@ -31,6 +32,7 @@ import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 	canonicalContainer = true)
 public class LldbModelTargetWatchpointSpecImpl extends LldbModelTargetAbstractXpointSpec {
 
+	private List<LldbModelTargetBreakpointLocationImpl> locs = new ArrayList<>();
 
 	public LldbModelTargetWatchpointSpecImpl(LldbModelTargetBreakpointContainer breakpoints,
 			Object info) {
@@ -55,7 +57,6 @@ public class LldbModelTargetWatchpointSpecImpl extends LldbModelTargetAbstractXp
 		updateAttributesFromInfo(reason);
 		
 		SBWatchpoint wpt = (SBWatchpoint) getModelObject();		
-		List<TargetObject> locs = new ArrayList<>();
 		locs.add(new LldbModelTargetBreakpointLocationImpl(this, wpt));
 		setElements(locs, Map.of(), "Refreshed");
 	}
@@ -75,6 +76,11 @@ public class LldbModelTargetWatchpointSpecImpl extends LldbModelTargetAbstractXp
 			BPT_VALID_ATTRIBUTE_NAME, wpt.IsValid(), //
 			BPT_TIMES_ATTRIBUTE_NAME, wpt.GetHitCount() //
 		), reason);
+	}
+
+	@Override
+	public LldbModelTargetBreakpointLocation findLocation(Object object) {
+		return locs.get(0);
 	}
 
 }

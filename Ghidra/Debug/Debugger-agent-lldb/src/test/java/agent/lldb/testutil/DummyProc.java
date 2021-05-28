@@ -15,17 +15,12 @@
  */
 package agent.lldb.testutil;
 
-import static org.junit.Assume.assumeNoException;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.Assume.*;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import com.sun.jna.Pointer;
-import com.sun.jna.platform.win32.Kernel32;
-import com.sun.jna.platform.win32.WinNT.HANDLE;
 
 // TODO: Factor this with ghidra.dbg.util.DummyProc (Framework-Debugging)
 // Need to work out OS-specific nuances.
@@ -63,7 +58,7 @@ public class DummyProc implements AutoCloseable {
 			Field handleFld = cls.getDeclaredField("handle");
 			handleFld.setAccessible(true);
 			long handle = handleFld.getLong(process);
-			pid = Kernel32.INSTANCE.GetProcessId(new HANDLE(new Pointer(handle)));
+			pid = 0; //Kernel32.INSTANCE.GetProcessId(new HANDLE(new Pointer(handle)));
 		}
 		catch (NoSuchFieldException | SecurityException e) {
 			assumeNoException(e);

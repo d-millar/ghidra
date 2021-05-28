@@ -24,8 +24,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.sun.jna.platform.win32.COM.COMException;
-
 import SWIG.*;
 import agent.lldb.gadp.impl.AbstractClientThreadExecutor;
 import agent.lldb.gadp.impl.LldbClientThreadExecutor;
@@ -1484,6 +1482,7 @@ public class LldbManagerImpl implements LldbManager {
 
 		@Override
 		public void close() {
+			/*
 			if (tid != null) {
 				try {
 					//so.setCurrentThreadId(tid);
@@ -1492,6 +1491,7 @@ public class LldbManagerImpl implements LldbManager {
 					Msg.debug(this, "Could not restore current thread id: " + e);
 				}
 			}
+			*/
 		}
 	}
 

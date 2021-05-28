@@ -19,9 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import SWIG.SBBreakpoint;
-import SWIG.SBStream;
-import agent.lldb.model.iface2.LldbModelTargetBreakpointContainer;
+import SWIG.*;
+import agent.lldb.model.iface2.*;
+import ghidra.dbg.target.TargetBreakpointLocation;
 import ghidra.dbg.target.TargetBreakpointSpecContainer.TargetBreakpointKindSet;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.TargetAttributeType;
@@ -38,7 +38,6 @@ import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 	},
 	canonicalContainer = true)
 public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetAbstractXpointSpec {
-
 
 	public LldbModelTargetBreakpointSpecImpl(LldbModelTargetBreakpointContainer breakpoints,
 			Object info) {
@@ -75,7 +74,6 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetAbstractXp
 		SBBreakpoint bpt = (SBBreakpoint) getModelObject();
 		this.changeAttributes(List.of(), List.of(), Map.of( //
 			DISPLAY_ATTRIBUTE_NAME, display = getDescription(0), //
-			SPEC_ATTRIBUTE_NAME, this, //
 			KINDS_ATTRIBUTE_NAME, kinds = computeKinds(bpt), //
 			ENABLED_ATTRIBUTE_NAME, enabled = bpt.IsEnabled(), //
 			EXPRESSION_ATTRIBUTE_NAME, "" //
@@ -91,9 +89,19 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetAbstractXp
 			Object[] elements = cachedElements.values().toArray();
 			LldbModelTargetBreakpointLocationImpl loc = (LldbModelTargetBreakpointLocationImpl) elements[0];
 			this.changeAttributes(List.of(), List.of(), Map.of( //
-				ADDRESS_ATTRIBUTE_NAME, loc.address //
+				TargetBreakpointLocation.ADDRESS_ATTRIBUTE_NAME, loc.address //
 			), reason);
 		}
+	}
+
+	public LldbModelTargetBreakpointLocation findLocation(Object obj) {
+		for (LldbModelTargetBreakpointLocation bp : breaksBySub.values()) {
+			//if (!bp.loc.getInferiorIds().contains(frame.inferior.inferior.getId())) {
+			//	continue;
+			//}
+			return bp;
+		}
+		return null;
 	}
 
 }

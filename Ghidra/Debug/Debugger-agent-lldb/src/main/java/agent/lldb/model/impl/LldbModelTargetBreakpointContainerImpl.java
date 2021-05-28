@@ -28,6 +28,7 @@ import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetBreakpointSpec.TargetBreakpointKind;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.*;
+import ghidra.util.Msg;
 
 @TargetObjectSchemaInfo(name = "BreakpointContainer", elements = { //
 	@TargetElementType(type = LldbModelTargetAbstractXpointSpec.class) //
@@ -79,7 +80,18 @@ public class LldbModelTargetBreakpointContainerImpl extends LldbModelTargetObjec
 	public void breakpointHit(Object bpt, LldbCause cause) {
 		TargetObject targetThread = getModel().getModelObject(getManager().getEventThread());
 		LldbModelTargetBreakpointSpec spec = getTargetBreakpointSpec(bpt);
-		listeners.fire.breakpointHit(getProxy(), targetThread, null, spec, spec);
+		if (spec == null) {
+			Msg.error(this, "Stopped for breakpoint unknown to the agent: " + bpt + " (pc=" +
+				targetThread + ")");
+			return;
+		}
+
+		LldbModelTargetBreakpointLocation loc = spec.findLocation(null);
+		if (loc == null) {
+			Msg.warn(this, "Stopped for a breakpoint whose location is unknown to the agent: " + spec);
+			//return; // Not ideal, but eb == null should be fine, since the spec holds the actions 
+		}
+		listeners.fire.breakpointHit(this, targetThread, null, spec, loc);
 		spec.breakpointHit();
 	}
 
