@@ -96,40 +96,62 @@ public class DebugClientImpl implements DebugClient {
 	}
 
 	@Override
-	public void attach(DebugServerId si, SBAttachInfo info) {
+	public SBProcess attach(DebugServerId si, SBAttachInfo info) {
 		SBError error = new SBError();
-		session.Attach(info, error);
+		SBProcess process = session.Attach(info, error);
 		if (!error.Success()) {
 			Msg.error(this, error.GetType() + " for attach");
+			return null;
 		}
+		return process;
 	}
 
 	@Override
-	public void attachProcess(DebugServerId si, String processName, boolean wait, BitmaskSet<DebugAttachFlags> attachFlags) {
+	public SBProcess attachProcess(DebugServerId si, String processName, boolean wait, BitmaskSet<DebugAttachFlags> attachFlags) {
 		SBListener listener = new SBListener();
 		SBError error = new SBError();
-		session.AttachToProcessWithName(listener, processName, wait, error);
+		SBProcess process = session.AttachToProcessWithName(listener, processName, wait, error);
 		if (!error.Success()) {
 			Msg.error(this, error.GetType() + " while attaching to " + processName);
+			return null;
 		}
+		return process;
 	}
 
 	@Override
-	public void attachProcess(DebugServerId si, BigInteger processId, BitmaskSet<DebugAttachFlags> attachFlags) {
+	public SBProcess attachProcess(DebugServerId si, String URL, boolean wait, boolean async, BitmaskSet<DebugAttachFlags> attachFlags) {
+		SBError error = new SBError();
+		session = createNullSession(); 
+		SBAttachInfo info = new SBAttachInfo(URL, wait, async);  // should be true,true for now
+		SBProcess process = session.Attach(info, error);
+		if (!error.Success()) {
+			Msg.error(this, error.GetType() + " while attaching to " + URL);
+			SBStream stream = new SBStream();
+			error.GetDescription(stream);
+			Msg.error(this, stream.GetData());
+			return null;
+		}
+		return process;
+	}
+
+	@Override
+	public SBProcess attachProcess(DebugServerId si, BigInteger processId, BitmaskSet<DebugAttachFlags> attachFlags) {
 		SBListener listener = new SBListener();
 		SBError error = new SBError();
-		session = createNullSession(); //sbd.CreateTarget("/opt/X11/bin/xclock");
-		session.AttachToProcessWithID(listener, processId, error);
+		session = createNullSession(); 
+		SBProcess process = session.AttachToProcessWithID(listener, processId, error);
 		if (!error.Success()) {
 			Msg.error(this, error.GetType() + " while attaching to " + processId);
 			SBStream stream = new SBStream();
 			error.GetDescription(stream);
 			Msg.error(this, stream.GetData());
+			return null;
 		}
+		return process;
 	}
 
 	@Override
-	public void createProcess(DebugServerId si, SBLaunchInfo info) {
+	public SBProcess createProcess(DebugServerId si, SBLaunchInfo info) {
 		SBError error = new SBError();
 		String cmd = info.GetExecutableFile().GetDirectory();
 		cmd += "/"+info.GetExecutableFile().GetFilename();
@@ -140,11 +162,13 @@ public class DebugClientImpl implements DebugClient {
 		SBProcess process = session.Launch(info, error);
 		if (!error.Success()) {
 			Msg.error(this, error.GetType() + " for create process");
+			return null;
 		}
+		return process;
 	}
 	
 	@Override
-	public void createProcess(DebugServerId si, String commandLine, BitmaskSet<DebugCreateFlags> createFlags) {
+	public SBProcess createProcess(DebugServerId si, String commandLine, BitmaskSet<DebugCreateFlags> createFlags) {
 		//TODO: fix this
 		session = connectSession(commandLine);
 		//session = connectSession("/opt/X11/bin/xclock-x86_64");
@@ -153,15 +177,9 @@ public class DebugClientImpl implements DebugClient {
 		SBProcess process = session.Launch(listener, null, null, "", "", "", "", 0, true, error);
 		if (!error.Success()) {
 			Msg.error(this, error.GetType() + " while launching " + commandLine);
+			return null;
 		}
-		//SBProcess process = session.LaunchSimple(null, null, null);
-		/*
-		listener = new SBListener(process.GetProcessID().toString());
-		broadcaster = process.GetBroadcaster();
-		broadcaster.AddListener(listener, SBProcess.eBroadcastBitStateChanged);
-		event = new SBEvent();
-		executor = new LldbClientThreadExecutor(() -> createClient());
-		*/
+		return process;
 	}
 
 	@Override

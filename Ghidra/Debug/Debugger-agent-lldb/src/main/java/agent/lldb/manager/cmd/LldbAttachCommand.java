@@ -90,6 +90,6 @@ public class LldbAttachCommand extends AbstractLldbCommand<Set<SBThread>> {
 			flags = new BitmaskSet<DebugAttachFlags>(DebugAttachFlags.class, DebugAttachFlags.DEFAULT.getMask());
 		}
 		client.attachProcess(client.getLocalServer(), BigInteger.valueOf(val), flags);
-		manager.waitForEventEx();
+		//manager.waitForEventEx();
 	}
 }
