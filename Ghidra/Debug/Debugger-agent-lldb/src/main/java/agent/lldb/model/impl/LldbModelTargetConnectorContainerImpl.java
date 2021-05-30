@@ -33,7 +33,7 @@ import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 			fixed = true),
 		@TargetAttributeType(
 			name = "Attach to process",
-			type = LldbModelTargetProcessAttachConnectorImpl.class,
+			type = LldbModelTargetProcessAttachByPidConnectorImpl.class,
 			required = true,
 			fixed = true),
 		@TargetAttributeType(
@@ -56,7 +56,9 @@ public class LldbModelTargetConnectorContainerImpl extends LldbModelTargetObject
 	private LldbModelTargetConnector defaultConnector;
 
 	protected final LldbModelTargetProcessLaunchConnectorImpl processLauncher;
-	protected final LldbModelTargetProcessAttachConnectorImpl processAttacher;
+	protected final LldbModelTargetProcessAttachByPidConnectorImpl processAttacherByPid;
+	protected final LldbModelTargetProcessAttachByNameConnectorImpl processAttacherByName;
+	protected final LldbModelTargetProcessAttachByPathConnectorImpl processAttacherByPath;
 	protected final LldbModelTargetTraceOrDumpConnectorImpl traceLoader;
 	protected final LldbModelTargetKernelConnectorImpl kernelAttacher;
 
@@ -65,17 +67,22 @@ public class LldbModelTargetConnectorContainerImpl extends LldbModelTargetObject
 		this.root = root;
 
 		this.processLauncher = new LldbModelTargetProcessLaunchConnectorImpl(this, "Launch process");
-		this.processAttacher =
-			new LldbModelTargetProcessAttachConnectorImpl(this, "Attach to process");
+		this.processAttacherByPid =
+				new LldbModelTargetProcessAttachByPidConnectorImpl(this, "Attach to process by pid");
+		this.processAttacherByName =
+				new LldbModelTargetProcessAttachByNameConnectorImpl(this, "Attach to process by name");
+		this.processAttacherByPath =
+				new LldbModelTargetProcessAttachByPathConnectorImpl(this, "Attach to process by path");
 		this.traceLoader = new LldbModelTargetTraceOrDumpConnectorImpl(this, "Load trace/dump");
 		this.kernelAttacher = new LldbModelTargetKernelConnectorImpl(this, "Attach to kernel");
 		this.defaultConnector = processLauncher;
 
 		changeAttributes(List.of(), List.of( //
-			processAttacher, //
+			processAttacherByPid, //
+			processAttacherByName, //
+			processAttacherByPath, //
 			processLauncher, //
-			traceLoader, //
-			kernelAttacher //
+			traceLoader //
 		), Map.of( //
 			DISPLAY_ATTRIBUTE_NAME, "Connectors" //
 		), "Initialized");

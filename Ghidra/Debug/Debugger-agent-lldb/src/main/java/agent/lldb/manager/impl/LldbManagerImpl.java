@@ -649,7 +649,7 @@ public class LldbManagerImpl implements LldbManager {
 		statusMap.put(LldbStoppedEvent.class, DebugStatus.BREAK);
 	}
 
-	private void updateState(SBEvent event) {
+	public void updateState(SBEvent event) {
 		DebugClientImpl client = (DebugClientImpl) engThread.getClient();
 		currentProcess = eventProcess = SBProcess.GetProcessFromEvent(event);
 		if (currentSession == null || !currentSession.IsValid()) {
@@ -693,6 +693,26 @@ public class LldbManagerImpl implements LldbManager {
 		}
 		return etid;
 		*/
+	}
+
+	public void updateState(SBProcess process) {
+		DebugClientImpl client = (DebugClientImpl) engThread.getClient();
+		currentProcess = eventProcess = process;
+		if (currentSession == null || !currentSession.IsValid()) {
+			SBTarget candidateSession = currentProcess.GetTarget();
+			if (candidateSession != null && candidateSession.IsValid()) {
+				currentSession = eventSession = candidateSession;
+			} 
+		} 
+		if (currentThread == null || !currentThread.IsValid()) {
+			SBThread candidateThread = currentProcess.GetSelectedThread();
+			if (candidateThread != null && candidateThread.IsValid()) {
+				currentThread = eventThread = candidateThread;
+			}
+		}
+		addSessionIfAbsent(eventSession);
+		addProcessIfAbsent(eventSession, eventProcess);
+		addThreadIfAbsent(eventProcess, eventThread);
 	}
 
 	/**
@@ -1413,8 +1433,18 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	@Override
-	public CompletableFuture<?> attach(String pid, BitmaskSet<DebugAttachFlags> flags) {
-		return execute(new LldbAttachCommand(this, pid, flags));
+	public CompletableFuture<?> attach(String pid) {
+		return execute(new LldbAttachCommand(this, pid));
+	}
+
+	@Override
+	public CompletableFuture<?> attach(String name, boolean wait) {
+		return execute(new LldbAttachCommand(this, name, wait));
+	}
+
+	@Override
+	public CompletableFuture<?> attach(String url, boolean wait, boolean async) {
+		return execute(new LldbAttachCommand(this, url, wait));
 	}
 
 	@Override

@@ -414,7 +414,11 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 */
 	CompletableFuture<Void> deleteBreakpoints(String... ids);
 
-	CompletableFuture<?> attach(String pid, BitmaskSet<DebugAttachFlags> flags);
+	CompletableFuture<?> attach(String pid);
+
+	CompletableFuture<?> attach(String name, boolean wait);
+
+	CompletableFuture<?> attach(String url, boolean wait, boolean async);
 
 	CompletableFuture<?> launch(List<String> args);
 
@@ -444,5 +448,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	DebugStatus getStatus();
 
 	void setCurrentEvent(SBEvent evt);
+
+	void updateState(SBProcess process);
 
 }

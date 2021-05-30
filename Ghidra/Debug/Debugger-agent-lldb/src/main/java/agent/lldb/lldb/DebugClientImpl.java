@@ -8,6 +8,7 @@ import SWIG.*;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.LldbManager;
 import agent.lldb.manager.evt.*;
+import agent.lldb.manager.impl.LldbManagerImpl;
 import ghidra.comm.util.BitmaskSet;
 import ghidra.util.Msg;
 
@@ -96,56 +97,42 @@ public class DebugClientImpl implements DebugClient {
 	}
 
 	@Override
-	public SBProcess attach(DebugServerId si, SBAttachInfo info) {
-		SBError error = new SBError();
-		SBProcess process = session.Attach(info, error);
-		if (!error.Success()) {
-			Msg.error(this, error.GetType() + " for attach");
-			return null;
-		}
-		return process;
-	}
-
-	@Override
-	public SBProcess attachProcess(DebugServerId si, String processName, boolean wait, BitmaskSet<DebugAttachFlags> attachFlags) {
+	public SBProcess attachProcess(DebugServerId si, int keyType, String key, boolean wait, boolean async) {
 		SBListener listener = new SBListener();
 		SBError error = new SBError();
-		SBProcess process = session.AttachToProcessWithName(listener, processName, wait, error);
-		if (!error.Success()) {
-			Msg.error(this, error.GetType() + " while attaching to " + processName);
-			return null;
-		}
-		return process;
-	}
-
-	@Override
-	public SBProcess attachProcess(DebugServerId si, String URL, boolean wait, boolean async, BitmaskSet<DebugAttachFlags> attachFlags) {
-		SBError error = new SBError();
 		session = createNullSession(); 
-		SBAttachInfo info = new SBAttachInfo(URL, wait, async);  // should be true,true for now
-		SBProcess process = session.Attach(info, error);
+		SBProcess process;
+		switch (keyType) {
+			case 0:  // pid
+				int radix = 10;
+				if (key.startsWith("0x")) {
+					key = key.substring(2);
+					radix = 16;
+				}
+				BigInteger processId = new BigInteger(key, radix);
+				process = session.AttachToProcessWithID(listener, processId, error);
+				break;
+			case 1:  // name
+				process = session.AttachToProcessWithName(listener, key, wait, error);
+				break;
+			case 2:  // path
+				SBAttachInfo info = new SBAttachInfo(key, wait, async); 
+				process = session.Attach(info, error);
+				break;
+			default:
+				return null;					
+		}
 		if (!error.Success()) {
-			Msg.error(this, error.GetType() + " while attaching to " + URL);
+			Msg.error(this, error.GetType() + " while attaching to " + key);
 			SBStream stream = new SBStream();
 			error.GetDescription(stream);
 			Msg.error(this, stream.GetData());
 			return null;
 		}
-		return process;
-	}
-
-	@Override
-	public SBProcess attachProcess(DebugServerId si, BigInteger processId, BitmaskSet<DebugAttachFlags> attachFlags) {
-		SBListener listener = new SBListener();
-		SBError error = new SBError();
-		session = createNullSession(); 
-		SBProcess process = session.AttachToProcessWithID(listener, processId, error);
-		if (!error.Success()) {
-			Msg.error(this, error.GetType() + " while attaching to " + processId);
-			SBStream stream = new SBStream();
-			error.GetDescription(stream);
-			Msg.error(this, stream.GetData());
-			return null;
+		if (async) {
+			manager.waitForEventEx();
+		} else {
+			manager.updateState(process);
 		}
 		return process;
 	}

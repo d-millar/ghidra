@@ -35,13 +35,13 @@ import ghidra.dbg.target.schema.*;
 	attributes = {
 		@TargetAttributeType(type = Void.class)
 	})
-public class LldbModelTargetProcessAttachConnectorImpl extends LldbModelTargetObjectImpl
+public class LldbModelTargetProcessAttachByPidConnectorImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetConnector {
 
 	protected final LldbModelTargetConnectorContainerImpl connectors;
 	protected final TargetParameterMap paramDescs;
 
-	public LldbModelTargetProcessAttachConnectorImpl(LldbModelTargetConnectorContainerImpl connectors,
+	public LldbModelTargetProcessAttachByPidConnectorImpl(LldbModelTargetConnectorContainerImpl connectors,
 			String name) {
 		super(connectors.getModel(), connectors, name, name);
 		this.connectors = connectors;
@@ -77,7 +77,7 @@ public class LldbModelTargetProcessAttachConnectorImpl extends LldbModelTargetOb
 	public CompletableFuture<Void> launch(Map<String, ?> args) {
 		String pidstr = (String) args.get("Pid");
 		return AsyncUtils.sequence(TypeSpec.VOID).then(seq -> {
-			getManager().attach(pidstr, null).handle(seq::nextIgnore);
+			getManager().attach(pidstr).handle(seq::nextIgnore);
 		}).finish().exceptionally((exc) -> {
 			throw new DebuggerUserException("Launch failed for " + args);
 		});

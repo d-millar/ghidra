@@ -441,13 +441,7 @@ public interface DebugClient extends DebugClientReentrant {
 			BitmaskSet<ProcessDescriptionFlags> flags);
 	*/
 
-	SBProcess attach(DebugServerId si, SBAttachInfo info);
-
-	SBProcess attachProcess(DebugServerId si, String procName, boolean wait, BitmaskSet<DebugAttachFlags> attachFlags);
-
-	SBProcess attachProcess(DebugServerId si, String URL, boolean wait, boolean async, BitmaskSet<DebugAttachFlags> attachFlags);
-
-	SBProcess attachProcess(DebugServerId si, BigInteger procId, BitmaskSet<DebugAttachFlags> attachFlags);
+	SBProcess attachProcess(DebugServerId si, int keyType, String key, boolean wait, boolean async);
 
 	SBProcess createProcess(DebugServerId si, SBLaunchInfo info);
 

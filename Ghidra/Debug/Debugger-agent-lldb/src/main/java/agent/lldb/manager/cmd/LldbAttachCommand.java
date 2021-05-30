@@ -36,22 +36,27 @@ public class LldbAttachCommand extends AbstractLldbCommand<Set<SBThread>> {
 
 	private LldbProcessCreatedEvent created = null;
 	private boolean completed = false;
-	private SBProcess proc;
-	private String id;
-	private BitmaskSet<DebugAttachFlags> flags;
+	private String key;
+	private int keyType = 0;
+	private boolean wait = true;
+	private boolean async = false;
 
-	public LldbAttachCommand(LldbManagerImpl manager, SBProcess proc,
-			BitmaskSet<DebugAttachFlags> flags) {
-		super(manager);
-		this.proc = proc;
-		this.flags = flags;
+	public LldbAttachCommand(LldbManagerImpl manager, String key) {
+		this(manager, key, true, false);
+		this.keyType = 0;
 	}
 
-	public LldbAttachCommand(LldbManagerImpl manager, String id,
-			BitmaskSet<DebugAttachFlags> flags) {
+	public LldbAttachCommand(LldbManagerImpl manager, String key, boolean wait) {
+		this(manager, key, wait, false);
+		this.keyType = 1;
+	}
+
+	public LldbAttachCommand(LldbManagerImpl manager, String key, boolean wait, boolean async) {
 		super(manager);
-		this.id = id;
-		this.flags = flags;
+		this.key = key;
+		this.wait = wait;
+		this.async = async;
+		this.keyType = 2;
 	}
 
 	@Override
@@ -84,12 +89,7 @@ public class LldbAttachCommand extends AbstractLldbCommand<Set<SBThread>> {
 	@Override
 	public void invoke() {
 		DebugClient client = manager.getClient();
-		String id = proc == null ? this.id : DebugClient.getId(proc);
-		long val = Long.decode(id);
-		if (flags == null) {
-			flags = new BitmaskSet<DebugAttachFlags>(DebugAttachFlags.class, DebugAttachFlags.DEFAULT.getMask());
-		}
-		client.attachProcess(client.getLocalServer(), BigInteger.valueOf(val), flags);
-		//manager.waitForEventEx();
+		client.attachProcess(client.getLocalServer(), keyType, key, wait, async);
+		// NB: manager.waitForEventEx - embedded in attach
 	}
 }
