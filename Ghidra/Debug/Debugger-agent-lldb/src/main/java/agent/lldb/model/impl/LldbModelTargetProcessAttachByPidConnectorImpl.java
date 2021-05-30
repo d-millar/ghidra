@@ -28,7 +28,7 @@ import ghidra.dbg.target.TargetMethod.TargetParameterMap;
 import ghidra.dbg.target.schema.*;
 
 @TargetObjectSchemaInfo(
-	name = "ProcessAttachConnector",
+	name = "ProcessAttachByPidConnector",
 	elements = {
 		@TargetElementType(type = Void.class)
 	},
