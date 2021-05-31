@@ -1448,8 +1448,8 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	@Override
-	public CompletableFuture<?> launch(List<String> args) {
-		return execute(new LldbLaunchProcessCommand(this, args));
+	public CompletableFuture<?> launch(String fileName, List<String> args) {
+		return execute(new LldbLaunchProcessCommand(this, fileName, args));
 	}
 
 	@Override

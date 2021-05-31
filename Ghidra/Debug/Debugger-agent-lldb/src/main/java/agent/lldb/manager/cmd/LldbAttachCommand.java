@@ -15,19 +15,15 @@
  */
 package agent.lldb.manager.cmd;
 
-import java.math.BigInteger;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import SWIG.SBProcess;
 import SWIG.SBThread;
 import agent.lldb.lldb.DebugClient;
-import agent.lldb.lldb.DebugClient.DebugAttachFlags;
 import agent.lldb.lldb.DebugThreadInfo;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.evt.*;
 import agent.lldb.manager.impl.LldbManagerImpl;
-import ghidra.comm.util.BitmaskSet;
 
 /**
  * Implementation of {@link DbgProcess#kill()}

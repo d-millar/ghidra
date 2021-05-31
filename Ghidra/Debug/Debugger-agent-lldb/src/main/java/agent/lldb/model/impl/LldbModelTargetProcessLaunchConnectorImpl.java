@@ -15,9 +15,7 @@
  */
 package agent.lldb.model.impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import agent.lldb.model.iface2.LldbModelTargetConnector;
@@ -79,13 +77,17 @@ public class LldbModelTargetProcessLaunchConnectorImpl extends LldbModelTargetOb
 
 	@Override
 	public CompletableFuture<Void> launch(Map<String, ?> args) {
-		return launch(
-			CmdLineParser.tokenize(TargetCmdLineLauncher.PARAMETER_CMDLINE_ARGS.get(args)));
+		return launch(CmdLineParser.tokenize(TargetCmdLineLauncher.PARAMETER_CMDLINE_ARGS.get(args)));
 	}
 
 	public CompletableFuture<Void> launch(List<String> args) {
+		String fileName = args.get(0);
+		List <String> nargs = new ArrayList<>();
+		for (int i = 1; i < args.size(); i++) {
+			nargs.add(args.get(i));
+		}
 		return AsyncUtils.sequence(TypeSpec.VOID).then(seq -> {
-			getManager().launch(args).handle(seq::nextIgnore);
+			getManager().launch(fileName, nargs).handle(seq::nextIgnore);
 		}).finish().exceptionally((exc) -> {
 			throw new DebuggerUserException("Launch failed for " + args);
 		});

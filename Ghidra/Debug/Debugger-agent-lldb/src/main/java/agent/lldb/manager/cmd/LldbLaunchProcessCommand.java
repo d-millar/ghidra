@@ -15,6 +15,7 @@
  */
 package agent.lldb.manager.cmd;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,11 +36,33 @@ public class LldbLaunchProcessCommand extends AbstractLldbCommand<SBThread> {
 
 	private LldbProcessCreatedEvent created = null;
 	private boolean completed = false;
+	private String fileName;
 	private List<String> args;
+	private List<String> envp;
+	private List<String> pathsIO;
+	private String wdir;
+	private long flags;
+	private boolean stopAtEntry;
 
-	public LldbLaunchProcessCommand(LldbManagerImpl manager, List<String> args) {
+	public LldbLaunchProcessCommand(LldbManagerImpl manager, String fileName, List<String> args) {
+		this(manager, fileName, args, null, null, "", 0L, true);
+	}
+	public LldbLaunchProcessCommand(LldbManagerImpl manager, String fileName, List<String> args, List<String> envp,
+			List<String> pathsIO, String workingDirectory, long flags, boolean stopAtEntry) {
 		super(manager);
+		this.fileName = fileName;
 		this.args = args;
+		this.envp = envp;
+		this.pathsIO = pathsIO;
+		if (pathsIO == null) {
+			this.pathsIO = new ArrayList<>();
+			this.pathsIO.add(""); 
+			this.pathsIO.add(""); 
+			this.pathsIO.add(""); 
+		}
+		this.wdir = workingDirectory;
+		this.flags = flags;
+		this.stopAtEntry = stopAtEntry;
 	}
 
 	@Override
@@ -61,8 +84,6 @@ public class LldbLaunchProcessCommand extends AbstractLldbCommand<SBThread> {
 	@Override
 	public void invoke() {
 		DebugClient client = manager.getClient();
-		client.createProcess(client.getLocalServer(), StringUtils.join(args, " "),
-			BitmaskSet.of(DebugCreateFlags.DEBUG_PROCESS));
-		manager.waitForEventEx();
+		client.createProcess(client.getLocalServer(), fileName, args, envp, pathsIO, wdir, flags, stopAtEntry);
 	}
 }

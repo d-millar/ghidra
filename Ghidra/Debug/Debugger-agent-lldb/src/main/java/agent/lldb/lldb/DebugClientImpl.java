@@ -3,6 +3,7 @@ package agent.lldb.lldb;
 import static org.junit.Assume.*;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import SWIG.*;
 import agent.lldb.manager.LldbEvent;
@@ -137,6 +138,7 @@ public class DebugClientImpl implements DebugClient {
 		return process;
 	}
 
+	
 	@Override
 	public SBProcess createProcess(DebugServerId si, SBLaunchInfo info) {
 		SBError error = new SBError();
@@ -155,18 +157,34 @@ public class DebugClientImpl implements DebugClient {
 	}
 	
 	@Override
-	public SBProcess createProcess(DebugServerId si, String commandLine, BitmaskSet<DebugCreateFlags> createFlags) {
-		//TODO: fix this
-		session = connectSession(commandLine);
-		//session = connectSession("/opt/X11/bin/xclock-x86_64");
+	public SBProcess createProcess(DebugServerId si, String fileName, 
+			List<String> args, List<String> envp, List<String> pathsIO, 
+			String workingDir, long createFlags, boolean stopAtEntry) {
+		session = connectSession(fileName);
+		
+		SWIGTYPE_p_p_char ppArgs = listToChar(args);
+		SWIGTYPE_p_p_char ppEnvp = listToChar(envp);
+		String pathSTDIN  = pathsIO.get(0);
+		String pathSTDOUT = pathsIO.get(1);
+		String pathSTDERR = pathsIO.get(2);
 		SBListener listener = new SBListener();
 		SBError error = new SBError();
-		SBProcess process = session.Launch(listener, null, null, "", "", "", "", 0, true, error);
+		SBProcess process = session.Launch(listener, ppArgs, ppEnvp, 
+			pathSTDIN, pathSTDOUT, pathSTDERR, workingDir, createFlags, stopAtEntry, error);
+		//SBProcess process = session.Launch(listener, null, null, "", "", "", "", 0, true, error);
 		if (!error.Success()) {
-			Msg.error(this, error.GetType() + " while launching " + commandLine);
+			Msg.error(this, error.GetType() + " while launching " + fileName);
+			SBStream stream = new SBStream();
+			error.GetDescription(stream);
+			Msg.error(this, stream.GetData());
 			return null;
 		}
+		manager.waitForEventEx();
 		return process;
+	}
+
+	private SWIGTYPE_p_p_char listToChar(List<String> list) {
+		return (SWIGTYPE_p_p_char) null; //list.toArray();
 	}
 
 	@Override
@@ -196,8 +214,8 @@ public class DebugClientImpl implements DebugClient {
 	}
 
 	@Override
-	public SBTarget connectSession(String commandLine) {
-		return sbd.CreateTarget(commandLine);
+	public SBTarget connectSession(String fileName) {
+		return sbd.CreateTarget(fileName);
 	}
 
 	@Override

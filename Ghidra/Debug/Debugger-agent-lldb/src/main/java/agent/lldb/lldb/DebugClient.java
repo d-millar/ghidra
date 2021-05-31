@@ -15,7 +15,7 @@
  */
 package agent.lldb.lldb;
 
-import java.math.BigInteger;
+import java.util.List;
 
 import SWIG.*;
 import agent.lldb.manager.LldbEvent;
@@ -216,47 +216,19 @@ public interface DebugClient extends DebugClientReentrant {
 	}
 
 	public static enum DebugCreateFlags implements BitmaskUniverse {
-		DEBUG_PROCESS(0), //
-		/*
-		DEBUG_ONLY_THIS_PROCESS(WinBase.DEBUG_ONLY_THIS_PROCESS), //
-		CREATE_SUSPENDED(WinBase.CREATE_SUSPENDED), //
-		DETACHED_PROCESS(WinBase.DETACHED_PROCESS), //
-
-		CREATE_NEW_CONSOLE(WinBase.CREATE_NEW_CONSOLE), //
-		//NORMAL_PRIORITY_CLASS(WinBase.NORMAL_PRIORITY_CLASS), //
-		//IDLE_PRIORITY_CLASS(WinBase.IDLE_PRIORITY_CLASS), //
-		//HIGH_PRIORITY_CLASS(WinBase.HIGH_PRIORITY_CLASS), //
-
-		//REALTIME_PRIORITY_CLASS(WinBase.REALTIME_PRIORITY_CLASS), //
-		CREATE_NEW_PROCESS_GROUP(WinBase.CREATE_NEW_PROCESS_GROUP), //
-		CREATE_UNICODE_ENVIRONMENT(WinBase.CREATE_UNICODE_ENVIRONMENT), //
-		CREATE_SEPARATE_WOW_VDM(WinBase.CREATE_SEPARATE_WOW_VDM), //
-
-		CREATE_SHARED_WOW_VDM(WinBase.CREATE_SHARED_WOW_VDM), //
-		CREATE_FORCEDOS(WinBase.CREATE_FORCEDOS), //
-		//BELOW_NORMAL_PRIORITY_CLASS(WinBase.BELOW_NORMAL_PRIORITY_CLASS), //
-		//ABOVE_NORMAL_PRIORITY_CLASS(WinBase.ABOVE_NORMAL_PRIORITY_CLASS), //
-
-		INHERIT_PARENT_AFFINITY(WinBase.INHERIT_PARENT_AFFINITY), //
-		//INHERIT_CALLER_PRIORITY(WinBase.INHERIT_CALLER_PRIORITY), //
-		CREATE_PROTECTED_PROCESS(WinBase.CREATE_PROTECTED_PROCESS), //
-		EXTENDED_STARTUPINFO_PRESENT(WinBase.EXTENDED_STARTUPINFO_PRESENT), //
-
-		//PROCESS_MODE_BACKGROUND_BEGIN(WinBase.PROCESS_MODE_BACKGROUND_BEGIN), //
-		//PROCESS_MODE_BACKGROUND_END(WinBase.PROCESS_MODE_BACKGROUND_END), //
-
-		CREATE_BREAKAWAY_FROM_JOB(WinBase.CREATE_BREAKAWAY_FROM_JOB), //
-		CREATE_PRESERVE_CODE_AUTHZ_LEVEL(WinBase.CREATE_PRESERVE_CODE_AUTHZ_LEVEL), //
-		CREATE_DEFAULT_ERROR_MODE(WinBase.CREATE_DEFAULT_ERROR_MODE), //
-		CREATE_NO_WINDOW(WinBase.CREATE_NO_WINDOW), //
-
-		//PROFILE_USER(WinBase.PROFILE_USER), //
-		//PROFILE_KERNEL(WinBase.PROFILE_KERNEL), //     
-		//PROFILE_SERVER(WinBase.PROFILE_SERVER), //
-		//CREATE_IGNORE_SYSTEM_DEFAULT(WinBase.CREATE_IGNORE_SYSTEM_DEFAULT), //
-		DEBUG_CREATE_NO_DEBUG_HEAP(0x00000400), //
-		DEBUG_CREATE_THROUGH_RTL(0x00010000), //
-		*/
+		LAUNCH_DEFAULT(0), //
+		LAUNCH_EXEC(1 << 0), //
+		LAUNCH_DEBUG(1 << 1), //
+		LAUNCH_STOP_AT_ENTRY(1 << 2), //
+		LAUNCH_DISABLE_ASLR(1 << 3), //
+		LAUNCH_DISABLE_STDIO(1 << 4), //
+		LAUNCH_IN_TTY(1 << 5), //
+		LAUNCH_IN_SHELL(1 << 6), //
+		LAUNCH_IN_SEP_GROUP(1 << 7), //
+		LAUNCH_DONT_SET_EXIT_STATUS(1 << 8), //
+		LAUNCH_DETACH_ON_ERROR(1 << 9), //
+		LAUNCH_SHELL_EXPAND_ARGS(1 << 10), //
+		LAUNCH_CLOSE_TTY_ON_EXIT(1 << 11), //
 		;
 
 		DebugCreateFlags(int mask) {
@@ -445,8 +417,8 @@ public interface DebugClient extends DebugClientReentrant {
 
 	SBProcess createProcess(DebugServerId si, SBLaunchInfo info);
 
-	SBProcess createProcess(DebugServerId si, String commandLine,
-			BitmaskSet<DebugCreateFlags> createFlags);
+	SBProcess createProcess(DebugServerId si, String fileName, List<String> args, List<String> envp, List<String> pathsIO,
+			String workingDir, long createFlags, boolean stopAtEntry);
 
 	void startServer(String options);
 
