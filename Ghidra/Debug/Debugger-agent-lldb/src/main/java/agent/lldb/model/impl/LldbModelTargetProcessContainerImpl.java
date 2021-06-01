@@ -20,9 +20,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import SWIG.SBProcess;
-import SWIG.SBThread;
-import SWIG.StateType;
+import SWIG.*;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.lldb.DebugModuleInfo;
 import agent.lldb.manager.LldbCause;

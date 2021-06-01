@@ -15,9 +15,7 @@
  */
 package agent.lldb.manager.evt;
 
-import SWIG.SBFrame;
-import SWIG.SBThread;
-import SWIG.StateType;
+import SWIG.*;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.lldb.DebugThreadInfo;
 

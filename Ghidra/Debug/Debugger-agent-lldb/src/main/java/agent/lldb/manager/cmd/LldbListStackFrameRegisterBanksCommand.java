@@ -18,9 +18,7 @@ package agent.lldb.manager.cmd;
 import java.util.HashMap;
 import java.util.Map;
 
-import SWIG.SBFrame;
-import SWIG.SBValue;
-import SWIG.SBValueList;
+import SWIG.*;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.impl.LldbManagerImpl;
 

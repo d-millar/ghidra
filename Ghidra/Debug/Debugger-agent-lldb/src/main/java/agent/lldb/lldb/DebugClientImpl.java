@@ -33,9 +33,16 @@ public class DebugClientImpl implements DebugClient {
 			System.load("/Users/llero/git/llvm-build/lib/liblldb.dylib");
 		}
 		catch (UnsatisfiedLinkError ex) {
+			Msg.error(this, "liblldb.dylib not found. Probably not OSX here.");
 			assumeTrue("liblldb.dylib not found. Probably not OSX here.", false);
 		}
-		SBDebugger.InitializeWithErrorHandling();
+		SBError error = SBDebugger.InitializeWithErrorHandling();
+		if (!error.Success()) {
+			SBStream stream = new SBStream();
+			error.GetDescription(stream);
+			Msg.error(this, stream.GetData());
+			return null;
+		}
 		event = new SBEvent();
 		sbd = SBDebugger.Create();
 		cmd = sbd.GetCommandInterpreter();
@@ -140,6 +147,14 @@ public class DebugClientImpl implements DebugClient {
 
 	
 	@Override
+	public SBProcess createProcess(DebugServerId si, String fileName) {
+		session = connectSession(fileName);
+		SBProcess process = session.LaunchSimple(null, null, "");
+		manager.updateState(process);
+		return process;
+	}
+	
+	@Override
 	public SBProcess createProcess(DebugServerId si, SBLaunchInfo info) {
 		SBError error = new SBError();
 		String cmd = info.GetExecutableFile().GetDirectory();
@@ -161,6 +176,14 @@ public class DebugClientImpl implements DebugClient {
 			List<String> args, List<String> envp, List<String> pathsIO, 
 			String workingDir, long createFlags, boolean stopAtEntry) {
 		session = connectSession(fileName);
+		
+		/*
+		SBLaunchInfo info = new SBLaunchInfo(null);
+		info.SetArguments(null, true);
+		info.SetEnvironmentEntries(null, true);
+		info.SetExecutableFile(null, true);
+		info.SetWorkingDirectory(workingDir);
+		*/
 		
 		SWIGTYPE_p_p_char ppArgs = listToChar(args);
 		SWIGTYPE_p_p_char ppEnvp = listToChar(envp);

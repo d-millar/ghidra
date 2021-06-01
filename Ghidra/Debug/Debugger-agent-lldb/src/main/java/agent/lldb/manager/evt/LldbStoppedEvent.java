@@ -15,9 +15,7 @@
  */
 package agent.lldb.manager.evt;
 
-import SWIG.SBFrame;
-import SWIG.SBThread;
-import SWIG.StateType;
+import SWIG.*;
 
 /**
  * The event corresponding with "{@code *stopped}"

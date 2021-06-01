@@ -18,11 +18,7 @@ package agent.lldb.lldb;
 import java.util.HashMap;
 import java.util.Map;
 
-import SWIG.SBEvent;
-import SWIG.SBFileSpec;
-import SWIG.SBModule;
-import SWIG.SBProcess;
-import SWIG.SBTarget;
+import SWIG.*;
 
 /**
  * Information about a module (program or library image).

@@ -54,6 +54,7 @@ public class LldbReadMemoryCommand extends AbstractLldbCommand<RangeSet<Long>> {
 	public void invoke() {
 		BigInteger offset = addr.getOffsetAsBigInteger();
 		SBError error = new SBError();
+		//byte[] buffer = buf.array();
 		//long read = process.ReadMemory(offset, buffer, len, error);
 		for (int i = 0; i < len; i += 8) {
 			BigInteger increment = new BigInteger(Integer.toString(i));

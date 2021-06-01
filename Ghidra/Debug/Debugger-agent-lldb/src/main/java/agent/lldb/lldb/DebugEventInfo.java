@@ -15,10 +15,7 @@
  */
 package agent.lldb.lldb;
 
-import SWIG.SBEvent;
-import SWIG.SBProcess;
-import SWIG.SBTarget;
-import SWIG.SBThread;
+import SWIG.*;
 import ghidra.comm.util.BitmaskSet;
 
 /**

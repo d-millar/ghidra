@@ -415,6 +415,8 @@ public interface DebugClient extends DebugClientReentrant {
 
 	SBProcess attachProcess(DebugServerId si, int keyType, String key, boolean wait, boolean async);
 
+	SBProcess createProcess(DebugServerId si, String fileName);
+
 	SBProcess createProcess(DebugServerId si, SBLaunchInfo info);
 
 	SBProcess createProcess(DebugServerId si, String fileName, List<String> args, List<String> envp, List<String> pathsIO,

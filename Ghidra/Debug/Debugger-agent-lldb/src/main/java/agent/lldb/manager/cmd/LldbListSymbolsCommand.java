@@ -18,9 +18,7 @@ package agent.lldb.manager.cmd;
 import java.util.HashMap;
 import java.util.Map;
 
-import SWIG.SBModule;
-import SWIG.SBProcess;
-import SWIG.SBSymbol;
+import SWIG.*;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 public class LldbListSymbolsCommand extends AbstractLldbCommand<Map<String, SBSymbol>> {
