@@ -9,8 +9,6 @@ import SWIG.*;
 import agent.lldb.manager.LldbEvent;
 import agent.lldb.manager.LldbManager;
 import agent.lldb.manager.evt.*;
-import agent.lldb.manager.impl.LldbManagerImpl;
-import ghidra.comm.util.BitmaskSet;
 import ghidra.util.Msg;
 
 public class DebugClientImpl implements DebugClient {
@@ -30,19 +28,12 @@ public class DebugClientImpl implements DebugClient {
 	public DebugClient createClient() {
 		try {
 			//TODO: fix this
-			System.load("/Users/llero/git/llvm-build/lib/liblldb.dylib");
+			System.load("/Users/llero/git/llvm-project/build/lib/liblldb.dylib");
 		}
 		catch (UnsatisfiedLinkError ex) {
-			Msg.error(this, "liblldb.dylib not found. Probably not OSX here.");
 			assumeTrue("liblldb.dylib not found. Probably not OSX here.", false);
 		}
-		SBError error = SBDebugger.InitializeWithErrorHandling();
-		if (!error.Success()) {
-			SBStream stream = new SBStream();
-			error.GetDescription(stream);
-			Msg.error(this, stream.GetData());
-			return null;
-		}
+		SBDebugger.InitializeWithErrorHandling();
 		event = new SBEvent();
 		sbd = SBDebugger.Create();
 		cmd = sbd.GetCommandInterpreter();
@@ -148,9 +139,13 @@ public class DebugClientImpl implements DebugClient {
 	
 	@Override
 	public SBProcess createProcess(DebugServerId si, String fileName) {
+		SBError error = new SBError();
 		session = connectSession(fileName);
 		SBProcess process = session.LaunchSimple(null, null, "");
-		manager.updateState(process);
+		if (!error.Success()) {
+			Msg.error(this, error.GetType() + " for create process");
+			return null;
+		}
 		return process;
 	}
 	
@@ -176,14 +171,6 @@ public class DebugClientImpl implements DebugClient {
 			List<String> args, List<String> envp, List<String> pathsIO, 
 			String workingDir, long createFlags, boolean stopAtEntry) {
 		session = connectSession(fileName);
-		
-		/*
-		SBLaunchInfo info = new SBLaunchInfo(null);
-		info.SetArguments(null, true);
-		info.SetEnvironmentEntries(null, true);
-		info.SetExecutableFile(null, true);
-		info.SetWorkingDirectory(workingDir);
-		*/
 		
 		SWIGTYPE_p_p_char ppArgs = listToChar(args);
 		SWIGTYPE_p_p_char ppEnvp = listToChar(envp);
