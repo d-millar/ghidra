@@ -84,7 +84,7 @@ public class LldbLaunchProcessCommand extends AbstractLldbCommand<SBThread> {
 	@Override
 	public void invoke() {
 		DebugClient client = manager.getClient();
-		client.createProcess(client.getLocalServer(), fileName);
-		//client.createProcess(client.getLocalServer(), fileName, args, envp, pathsIO, wdir, flags, stopAtEntry);
+		//client.createProcess(client.getLocalServer(), fileName);
+		client.createProcess(client.getLocalServer(), fileName, args, envp, pathsIO, wdir, flags, stopAtEntry);
 	}
 }

@@ -33,7 +33,13 @@ public class DebugClientImpl implements DebugClient {
 		catch (UnsatisfiedLinkError ex) {
 			assumeTrue("liblldb.dylib not found. Probably not OSX here.", false);
 		}
-		SBDebugger.InitializeWithErrorHandling();
+		SBError error = SBDebugger.InitializeWithErrorHandling();
+		if (!error.Success()) {
+			SBStream stream = new SBStream();
+			error.GetDescription(stream);
+			Msg.error(this, stream.GetData());
+			return null;
+		}
 		event = new SBEvent();
 		sbd = SBDebugger.Create();
 		cmd = sbd.GetCommandInterpreter();
