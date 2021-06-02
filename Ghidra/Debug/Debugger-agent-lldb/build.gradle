@@ -46,7 +46,7 @@ def boolean filterJar(File jarfile) {
 
 jar {
 	manifest {
-		attributes['Main-Class'] = 'agent.gdb.gadp.LldbGadpServer'
+		attributes['Main-Class'] = 'agent.lldb.gadp.LldbGadpServer'
 	}
 }
 
@@ -67,7 +67,7 @@ task nodepJar(type: Jar) {
 	
 	appendix = 'nodep'
 	manifest {
-		attributes['Main-Class'] = 'agent.gdb.gadp.LldbGadpServer'
+		attributes['Main-Class'] = 'agent.lldb.gadp.LldbGadpServer'
 	}
 
 	from(zipTree(jar.archivePath))

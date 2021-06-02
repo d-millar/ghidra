@@ -31,9 +31,16 @@ import ghidra.dbg.target.TargetFocusScope;
 import ghidra.dbg.target.schema.*;
 import ghidra.dbg.util.PathUtils;
 
-@TargetObjectSchemaInfo(name = "Thread", elements = {
-	@TargetElementType(type = Void.class) }, attributes = {
-		@TargetAttributeType(name = "Stack", type = LldbModelTargetStackImpl.class, required = true, fixed = true),
+@TargetObjectSchemaInfo(
+	name = "Thread",
+	elements = {
+		@TargetElementType(type = Void.class) },
+	attributes = {
+		@TargetAttributeType(
+			name = "Stack",
+			type = LldbModelTargetStackImpl.class,
+			required = true,
+			fixed = true),
 		@TargetAttributeType(name = TargetEnvironment.ARCH_ATTRIBUTE_NAME, type = String.class),
 		@TargetAttributeType(type = Void.class) })
 public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
@@ -94,7 +101,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 
 	public String getDescription(int level) {
 		SBStream stream = new SBStream();
-		SBThread thread = (SBThread) getModelObject();		
+		SBThread thread = (SBThread) getModelObject();
 		thread.GetDescription(stream);
 		return stream.GetData();
 	}
@@ -102,7 +109,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 	@Override
 	public String getDisplay() {
 		if (getManager().isKernelMode()) {
-			return "[PR" +  DebugClient.getId(getThread()) + "]";
+			return "[PR" + DebugClient.getId(getThread()) + "]";
 		}
 		String tidstr = DebugClient.getId(getThread());
 		if (base == 16) {

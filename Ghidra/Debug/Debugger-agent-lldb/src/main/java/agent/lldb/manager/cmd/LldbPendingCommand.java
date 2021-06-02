@@ -31,9 +31,9 @@ import agent.lldb.manager.evt.LldbCommandErrorEvent;
 /**
  * A command queued on the lldb manager
  *
- * A {@link DbgCommand} is queued by wrapping it in a {@link LldbPendingCommand} and submitting it to
- * the manager implementation's executor. This object also keep track of claimed/stolen events and
- * provides convenience methods for sifting through them.
+ * A {@link DbgCommand} is queued by wrapping it in a {@link LldbPendingCommand} and submitting it
+ * to the manager implementation's executor. This object also keep track of claimed/stolen events
+ * and provides convenience methods for sifting through them.
  *
  * @param <T> the type "returned" by the command
  */
@@ -175,8 +175,8 @@ public class LldbPendingCommand<T> extends CompletableFuture<T> implements LldbC
 	/**
 	 * Check that the command completed with one of the given results
 	 * 
-	 * {@link LldbCommandErrorEvent} need not be listed. This method will handle it as a special case
-	 * already. To avoid the special treatment, list it explicitly.
+	 * {@link LldbCommandErrorEvent} need not be listed. This method will handle it as a special
+	 * case already. To avoid the special treatment, list it explicitly.
 	 * 
 	 * @param classes the completion type to accept
 	 * @return the completion event, cast to the greatest common subclass

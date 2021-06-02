@@ -23,11 +23,11 @@ import SWIG.SBBreakpointLocation;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
-
 /**
  * Implementation of {@link LldbProcess#listBreakpoints()}
  */
-public class LldbListBreakpointLocationsCommand extends AbstractLldbCommand<Map<String, SBBreakpointLocation>> {
+public class LldbListBreakpointLocationsCommand
+		extends AbstractLldbCommand<Map<String, SBBreakpointLocation>> {
 
 	private Map<String, SBBreakpointLocation> updatedLocations = new HashMap<>();
 	protected final SBBreakpoint spec;

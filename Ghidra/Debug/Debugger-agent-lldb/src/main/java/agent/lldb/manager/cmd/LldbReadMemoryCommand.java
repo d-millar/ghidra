@@ -35,7 +35,8 @@ public class LldbReadMemoryCommand extends AbstractLldbCommand<RangeSet<Long>> {
 	private final ByteBuffer buf;
 	private final int len;
 
-	public LldbReadMemoryCommand(LldbManagerImpl manager, SBProcess process, Address addr, ByteBuffer buf, int len) {
+	public LldbReadMemoryCommand(LldbManagerImpl manager, SBProcess process, Address addr,
+			ByteBuffer buf, int len) {
 		super(manager);
 		this.process = process;
 		this.addr = addr;
@@ -46,7 +47,7 @@ public class LldbReadMemoryCommand extends AbstractLldbCommand<RangeSet<Long>> {
 	@Override
 	public RangeSet<Long> complete(LldbPendingCommand<?> pending) {
 		RangeSet<Long> rangeSet = TreeRangeSet.create();
-		rangeSet.add(Range.closedOpen(addr.getOffset(), addr.getOffset()+len));
+		rangeSet.add(Range.closedOpen(addr.getOffset(), addr.getOffset() + len));
 		return rangeSet;
 	}
 
@@ -60,13 +61,13 @@ public class LldbReadMemoryCommand extends AbstractLldbCommand<RangeSet<Long>> {
 			BigInteger increment = new BigInteger(Integer.toString(i));
 			BigInteger res = process.ReadPointerFromMemory(offset.add(increment), error);
 			byte[] bytes = res.toByteArray();
-			for (int j = 0; j < bytes.length; j++) {	
+			for (int j = 0; j < bytes.length; j++) {
 				buf.put(i + j, bytes[bytes.length - j - 1]);
 			}
 			if (!error.Success()) {
 				SBStream stream = new SBStream();
 				error.GetDescription(stream);
-				Msg.error(this, error.GetType()+":"+stream.GetData());
+				Msg.error(this, error.GetType() + ":" + stream.GetData());
 				break;
 			}
 		}

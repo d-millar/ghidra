@@ -26,20 +26,31 @@ import ghidra.dbg.util.PathUtils;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressRangeImpl;
 
-@TargetObjectSchemaInfo(name = "Module", elements = {
-	@TargetElementType(type = Void.class) 
-}, attributes = {
-	@TargetAttributeType(name = "Sections", type = LldbModelTargetModuleSectionContainerImpl.class, required = true, fixed = true),
-	@TargetAttributeType(name = "Symbols", type = LldbModelTargetSymbolContainerImpl.class, required = true, fixed = true),
-	@TargetAttributeType(name = "BaseAddress", type = Address.class),
-	@TargetAttributeType(name = "ImageName", type = String.class),
-	@TargetAttributeType(name = "UUID", type = String.class),
-	@TargetAttributeType(name = "Len", type = String.class),
-	@TargetAttributeType(type = Void.class) 
-})
+@TargetObjectSchemaInfo(
+	name = "Module",
+	elements = {
+		@TargetElementType(type = Void.class)
+	},
+	attributes = {
+		@TargetAttributeType(
+			name = "Sections",
+			type = LldbModelTargetModuleSectionContainerImpl.class,
+			required = true,
+			fixed = true),
+		@TargetAttributeType(
+			name = "Symbols",
+			type = LldbModelTargetSymbolContainerImpl.class,
+			required = true,
+			fixed = true),
+		@TargetAttributeType(name = "BaseAddress", type = Address.class),
+		@TargetAttributeType(name = "ImageName", type = String.class),
+		@TargetAttributeType(name = "UUID", type = String.class),
+		@TargetAttributeType(name = "Len", type = String.class),
+		@TargetAttributeType(type = Void.class)
+	})
 public class LldbModelTargetModuleImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetModule {
-	
+
 	protected static String indexModule(SBModule module) {
 		return DebugClient.getId(module);
 	}
@@ -59,33 +70,33 @@ public class LldbModelTargetModuleImpl extends LldbModelTargetObjectImpl
 
 		//this.symbols = new LldbModelTargetSymbolContainerImpl(this);
 		this.sections = new LldbModelTargetModuleSectionContainerImpl(this);
-	
+
 		SBFileSpec fspec = module.GetFileSpec();
 		changeAttributes(List.of(), List.of( //
 			sections //
-			//symbols //
+		//symbols //
 		), Map.of( //
 			DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
 			SHORT_DISPLAY_ATTRIBUTE_NAME, fspec.GetFilename(), //
-			MODULE_NAME_ATTRIBUTE_NAME, fspec.GetDirectory()+"/"+fspec.GetFilename(), //
-			"ImageName", fspec.GetDirectory()+"/"+fspec.GetFilename(), //
+			MODULE_NAME_ATTRIBUTE_NAME, fspec.GetDirectory() + "/" + fspec.GetFilename(), //
+			"ImageName", fspec.GetDirectory() + "/" + fspec.GetFilename(), //
 			"UUID", module.GetUUIDString() //
-			/*
-			"BaseAddress", space.getAddress(module.getKnownBase()), //
-			"TimeStamp", module.getTimeStamp(), //
-			"Len", Integer.toHexString(module.getSize()) //
-			*/
+		/*
+		"BaseAddress", space.getAddress(module.getKnownBase()), //
+		"TimeStamp", module.getTimeStamp(), //
+		"Len", Integer.toHexString(module.getSize()) //
+		*/
 		), "Initialized");
 
 	}
 
 	public String getDescription(int level) {
 		SBStream stream = new SBStream();
-		SBModule module = (SBModule) getModelObject();		
+		SBModule module = (SBModule) getModelObject();
 		module.GetDescription(stream);
 		return stream.GetData();
 	}
-	
+
 	protected Address doGetBase() {
 		return null; //getModel().getAddressSpace("ram").getAddress(module.getKnownBase());
 	}

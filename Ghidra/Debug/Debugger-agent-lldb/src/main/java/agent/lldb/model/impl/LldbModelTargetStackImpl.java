@@ -83,10 +83,11 @@ public class LldbModelTargetStackImpl extends LldbModelTargetObjectImpl
 			requestElements(true).thenAccept(__ -> {
 				for (TargetObject element : getCachedElements().values()) {
 					if (element instanceof LldbModelTargetStackFrame) {
-						LldbModelTargetStackFrameImpl frame = (LldbModelTargetStackFrameImpl) element;
+						LldbModelTargetStackFrameImpl frame =
+							(LldbModelTargetStackFrameImpl) element;
 						frame.threadStateChangedSpecific(state, reason);
 					}
-				} 
+				}
 			});
 		}
 	}

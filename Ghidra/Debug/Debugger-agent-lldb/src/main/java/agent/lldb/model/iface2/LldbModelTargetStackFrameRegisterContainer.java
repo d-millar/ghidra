@@ -30,13 +30,13 @@ import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
 			required = true),
 		@TargetAttributeType(
 			name = "Exception State Registers",
-			type = LldbModelTargetStackFrameRegisterNullBank.class, 
+			type = LldbModelTargetStackFrameRegisterNullBank.class,
 			required = true),
 		@TargetAttributeType(
 			name = "Floating Point Registers",
-			type = LldbModelTargetStackFrameRegisterNullBank.class, 
+			type = LldbModelTargetStackFrameRegisterNullBank.class,
 			required = true),
-		@TargetAttributeType(type = Void.class) 
+		@TargetAttributeType(type = Void.class)
 	},
 	canonicalContainer = true)
 public interface LldbModelTargetStackFrameRegisterContainer

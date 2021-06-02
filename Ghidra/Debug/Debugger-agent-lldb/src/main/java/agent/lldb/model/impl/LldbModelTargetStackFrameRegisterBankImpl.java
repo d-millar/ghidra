@@ -40,7 +40,7 @@ import ghidra.util.datastruct.ListenerSet;
 		@TargetElementType(type = LldbModelTargetStackFrameRegisterImpl.class)
 	},
 	attributes = {
-		@TargetAttributeType(type = Void.class) 
+		@TargetAttributeType(type = Void.class)
 	},
 	canonicalContainer = true)
 public class LldbModelTargetStackFrameRegisterBankImpl
@@ -54,21 +54,21 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 
 	protected final LldbModelTargetStackFrameRegisterContainerImpl container;
 
-	public LldbModelTargetStackFrameRegisterBankImpl(LldbModelTargetStackFrameRegisterContainerImpl container, SBValue val) {
+	public LldbModelTargetStackFrameRegisterBankImpl(
+			LldbModelTargetStackFrameRegisterContainerImpl container, SBValue val) {
 		super(container.getModel(), container, val.GetName(), val, "StackFrameRegisterBank");
 		this.container = container;
-		
+
 		changeAttributes(List.of(), List.of(), Map.of(
-			DISPLAY_ATTRIBUTE_NAME, getName(), 
-			DESCRIPTIONS_ATTRIBUTE_NAME, container
-		), "Initialized");
-		
+			DISPLAY_ATTRIBUTE_NAME, getName(),
+			DESCRIPTIONS_ATTRIBUTE_NAME, container), "Initialized");
+
 		requestElements(false);
 	}
 
 	public String getDescription(int level) {
 		SBStream stream = new SBStream();
-		SBValue val = (SBValue) getModelObject();		
+		SBValue val = (SBValue) getModelObject();
 		val.GetDescription(stream);
 		return stream.GetData();
 	}
@@ -82,15 +82,17 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 		return getManager().listStackFrameRegisters(bank).thenAccept(regs -> {
 			List<TargetObject> registers;
 			synchronized (this) {
-				registers = regs.values().stream().map(this::getTargetRegister).collect(Collectors.toList());
+				registers = regs.values()
+						.stream()
+						.map(this::getTargetRegister)
+						.collect(Collectors.toList());
 			}
 			setElements(registers, Map.of(), "Refreshed");
 			if (!getCachedElements().isEmpty()) {
 				readRegistersNamed(getCachedElements().keySet());
 			}
-		}); 
+		});
 	}
-
 
 	@Override
 	public LldbModelTargetRegister getTargetRegister(SBValue register) {
@@ -113,14 +115,15 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 
 	@Override
 	public CompletableFuture<? extends Map<String, byte[]>> readRegistersNamed(
-		Collection<String> names) {
-		Map<String, byte []> result = new HashMap<>();
+			Collection<String> names) {
+		Map<String, byte[]> result = new HashMap<>();
 		Map<String, TargetObject> elements = getCachedElements();
 		for (String regname : names) {
 			if (!elements.containsKey(regname)) {
 				throw new DebuggerRegisterAccessException("No such register: " + regname);
 			}
-			LldbModelTargetStackFrameRegisterImpl register = (LldbModelTargetStackFrameRegisterImpl) elements.get(regname);
+			LldbModelTargetStackFrameRegisterImpl register =
+				(LldbModelTargetStackFrameRegisterImpl) elements.get(regname);
 			byte[] bytes = register.getBytes();
 			result.put(regname, bytes);
 		}
@@ -132,13 +135,14 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 		}
 		return CompletableFuture.completedFuture(result);
 	}
-	
+
 	@Override
 	public CompletableFuture<Void> writeRegistersNamed(Map<String, byte[]> values) {
 		Map<String, TargetObject> elements = getCachedElements();
 		for (Map.Entry<String, byte[]> ent : values.entrySet()) {
 			String regname = ent.getKey();
-			LldbModelTargetStackFrameRegisterImpl reg = (LldbModelTargetStackFrameRegisterImpl) elements.get(regname);
+			LldbModelTargetStackFrameRegisterImpl reg =
+				(LldbModelTargetStackFrameRegisterImpl) elements.get(regname);
 			if (reg == null) {
 				throw new DebuggerRegisterAccessException("No such register: " + regname);
 			}
@@ -152,5 +156,5 @@ public class LldbModelTargetStackFrameRegisterBankImpl
 	public Object getContainer() {
 		return container;
 	}
-	
+
 }

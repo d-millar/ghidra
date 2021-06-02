@@ -167,8 +167,8 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	/**
 	 * Get all threads known to the manager
 	 * 
-	 * This does not ask lldb to lists its known threads. Rather it returns a read-only view of
-	 * the manager's understanding of the current threads based on its tracking of lldb events.
+	 * This does not ask lldb to lists its known threads. Rather it returns a read-only view of the
+	 * manager's understanding of the current threads based on its tracking of lldb events.
 	 * 
 	 * @return a map of lldb-assigned thread IDs to corresponding thread handles
 	 */
@@ -226,8 +226,8 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * Get the state of the lldb session
 	 * 
 	 * In all-stop mode, if any thread is running, lldb is said to be in the running state and is
-	 * unable to process commands. Otherwise, if all threads are stopped, then lldb is said to be
-	 * in the stopped state and can accept and process commands. This manager has not been tested in
+	 * unable to process commands. Otherwise, if all threads are stopped, then lldb is said to be in
+	 * the stopped state and can accept and process commands. This manager has not been tested in
 	 * non-stop mode.
 	 * 
 	 * @return the state
@@ -342,34 +342,35 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
 	public CompletableFuture<Map<String, SBModule>> listModules(SBTarget session);
-	
+
 	/**
 	 * List lldb's module sections
 	 * 
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
 	public CompletableFuture<Map<String, SBSection>> listModuleSections(SBModule module);
-	
+
 	/**
 	 * List lldb's module symbols
 	 * 
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
 	public CompletableFuture<Map<String, SBSymbol>> listModuleSymbols(SBModule module);
-		
+
 	/**
 	 * List lldb's memory
 	 * 
 	 * @return a future that completes with a map of session IDs to session handles
 	 */
 	public CompletableFuture<List<SBMemoryRegionInfo>> listMemory(SBProcess process);
-	
+
 	/**
 	 * List information for all breakpoints
 	 * 
 	 * @return a future that completes with a list of information for all breakpoints
 	 */
 	CompletableFuture<Map<String, Object>> listBreakpoints(SBTarget session);
+
 	/**
 	 * List information for all breakpoints
 	 * 
@@ -383,7 +384,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 	 * @return a future that completes with a list of information for all env vars
 	 */
 	CompletableFuture<Map<String, String>> listEnvironment(SBTarget session);
-	
+
 	/**
 	 * Disable the given breakpoints
 	 * 

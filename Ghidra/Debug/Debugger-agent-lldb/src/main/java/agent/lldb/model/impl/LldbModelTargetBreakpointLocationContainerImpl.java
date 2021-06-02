@@ -24,18 +24,23 @@ import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.*;
 
-@TargetObjectSchemaInfo(name = "BreakpointLocationContainer", elements = { //
-	@TargetElementType(type = LldbModelTargetBreakpointLocationImpl.class) //
-}, attributes = { //
-	@TargetAttributeType(type = Void.class) //
-}, canonicalContainer = true)
+@TargetObjectSchemaInfo(
+	name = "BreakpointLocationContainer",
+	elements = { //
+		@TargetElementType(type = LldbModelTargetBreakpointLocationImpl.class) //
+	},
+	attributes = { //
+		@TargetAttributeType(type = Void.class) //
+	},
+	canonicalContainer = true)
 public class LldbModelTargetBreakpointLocationContainerImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetBreakpointLocationContainer {
 
 	protected final LldbModelTargetProcessImpl targetProcess;
 
 	public LldbModelTargetBreakpointLocationContainerImpl(LldbModelTargetProcess targetProcess) {
-		super(targetProcess.getModel(), targetProcess, "Breakpoints", "BreakpointLocationContainer");
+		super(targetProcess.getModel(), targetProcess, "Breakpoints",
+			"BreakpointLocationContainer");
 		this.targetProcess = (LldbModelTargetProcessImpl) targetProcess;
 
 		getManager().addEventsListener(this);
@@ -45,12 +50,14 @@ public class LldbModelTargetBreakpointLocationContainerImpl extends LldbModelTar
 	public LldbModelTargetBreakpointLocation getTargetBreakpointLocation(SBBreakpointLocation loc) {
 		TargetObject targetObject = getMapObject(loc);
 		if (targetObject != null) {
-			LldbModelTargetBreakpointLocation location = (LldbModelTargetBreakpointLocation) targetObject;
+			LldbModelTargetBreakpointLocation location =
+				(LldbModelTargetBreakpointLocation) targetObject;
 			location.setModelObject(loc);
 			return location;
 		}
 		TargetObject spec = getModel().getModelObject(loc.GetBreakpoint());
-		return new LldbModelTargetBreakpointLocationImpl((LldbModelTargetAbstractXpointSpec) spec, loc);
+		return new LldbModelTargetBreakpointLocationImpl((LldbModelTargetAbstractXpointSpec) spec,
+			loc);
 	}
 
 	/*
@@ -68,7 +75,7 @@ public class LldbModelTargetBreakpointLocationContainerImpl extends LldbModelTar
 		});
 	}
 	*/
-	
+
 	public void addBreakpointLocation(LldbModelTargetBreakpointLocation loc) {
 		changeElements(List.of(), Map.of(loc.getName(), loc), "Added");
 	}
@@ -76,7 +83,6 @@ public class LldbModelTargetBreakpointLocationContainerImpl extends LldbModelTar
 	public void removeBreakpointLocation(LldbModelTargetBreakpointLocation loc) {
 		changeElements(List.of(loc.getName()), Map.of(), "Removed");
 	}
-
 
 	public SBTarget getSession() {
 		return (SBTarget) getModelObject();

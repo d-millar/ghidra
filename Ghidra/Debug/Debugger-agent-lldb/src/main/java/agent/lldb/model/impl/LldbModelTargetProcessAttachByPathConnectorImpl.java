@@ -41,7 +41,8 @@ public class LldbModelTargetProcessAttachByPathConnectorImpl extends LldbModelTa
 	protected final LldbModelTargetConnectorContainerImpl connectors;
 	protected final TargetParameterMap paramDescs;
 
-	public LldbModelTargetProcessAttachByPathConnectorImpl(LldbModelTargetConnectorContainerImpl connectors,
+	public LldbModelTargetProcessAttachByPathConnectorImpl(
+			LldbModelTargetConnectorContainerImpl connectors,
 			String name) {
 		super(connectors.getModel(), connectors, name, name);
 		this.connectors = connectors;

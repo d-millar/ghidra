@@ -33,12 +33,11 @@ public interface LldbModelTargetRegisterBank extends LldbModelTargetObject, Targ
 	}
 
 	@Override
-	public  CompletableFuture<? extends Map<String, byte[]>> readRegistersNamed(
+	public CompletableFuture<? extends Map<String, byte[]>> readRegistersNamed(
 			Collection<String> names);
 
 	@Override
 	public CompletableFuture<Void> writeRegistersNamed(Map<String, byte[]> values);
-
 
 	@Override
 	public default Map<String, byte[]> getCachedRegisters() {

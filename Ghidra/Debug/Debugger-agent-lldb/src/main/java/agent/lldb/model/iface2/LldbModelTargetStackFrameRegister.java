@@ -30,7 +30,7 @@ import ghidra.dbg.util.ConversionUtils;
 		@TargetElementType(type = LldbModelTargetStackFrameRegisterImpl.class)
 	},
 	attributes = {
-		@TargetAttributeType(type = Void.class) 
+		@TargetAttributeType(type = Void.class)
 	},
 	canonicalContainer = true)
 public interface LldbModelTargetStackFrameRegister extends LldbModelTargetRegister {

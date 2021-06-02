@@ -26,7 +26,7 @@ import ghidra.comm.util.BitmaskSet;
  * {@code CreateProcess} of {@code IDebugEventCallbacks}.
  */
 public class DebugEventInfo {
-	
+
 	public SBEvent event;
 	public Long id;
 
@@ -42,17 +42,17 @@ public class DebugEventInfo {
 	public BitmaskSet<?> getFlags() {
 		if (SBTarget.EventIsTargetEvent(event)) {
 			BitmaskSet<DebugClient.ChangeSessionState> flags =
-					new BitmaskSet<>(DebugClient.ChangeSessionState.class, event.GetType());
+				new BitmaskSet<>(DebugClient.ChangeSessionState.class, event.GetType());
 			return flags;
 		}
 		if (SBProcess.EventIsProcessEvent(event)) {
 			BitmaskSet<DebugClient.ChangeProcessState> flags =
-					new BitmaskSet<>(DebugClient.ChangeProcessState.class, event.GetType());
+				new BitmaskSet<>(DebugClient.ChangeProcessState.class, event.GetType());
 			return flags;
 		}
 		if (SBThread.EventIsThreadEvent(event)) {
 			BitmaskSet<DebugClient.ChangeThreadState> flags =
-					new BitmaskSet<>(DebugClient.ChangeThreadState.class, event.GetType());
+				new BitmaskSet<>(DebugClient.ChangeThreadState.class, event.GetType());
 			return flags;
 		}
 		return null;

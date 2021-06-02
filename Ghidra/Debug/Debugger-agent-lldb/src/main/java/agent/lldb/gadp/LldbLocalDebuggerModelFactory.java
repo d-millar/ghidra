@@ -22,8 +22,8 @@ import ghidra.dbg.util.ConfigurableFactory.FactoryDescription;
 import ghidra.util.classfinder.ExtensionPointProperties;
 
 @FactoryDescription( //
-		brief = "OSX lldb local agent via GADP/TCP", //
-		htmlDetails = "Launch a new agent using OSX lldb." //
+	brief = "OSX lldb local agent via GADP/TCP", //
+	htmlDetails = "Launch a new agent using OSX lldb." //
 )
 @ExtensionPointProperties(priority = 100)
 public class LldbLocalDebuggerModelFactory extends AbstractGadpLocalDebuggerModelFactory {

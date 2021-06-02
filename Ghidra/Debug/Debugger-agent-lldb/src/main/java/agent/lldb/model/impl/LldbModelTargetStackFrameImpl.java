@@ -110,11 +110,11 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 
 	public String getDescription(int level) {
 		SBStream stream = new SBStream();
-		SBFrame frame = (SBFrame) getModelObject();		
+		SBFrame frame = (SBFrame) getModelObject();
 		frame.GetDescription(stream);
 		return stream.GetData();
 	}
-	
+
 	protected static String computeDisplay(SBFrame frame) {
 		if (frame.GetFunction() == null) {
 			return String.format("#%d 0x%s", frame.GetFrameID(), frame.GetPC().toString(16));

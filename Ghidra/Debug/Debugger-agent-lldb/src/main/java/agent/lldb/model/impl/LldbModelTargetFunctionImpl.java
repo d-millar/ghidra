@@ -41,7 +41,7 @@ public class LldbModelTargetFunctionImpl extends LldbModelTargetObjectImpl
 	protected static String keyFunction(SBFunction fn) {
 		return PathUtils.makeKey(DebugClient.getId(fn));
 	}
-	
+
 	protected final LldbModelTargetStackFrame frame;
 
 	protected final Map<Integer, LldbModelTargetStackFrameImpl> framesByLevel =
@@ -55,7 +55,7 @@ public class LldbModelTargetFunctionImpl extends LldbModelTargetObjectImpl
 			AddressSpace space = getModel().getAddressSpace("ram");
 			Address min = space.getAddress(function.GetStartAddress().GetOffset().longValue());
 			Address max = space.getAddress(function.GetStartAddress().GetOffset().longValue());
-			
+
 			changeAttributes(List.of(), List.of(), Map.of( //
 				DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
 				"Start", min, //
@@ -72,7 +72,7 @@ public class LldbModelTargetFunctionImpl extends LldbModelTargetObjectImpl
 
 	public String getDescription(int level) {
 		SBStream stream = new SBStream();
-		SBFunction function = (SBFunction) getModelObject();		
+		SBFunction function = (SBFunction) getModelObject();
 		function.GetDescription(stream);
 		return stream.GetData();
 	}

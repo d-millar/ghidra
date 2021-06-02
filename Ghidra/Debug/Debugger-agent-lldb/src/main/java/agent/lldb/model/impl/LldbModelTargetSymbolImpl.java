@@ -28,9 +28,14 @@ import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 import ghidra.dbg.util.PathUtils;
 import ghidra.program.model.address.Address;
 
-@TargetObjectSchemaInfo(name = "Symbol", elements = {
-	@TargetElementType(type = Void.class) }, attributes = {
-		@TargetAttributeType(name = TargetSymbol.NAMESPACE_ATTRIBUTE_NAME, type = LldbModelTargetSymbolContainerImpl.class),
+@TargetObjectSchemaInfo(
+	name = "Symbol",
+	elements = {
+		@TargetElementType(type = Void.class) },
+	attributes = {
+		@TargetAttributeType(
+			name = TargetSymbol.NAMESPACE_ATTRIBUTE_NAME,
+			type = LldbModelTargetSymbolContainerImpl.class),
 		@TargetAttributeType(name = TargetObject.VALUE_ATTRIBUTE_NAME, type = Address.class),
 		@TargetAttributeType(name = TargetSymbol.SIZE_ATTRIBUTE_NAME, type = long.class),
 		@TargetAttributeType(name = "Name", type = String.class),
@@ -56,26 +61,31 @@ public class LldbModelTargetSymbolImpl extends LldbModelTargetObjectImpl
 			SBSymbol symbol) {
 		super(symbols.getModel(), symbols, keySymbol(symbol), symbol, "Symbol");
 		this.constant = false;
-		this.value = symbols.getModel().getAddressSpace("ram").getAddress(symbol.GetStartAddress().GetOffset().longValue());
-		this.size = symbol.GetEndAddress().GetOffset().subtract(symbol.GetStartAddress().GetOffset()).longValue();
+		this.value = symbols.getModel()
+				.getAddressSpace("ram")
+				.getAddress(symbol.GetStartAddress().GetOffset().longValue());
+		this.size = symbol.GetEndAddress()
+				.GetOffset()
+				.subtract(symbol.GetStartAddress().GetOffset())
+				.longValue();
 
 		changeAttributes(List.of(), List.of(), Map.of( //
 			DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
 			NAMESPACE_ATTRIBUTE_NAME, symbols, //
 			VALUE_ATTRIBUTE_NAME, value, //
 			SIZE_ATTRIBUTE_NAME, size //
-			/*
-			"Name", symbol.getName(), //
-			"Size", size, //
-			"TypeId", symbol.getTypeId(), //
-			"Tag", symbol.getTag() //
-			*/
+		/*
+		"Name", symbol.getName(), //
+		"Size", size, //
+		"TypeId", symbol.getTypeId(), //
+		"Tag", symbol.getTag() //
+		*/
 		), "Initialized");
 	}
 
 	public String getDescription(int level) {
 		SBStream stream = new SBStream();
-		SBSymbol symbol = (SBSymbol) getModelObject();		
+		SBSymbol symbol = (SBSymbol) getModelObject();
 		symbol.GetDescription(stream);
 		return stream.GetData();
 	}

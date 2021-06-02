@@ -136,8 +136,9 @@ public enum MacOSSpecimen implements DebuggerTestSpecimen, DebuggerModelTestUtil
 	public boolean isAttachable(DummyProc dummy, TargetAttachable attachable,
 			AbstractDebuggerModelTest test) throws Throwable {
 		waitOn(attachable.fetchAttributes());
-		long pid = attachable.getTypedAttributeNowByName(LldbModelTargetAvailable.PID_ATTRIBUTE_NAME,
-			Long.class, -1L);
+		long pid =
+			attachable.getTypedAttributeNowByName(LldbModelTargetAvailable.PID_ATTRIBUTE_NAME,
+				Long.class, -1L);
 		return pid == dummy.pid;
 	}
 }

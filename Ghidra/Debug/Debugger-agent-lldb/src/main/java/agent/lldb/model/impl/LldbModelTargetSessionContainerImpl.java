@@ -26,9 +26,13 @@ import agent.lldb.model.iface2.*;
 import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.*;
 
-@TargetObjectSchemaInfo(name = "SessionContainer", elements = {
-	@TargetElementType(type = LldbModelTargetSessionImpl.class) }, attributes = {
-		@TargetAttributeType(type = Void.class) }, canonicalContainer = true)
+@TargetObjectSchemaInfo(
+	name = "SessionContainer",
+	elements = {
+		@TargetElementType(type = LldbModelTargetSessionImpl.class) },
+	attributes = {
+		@TargetAttributeType(type = Void.class) },
+	canonicalContainer = true)
 public class LldbModelTargetSessionContainerImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetSessionContainer {
 

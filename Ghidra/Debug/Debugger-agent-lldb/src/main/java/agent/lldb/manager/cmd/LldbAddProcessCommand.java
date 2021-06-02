@@ -30,7 +30,7 @@ public class LldbAddProcessCommand extends AbstractLldbCommand<SBProcess> {
 	@Override
 	public SBProcess complete(LldbPendingCommand<?> pending) {
 		// Not apparent this is needed
-		return null; 
+		return null;
 	}
 
 }

@@ -43,16 +43,17 @@ public class LldbDisableBreakpointsCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public void invoke() {
-		Map<String, Object> knownBreakpoints = manager.getKnownBreakpoints(manager.getCurrentSession());
+		Map<String, Object> knownBreakpoints =
+			manager.getKnownBreakpoints(manager.getCurrentSession());
 		for (String id : ids) {
 			if (knownBreakpoints.containsKey(id)) {
 				Object obj = knownBreakpoints.get(id);
 				if (obj instanceof SBBreakpoint) {
-					((SBBreakpoint)obj).SetEnabled(false);
-				}	
+					((SBBreakpoint) obj).SetEnabled(false);
+				}
 				if (obj instanceof SBWatchpoint) {
-					((SBWatchpoint)obj).SetEnabled(false);
-				}	
+					((SBWatchpoint) obj).SetEnabled(false);
+				}
 			}
 		}
 	}

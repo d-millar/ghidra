@@ -27,7 +27,7 @@ import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
 		@TargetElementType(type = LldbModelTargetStackFrameRegisterImpl.class)
 	},
 	attributes = {
-		@TargetAttributeType(type = Object.class) 
+		@TargetAttributeType(type = Object.class)
 	},
 	canonicalContainer = true)
 public interface LldbModelTargetStackFrameRegisterNullBank

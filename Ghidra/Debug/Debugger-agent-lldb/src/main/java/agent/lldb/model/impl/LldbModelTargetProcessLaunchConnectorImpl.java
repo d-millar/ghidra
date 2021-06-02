@@ -43,7 +43,8 @@ public class LldbModelTargetProcessLaunchConnectorImpl extends LldbModelTargetOb
 	protected final LldbModelTargetConnectorContainerImpl connectors;
 	protected final TargetParameterMap paramDescs;
 
-	public LldbModelTargetProcessLaunchConnectorImpl(LldbModelTargetConnectorContainerImpl connectors,
+	public LldbModelTargetProcessLaunchConnectorImpl(
+			LldbModelTargetConnectorContainerImpl connectors,
 			String name) {
 		super(connectors.getModel(), connectors, name, name);
 		this.connectors = connectors;
@@ -77,12 +78,13 @@ public class LldbModelTargetProcessLaunchConnectorImpl extends LldbModelTargetOb
 
 	@Override
 	public CompletableFuture<Void> launch(Map<String, ?> args) {
-		return launch(CmdLineParser.tokenize(TargetCmdLineLauncher.PARAMETER_CMDLINE_ARGS.get(args)));
+		return launch(
+			CmdLineParser.tokenize(TargetCmdLineLauncher.PARAMETER_CMDLINE_ARGS.get(args)));
 	}
 
 	public CompletableFuture<Void> launch(List<String> args) {
 		String fileName = args.get(0);
-		List <String> nargs = new ArrayList<>();
+		List<String> nargs = new ArrayList<>();
 		for (int i = 1; i < args.size(); i++) {
 			nargs.add(args.get(i));
 		}

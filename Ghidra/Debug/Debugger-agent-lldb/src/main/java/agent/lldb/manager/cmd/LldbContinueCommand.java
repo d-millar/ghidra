@@ -26,7 +26,7 @@ import agent.lldb.manager.impl.LldbManagerImpl;
  * Implementation of {@link DbgProcess#kill()}
  */
 public class LldbContinueCommand extends AbstractLldbCommand<Void> {
-	
+
 	private SBProcess process;
 
 	public LldbContinueCommand(LldbManagerImpl manager, SBProcess process) {

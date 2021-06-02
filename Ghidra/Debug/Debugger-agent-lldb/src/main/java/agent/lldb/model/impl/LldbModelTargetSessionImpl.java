@@ -32,9 +32,9 @@ import ghidra.dbg.util.PathUtils;
 		@TargetElementType(type = Void.class) },
 	attributes = {
 		@TargetAttributeType(
-			name = "Debug", 
-			type = LldbModelTargetDebugContainerImpl.class, 
-			required = true, 
+			name = "Debug",
+			type = LldbModelTargetDebugContainerImpl.class,
+			required = true,
 			fixed = true),
 		@TargetAttributeType(
 			name = "Attributes",
@@ -46,9 +46,9 @@ import ghidra.dbg.util.PathUtils;
 			required = true,
 			fixed = true),
 		@TargetAttributeType(
-			name = "Modules", 
-			type = LldbModelTargetModuleContainerImpl.class, 
-			required = true, 
+			name = "Modules",
+			type = LldbModelTargetModuleContainerImpl.class,
+			required = true,
 			fixed = true),
 		@TargetAttributeType(type = Void.class) })
 public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
@@ -84,7 +84,7 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 		this.attributes = new LldbModelTargetSessionAttributesImpl(this);
 		this.processes = new LldbModelTargetProcessContainerImpl(this);
 		this.modules = new LldbModelTargetModuleContainerImpl(this);
-		
+
 		changeAttributes(List.of(), List.of( //
 			debug, //
 			attributes, //
@@ -102,12 +102,12 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 
 	public String getDescription(int level) {
 		SBStream stream = new SBStream();
-		SBTarget session = (SBTarget) getModelObject();		
+		SBTarget session = (SBTarget) getModelObject();
 		DescriptionLevel detail = DescriptionLevel.swigToEnum(level);
 		session.GetDescription(stream, detail);
 		return stream.GetData();
 	}
-	
+
 	@Override
 	public CompletableFuture<Void> setActive() {
 		return getManager().setActiveSession(getSession());
@@ -127,7 +127,7 @@ public class LldbModelTargetSessionImpl extends LldbModelTargetObjectImpl
 	public LldbModelTargetModuleContainer getModules() {
 		return modules;
 	}
-	
+
 	public SBTarget getSession() {
 		return (SBTarget) getModelObject();
 	}

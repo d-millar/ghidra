@@ -96,8 +96,8 @@ public interface LldbEventsListener {
 	void threadCreated(SBThread thread, LldbCause cause);
 
 	/**
-	 * A thread's sta@Override
-	te has changed, e.g., {@link DbgState#RUNNING} to {@link DbgState#STOPPED}
+	 * A thread's sta@Override te has changed, e.g., {@link DbgState#RUNNING} to
+	 * {@link DbgState#STOPPED}
 	 * 
 	 * @param thread a handle to the thread whose state has changed
 	 * @param state the state to which the thread changed
@@ -189,10 +189,10 @@ public interface LldbEventsListener {
 	 * specification, new locations may be appended.
 	 * 
 	 * Thus, the lldb manager attempts to interpret the information about a breakpoint provided by
-	 * lldb and builds a set of "effective breakpoints" each corresponding to a single location in
-	 * a single process image, i.e., process. Consider for example: A new library is loaded and an
-	 * existing lldb breakpoint must be applied within. lldb will emit a breakpoint modified
-	 * event, which the manager will parse and pass to
+	 * lldb and builds a set of "effective breakpoints" each corresponding to a single location in a
+	 * single process image, i.e., process. Consider for example: A new library is loaded and an
+	 * existing lldb breakpoint must be applied within. lldb will emit a breakpoint modified event,
+	 * which the manager will parse and pass to
 	 * {@link #breakpointModified(DbgBreakpointInfo, DbgBreakpointInfo, DbgCause)}. The manager will
 	 * also interpret that event and, seeing a new location, emit an
 	 * {@link #effectiveBreakpointCreated(DbgProcess, DbgEffectiveBreakpoint, DbgCause)} event.

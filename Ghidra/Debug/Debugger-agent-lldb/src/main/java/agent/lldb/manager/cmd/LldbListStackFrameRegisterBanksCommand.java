@@ -22,7 +22,8 @@ import SWIG.*;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
-public class LldbListStackFrameRegisterBanksCommand extends AbstractLldbCommand<Map<String, SBValue>> {
+public class LldbListStackFrameRegisterBanksCommand
+		extends AbstractLldbCommand<Map<String, SBValue>> {
 	protected final SBFrame frame;
 	private Map<String, SBValue> result;
 

@@ -34,7 +34,8 @@ public class LldbStepCommand extends AbstractLldbCommand<Void> {
 	private Map<String, ?> args;
 	private String lastCommand = "";
 
-	public LldbStepCommand(LldbManagerImpl manager, SBThread thread, TargetStepKind kind, Map<String, ?> args) {
+	public LldbStepCommand(LldbManagerImpl manager, SBThread thread, TargetStepKind kind,
+			Map<String, ?> args) {
 		super(manager);
 		this.thread = thread;
 		this.kind = kind;
@@ -95,10 +96,10 @@ public class LldbStepCommand extends AbstractLldbCommand<Void> {
 				break;
 			case SKIP:
 			default:
-				throw new UnsupportedOperationException("Step "+kind.name()+" not supported");
+				throw new UnsupportedOperationException("Step " + kind.name() + " not supported");
 		}
 		if (!error.Success()) {
-			Msg.error(this, error.GetType()+" while stepping");
+			Msg.error(this, error.GetType() + " while stepping");
 		}
 	}
 

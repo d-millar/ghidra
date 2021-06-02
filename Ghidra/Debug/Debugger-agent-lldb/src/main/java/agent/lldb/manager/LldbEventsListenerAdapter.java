@@ -83,12 +83,14 @@ public interface LldbEventsListenerAdapter extends LldbEventsListener {
 	}
 
 	@Override
-	public default void moduleLoaded(SBProcess process, DebugModuleInfo info, int index, LldbCause cause) {
+	public default void moduleLoaded(SBProcess process, DebugModuleInfo info, int index,
+			LldbCause cause) {
 		// Extension point
 	}
 
 	@Override
-	public default void moduleUnloaded(SBProcess process, DebugModuleInfo info, int index, LldbCause cause) {
+	public default void moduleUnloaded(SBProcess process, DebugModuleInfo info, int index,
+			LldbCause cause) {
 		// Extension point
 	}
 

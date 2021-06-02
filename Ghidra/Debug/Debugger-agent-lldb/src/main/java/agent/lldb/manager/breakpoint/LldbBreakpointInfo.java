@@ -145,9 +145,10 @@ public class LldbBreakpointInfo {
 	 */
 	public boolean isEnabled() {
 		if (info instanceof SBBreakpoint) {
-			return ((SBBreakpoint)info).IsEnabled();
-		} else {
-			return ((SBWatchpoint)info).IsEnabled();
+			return ((SBBreakpoint) info).IsEnabled();
+		}
+		else {
+			return ((SBWatchpoint) info).IsEnabled();
 		}
 	}
 
@@ -158,9 +159,10 @@ public class LldbBreakpointInfo {
 	 */
 	public long getTimes() {
 		if (info instanceof SBBreakpoint) {
-			return ((SBBreakpoint)info).GetHitCount();
-		} else {
-			return ((SBWatchpoint)info).GetHitCount();
+			return ((SBBreakpoint) info).GetHitCount();
+		}
+		else {
+			return ((SBWatchpoint) info).GetHitCount();
 		}
 	}
 
@@ -192,8 +194,9 @@ public class LldbBreakpointInfo {
 
 	public int getEventThread() {
 		if (info instanceof SBBreakpoint) {
-			return ((SBBreakpoint)info).GetThreadID().intValue();
-		} else {
+			return ((SBBreakpoint) info).GetThreadID().intValue();
+		}
+		else {
 			return -1;
 		}
 	}
@@ -201,7 +204,8 @@ public class LldbBreakpointInfo {
 	public long getAddressAsLong() {
 		if (info instanceof SBBreakpoint) {
 			return locations.get(0).GetLoadAddress().longValue();
-		} else {
+		}
+		else {
 			return ((SBWatchpoint) info).GetWatchAddress().longValue();
 		}
 	}

@@ -42,7 +42,6 @@ public class LldbSelectedFrameChangedEvent extends AbstractLldbEvent<String> {
 		this.frame = info.frame;
 	}
 
-
 	/**
 	 * Get the selected thread ID
 	 * 

@@ -47,7 +47,9 @@ public class LldbLaunchProcessCommand extends AbstractLldbCommand<SBThread> {
 	public LldbLaunchProcessCommand(LldbManagerImpl manager, String fileName, List<String> args) {
 		this(manager, fileName, args, null, null, "", 0L, true);
 	}
-	public LldbLaunchProcessCommand(LldbManagerImpl manager, String fileName, List<String> args, List<String> envp,
+
+	public LldbLaunchProcessCommand(LldbManagerImpl manager, String fileName, List<String> args,
+			List<String> envp,
 			List<String> pathsIO, String workingDirectory, long flags, boolean stopAtEntry) {
 		super(manager);
 		this.fileName = fileName;
@@ -56,9 +58,9 @@ public class LldbLaunchProcessCommand extends AbstractLldbCommand<SBThread> {
 		this.pathsIO = pathsIO;
 		if (pathsIO == null) {
 			this.pathsIO = new ArrayList<>();
-			this.pathsIO.add(""); 
-			this.pathsIO.add(""); 
-			this.pathsIO.add(""); 
+			this.pathsIO.add("");
+			this.pathsIO.add("");
+			this.pathsIO.add("");
 		}
 		this.wdir = workingDirectory;
 		this.flags = flags;
@@ -85,6 +87,7 @@ public class LldbLaunchProcessCommand extends AbstractLldbCommand<SBThread> {
 	public void invoke() {
 		DebugClient client = manager.getClient();
 		//client.createProcess(client.getLocalServer(), fileName);
-		client.createProcess(client.getLocalServer(), fileName, args, envp, pathsIO, wdir, flags, stopAtEntry);
+		client.createProcess(client.getLocalServer(), fileName, args, envp, pathsIO, wdir, flags,
+			stopAtEntry);
 	}
 }

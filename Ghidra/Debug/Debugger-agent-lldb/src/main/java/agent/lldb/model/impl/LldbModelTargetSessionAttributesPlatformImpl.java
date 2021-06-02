@@ -49,30 +49,31 @@ public class LldbModelTargetSessionAttributesPlatformImpl extends LldbModelTarge
 	static String BUILD_ATTRIBUTE_NAME = "Build";
 	static String ENDIAN_ATTRIBUTE_NAME = "Endian";
 	static String DIRECTORY_ATTRIBUTE_NAME = "Working Dir";
-	
+
 	SBTarget session;
 
-	public LldbModelTargetSessionAttributesPlatformImpl(LldbModelTargetSessionAttributes attributes) {
+	public LldbModelTargetSessionAttributesPlatformImpl(
+			LldbModelTargetSessionAttributes attributes) {
 		super(attributes.getModel(), attributes, "Platform", "SessionAttributesPlatform");
-		
+
 		session = (SBTarget) getModelObject();
 		String[] triple = session.GetTriple().split("-");
 		ByteOrder order = session.GetByteOrder();
 		SBPlatform platform = session.GetPlatform();
-		
+
 		long major = platform.GetOSMajorVersion();
 		long minor = platform.GetOSMinorVersion();
 		String build = platform.GetOSBuild();
 		String desc = platform.GetOSDescription();
 		String wdir = platform.GetWorkingDirectory();
-		
+
 		changeAttributes(List.of(), List.of(), Map.of( //
 			ARCH_ATTRIBUTE_NAME, triple[0], //
 			MANUFACTURER_ATTRIBUTE_NAME, triple[1], //
 			OS_ATTRIBUTE_NAME, triple[2], //
 			OS_DESC_ATTRIBUTE_NAME, desc, //
 			DEBUGGER_ATTRIBUTE_NAME, "lldb", //
-			OS_MM_ATTRIBUTE_NAME, major+":"+minor, //
+			OS_MM_ATTRIBUTE_NAME, major + ":" + minor, //
 			BUILD_ATTRIBUTE_NAME, build, //
 			ENDIAN_ATTRIBUTE_NAME, order.toString(), //
 			DIRECTORY_ATTRIBUTE_NAME, wdir //

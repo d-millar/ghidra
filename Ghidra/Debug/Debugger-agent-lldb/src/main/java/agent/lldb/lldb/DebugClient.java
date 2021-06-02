@@ -40,7 +40,7 @@ public interface DebugClient extends DebugClientReentrant {
 	public static DebugClient debugCreate() {
 		return new DebugClientImpl();
 	}
-	
+
 	public static enum ExecutionState {
 		RUNNING, STOPPED;
 	}
@@ -110,7 +110,7 @@ public interface DebugClient extends DebugClientReentrant {
 		public static boolean isInsideWait(SBEvent event) {
 			return (argument & INSIDE_WAIT) != 0;
 		}
-
+		
 		public static boolean isWaitTimeout(SBEvent event) {
 			return (argument & WAIT_TIMEOUT) != 0;
 		}
@@ -149,7 +149,7 @@ public interface DebugClient extends DebugClientReentrant {
 			return mask;
 		}
 	}
-	
+
 	public static enum ChangeProcessState implements BitmaskUniverse {
 		PROCESS_ALL(0xffffffff), //
 		PROCESS_STATE_CHANGED(SBProcess.eBroadcastBitStateChanged), //
@@ -171,7 +171,7 @@ public interface DebugClient extends DebugClientReentrant {
 			return mask;
 		}
 	}
-	
+
 	public static enum ChangeThreadState implements BitmaskUniverse {
 		THREAD_ALL(0xffffffff), //
 		THREAD_STACK_CHANGED(SBThread.eBroadcastBitStackChanged), //
@@ -285,7 +285,7 @@ public interface DebugClient extends DebugClientReentrant {
 	}
 
 	public static String getModelKey(Object modelObject) {
-		return modelObject.getClass()+":"+getId(modelObject);
+		return modelObject.getClass() + ":" + getId(modelObject);
 	}
 
 	public static String getId(Object modelObject) {
@@ -315,7 +315,7 @@ public interface DebugClient extends DebugClientReentrant {
 		}
 		if (modelObject instanceof SBSection) {
 			SBSection section = (SBSection) modelObject;
-			return section.GetName()+":"+section.GetFileAddress();
+			return section.GetName() + ":" + section.GetFileAddress();
 		}
 		if (modelObject instanceof SBMemoryRegionInfo) {
 			SBMemoryRegionInfo region = (SBMemoryRegionInfo) modelObject;
@@ -341,7 +341,7 @@ public interface DebugClient extends DebugClientReentrant {
 			SBFunction fn = (SBFunction) modelObject;
 			return fn.GetName();
 		}
-		throw new RuntimeException("Unknown object "+modelObject.getClass());
+		throw new RuntimeException("Unknown object " + modelObject.getClass());
 	}
 
 	public static TargetExecutionState convertState(StateType state) {
@@ -404,11 +404,11 @@ public interface DebugClient extends DebugClientReentrant {
 
 	/*
 	void setInputCallbacks(DebugInputCallbacks cb);
-
+	
 	void setOutputCallbacks(DebugOutputCallbacks cb);
-
+	
 	List<DebugRunningProcess> getRunningProcesses(DebugServerId server);
-
+	
 	Description getProcessDescription(DebugServerId si, int systemId,
 			BitmaskSet<ProcessDescriptionFlags> flags);
 	*/
@@ -419,7 +419,8 @@ public interface DebugClient extends DebugClientReentrant {
 
 	SBProcess createProcess(DebugServerId si, SBLaunchInfo info);
 
-	SBProcess createProcess(DebugServerId si, String fileName, List<String> args, List<String> envp, List<String> pathsIO,
+	SBProcess createProcess(DebugServerId si, String fileName, List<String> args, List<String> envp,
+			List<String> pathsIO,
 			String workingDir, long createFlags, boolean stopAtEntry);
 
 	void startServer(String options);
@@ -443,9 +444,9 @@ public interface DebugClient extends DebugClientReentrant {
 	// Only in IDebugClient4+
 
 	void openDumpFileWide(String fileName);
-	
+
 	SBEvent waitForEvent();
-	
+
 	DebugStatus getExecutionStatus();
 
 	void processEvent(LldbEvent<?> lldbEvt);

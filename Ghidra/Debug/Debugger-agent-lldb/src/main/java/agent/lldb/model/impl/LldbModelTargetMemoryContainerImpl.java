@@ -35,13 +35,16 @@ import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
 import ghidra.program.model.address.Address;
 import ghidra.util.datastruct.WeakValueHashMap;
 
-@TargetObjectSchemaInfo(name = "Memory", 
+@TargetObjectSchemaInfo(
+	name = "Memory",
 	elementResync = ResyncMode.ALWAYS,
 	elements = {
 		@TargetElementType(type = LldbModelTargetMemoryRegionImpl.class)
-	}, attributes = {
-		@TargetAttributeType(type = Void.class) 
-	}, canonicalContainer = true)
+	},
+	attributes = {
+		@TargetAttributeType(type = Void.class)
+	},
+	canonicalContainer = true)
 public class LldbModelTargetMemoryContainerImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetMemoryContainer {
 
@@ -90,7 +93,6 @@ public class LldbModelTargetMemoryContainerImpl extends LldbModelTargetObjectImp
 		return Arrays.copyOf(buf.array(), (int) (range.upperEndpoint() - range.lowerEndpoint()));
 	}
 
-
 	private void writeAssist(Address address, byte[] data) {
 		listeners.fire.memoryUpdated(getProxy(), address, data);
 	}
@@ -109,7 +111,9 @@ public class LldbModelTargetMemoryContainerImpl extends LldbModelTargetObjectImp
 		ByteBuffer buf = ByteBuffer.allocate(length);
 		long offset = address.getOffset();
 		if (!manager.isKernelMode() || address.getAddressSpace().getName().equals("ram")) {
-			return manager.execute(new LldbReadMemoryCommand(manager, process.getProcess(), address, buf, buf.remaining()))
+			return manager
+					.execute(new LldbReadMemoryCommand(manager, process.getProcess(), address, buf,
+						buf.remaining()))
 					.thenApply(set -> {
 						return readAssist(address, buf, offset, set);
 					});
@@ -130,7 +134,9 @@ public class LldbModelTargetMemoryContainerImpl extends LldbModelTargetObjectImp
 		}
 		ByteBuffer buf = ByteBuffer.wrap(data);
 		if (!manager.isKernelMode() || address.getAddressSpace().getName().equals("ram")) {
-			return manager.execute(new LldbWriteMemoryCommand(manager, process.getProcess(), address, buf, buf.remaining()))
+			return manager
+					.execute(new LldbWriteMemoryCommand(manager, process.getProcess(), address, buf,
+						buf.remaining()))
 					.thenAccept(___ -> {
 						writeAssist(address, data);
 					});

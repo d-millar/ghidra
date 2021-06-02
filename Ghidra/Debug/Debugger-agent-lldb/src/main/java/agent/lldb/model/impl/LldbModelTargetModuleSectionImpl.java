@@ -24,8 +24,11 @@ import ghidra.dbg.target.schema.*;
 import ghidra.dbg.util.PathUtils;
 import ghidra.program.model.address.*;
 
-@TargetObjectSchemaInfo(name = "Section", elements = {
-	@TargetElementType(type = Void.class) }, attributes = {
+@TargetObjectSchemaInfo(
+	name = "Section",
+	elements = {
+		@TargetElementType(type = Void.class) },
+	attributes = {
 		@TargetAttributeType(type = Object.class) })
 public class LldbModelTargetModuleSectionImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetModuleSection {
@@ -63,11 +66,11 @@ public class LldbModelTargetModuleSectionImpl extends LldbModelTargetObjectImpl
 
 	public String getDescription(int level) {
 		SBStream stream = new SBStream();
-		SBSection section = (SBSection) getModelObject();		
+		SBSection section = (SBSection) getModelObject();
 		section.GetDescription(stream);
 		return stream.GetData();
 	}
-	
+
 	@Override
 	public AddressRange getRange() {
 		return range;

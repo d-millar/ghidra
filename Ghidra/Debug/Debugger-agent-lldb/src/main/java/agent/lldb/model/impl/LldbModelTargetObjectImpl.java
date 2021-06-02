@@ -37,7 +37,7 @@ public class LldbModelTargetObjectImpl extends DefaultTargetObject<TargetObject,
 	protected boolean accessible = true;
 	protected final LldbStateListener accessListener = this::checkExited;
 	private boolean modified;
-	
+
 	private Object modelObject;
 	protected Map<Object, TargetObject> objectMap = new HashMap<>();
 
@@ -47,8 +47,9 @@ public class LldbModelTargetObjectImpl extends DefaultTargetObject<TargetObject,
 		this.setModelObject(((LldbModelTargetObject) parent).getModelObject());
 		getManager().addStateListener(accessListener);
 	}
-	
-	public LldbModelTargetObjectImpl(AbstractLldbModel impl, TargetObject parent, String name, Object modelObject,
+
+	public LldbModelTargetObjectImpl(AbstractLldbModel impl, TargetObject parent, String name,
+			Object modelObject,
 			String typeHint) {
 		super(impl, parent, name, typeHint);
 		((LldbModelTargetObject) parent).addMapObject(modelObject, this);
@@ -56,7 +57,8 @@ public class LldbModelTargetObjectImpl extends DefaultTargetObject<TargetObject,
 		getManager().addStateListener(accessListener);
 	}
 
-	public LldbModelTargetObjectImpl(AbstractLldbModel impl, TargetObject parent, String name, Object modelObject,
+	public LldbModelTargetObjectImpl(AbstractLldbModel impl, TargetObject parent, String name,
+			Object modelObject,
 			String typeHint, TargetObjectSchema schema) {
 		super(impl, parent, name, typeHint, schema);
 		this.setModelObject(modelObject);
@@ -110,14 +112,14 @@ public class LldbModelTargetObjectImpl extends DefaultTargetObject<TargetObject,
 		switch (state.swigValue()) {
 			case 0: // eStateInvalid
 			case 9: // eStateDetached
-			{ 
+			{
 				exec = TargetExecutionState.INACTIVE;
 				break;
 			}
 			case 2: // eStateConnected
 			case 3: // eStateAttaching
 			case 4: // eStateLaunching
-			{ 
+			{
 				exec = TargetExecutionState.ALIVE;
 				break;
 			}
@@ -128,7 +130,7 @@ public class LldbModelTargetObjectImpl extends DefaultTargetObject<TargetObject,
 			}
 			case 6: // eStateRunning
 			case 7: // eStateStepping
-			{ 
+			{
 				exec = TargetExecutionState.RUNNING;
 				resetModified();
 				onRunning();
@@ -144,7 +146,7 @@ public class LldbModelTargetObjectImpl extends DefaultTargetObject<TargetObject,
 			}
 			case 1: // eStateUnloaded
 			case 8: // eStateCrashed
-			{ 
+			{
 				getModel().close();
 				return;
 			}
@@ -219,7 +221,7 @@ public class LldbModelTargetObjectImpl extends DefaultTargetObject<TargetObject,
 		List<String> pathToClass = model.getRootSchema().searchForSuitable(type, path);
 		return model.getModelObject(pathToClass);
 	}
-	
+
 	public String getDescription(int level) {
 		return getName();
 	}

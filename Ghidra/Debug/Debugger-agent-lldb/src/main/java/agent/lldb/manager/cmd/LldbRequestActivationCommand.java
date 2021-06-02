@@ -31,7 +31,8 @@ public class LldbRequestActivationCommand extends AbstractLldbCommand<Void> {
 	 * @param activator in most cases the root object (must be an ancestor for the ref)
 	 * @param obj the desired object to be made active
 	 */
-	public LldbRequestActivationCommand(LldbManagerImpl manager, LldbModelTargetActiveScope activator,
+	public LldbRequestActivationCommand(LldbManagerImpl manager,
+			LldbModelTargetActiveScope activator,
 			TargetObject obj) {
 		super(manager);
 		this.activator = activator;

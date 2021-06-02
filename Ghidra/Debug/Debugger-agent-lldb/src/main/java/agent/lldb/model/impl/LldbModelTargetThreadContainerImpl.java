@@ -33,14 +33,17 @@ import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.*;
 import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
 
-@TargetObjectSchemaInfo(name = "ThreadContainer", 
+@TargetObjectSchemaInfo(
+	name = "ThreadContainer",
 	elementResync = ResyncMode.ALWAYS,
 	elements = { //
 		@TargetElementType(type = LldbModelTargetThreadImpl.class) //
-	}, attributes = { //
+	},
+	attributes = { //
 		@TargetAttributeType(name = TargetConfigurable.BASE_ATTRIBUTE_NAME, type = Integer.class), //
 		@TargetAttributeType(type = Void.class) //
-	}, canonicalContainer = true)
+	},
+	canonicalContainer = true)
 public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetThreadContainer, LldbModelTargetConfigurable {
 
@@ -60,9 +63,10 @@ public class LldbModelTargetThreadContainerImpl extends LldbModelTargetObjectImp
 		changeElements(List.of(), List.of(getTargetThread(thread)), Map.of(), "Created");
 		LldbModelTargetThread targetThread = getTargetThread(thread);
 		changeElements(List.of(), List.of(targetThread), Map.of(), "Created");
-		targetThread.threadStateChangedSpecific(StateType.eStateConnected, LldbReason.getReason(null));
+		targetThread.threadStateChangedSpecific(StateType.eStateConnected,
+			LldbReason.getReason(null));
 		getListeners().fire.event(getProxy(), targetThread, TargetEventType.THREAD_CREATED,
-			"Thread " +  DebugClient.getId(thread) + " started", List.of(targetThread));
+			"Thread " + DebugClient.getId(thread) + " started", List.of(targetThread));
 	}
 
 	@Override

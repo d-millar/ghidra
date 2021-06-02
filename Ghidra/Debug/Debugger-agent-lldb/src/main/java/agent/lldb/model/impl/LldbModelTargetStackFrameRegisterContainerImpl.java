@@ -39,13 +39,13 @@ import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
 			required = true),
 		@TargetAttributeType(
 			name = "Exception State Registers",
-			type = LldbModelTargetStackFrameRegisterNullBank.class, 
+			type = LldbModelTargetStackFrameRegisterNullBank.class,
 			required = true),
 		@TargetAttributeType(
 			name = "Floating Point Registers",
-			type = LldbModelTargetStackFrameRegisterNullBank.class, 
+			type = LldbModelTargetStackFrameRegisterNullBank.class,
 			required = true),
-		@TargetAttributeType(type = Void.class) 
+		@TargetAttributeType(type = Void.class)
 	},
 	canonicalContainer = true)
 public class LldbModelTargetStackFrameRegisterContainerImpl
@@ -69,12 +69,14 @@ public class LldbModelTargetStackFrameRegisterContainerImpl
 		return getManager().listStackFrameRegisterBanks(frame.getFrame()).thenAccept(banks -> {
 			List<TargetObject> targetBanks;
 			synchronized (this) {
-				targetBanks = banks.values().stream().map(this::getTargetRegisterBank).collect(Collectors.toList());
+				targetBanks = banks.values()
+						.stream()
+						.map(this::getTargetRegisterBank)
+						.collect(Collectors.toList());
 			}
 			changeAttributes(List.of(), targetBanks, Map.of(), "Refreshed");
-		}); 
+		});
 	}
-
 
 	@Override
 	public LldbModelTargetObject getTargetRegisterBank(SBValue val) {
@@ -86,7 +88,8 @@ public class LldbModelTargetStackFrameRegisterContainerImpl
 		}
 		if (val.GetName().contains("General")) {
 			return new LldbModelTargetStackFrameRegisterBankImpl(this, val);
-		} else {
+		}
+		else {
 			return new LldbModelTargetStackFrameRegisterNullBankImpl(this, val);
 		}
 	}
@@ -100,10 +103,11 @@ public class LldbModelTargetStackFrameRegisterContainerImpl
 						bank.threadStateChangedSpecific(state, reason);
 					}
 					if (element instanceof LldbModelTargetStackFrameRegisterNullBank) {
-						LldbModelTargetStackFrameRegisterNullBankImpl bank = (LldbModelTargetStackFrameRegisterNullBankImpl) element;
+						LldbModelTargetStackFrameRegisterNullBankImpl bank =
+							(LldbModelTargetStackFrameRegisterNullBankImpl) element;
 						bank.threadStateChangedSpecific(state, reason);
 					}
-				} 
+				}
 			});
 		}
 	}

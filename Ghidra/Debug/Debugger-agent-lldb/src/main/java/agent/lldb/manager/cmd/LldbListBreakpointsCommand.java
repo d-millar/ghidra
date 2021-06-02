@@ -24,7 +24,6 @@ import SWIG.*;
 import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
-
 /**
  * Implementation of {@link LldbProcess#listBreakpoints()}
  */

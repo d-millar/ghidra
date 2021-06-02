@@ -24,8 +24,8 @@ import ghidra.dbg.util.ConfigurableFactory.FactoryDescription;
 import ghidra.util.classfinder.ExtensionPointProperties;
 
 /**
- * Note this is in the testing source because it's not meant to be shipped in
- * the release.... That may change if it proves stable, though, no?
+ * Note this is in the testing source because it's not meant to be shipped in the release.... That
+ * may change if it proves stable, though, no?
  */
 @FactoryDescription( //
 	brief = "IN-VM lldb local debugger", //

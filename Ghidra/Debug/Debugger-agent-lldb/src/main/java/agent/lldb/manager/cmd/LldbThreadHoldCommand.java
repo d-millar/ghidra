@@ -57,11 +57,12 @@ public class LldbThreadHoldCommand extends AbstractLldbCommand<Void> {
 		SBError error = new SBError();
 		if (set) {
 			thread.Suspend(error);
-		} else {
+		}
+		else {
 			thread.Resume(error);
 		}
 		if (!error.Success()) {
-			Msg.error(this, error.GetType()+" while placing hold");
+			Msg.error(this, error.GetType() + " while placing hold");
 		}
 	}
 }

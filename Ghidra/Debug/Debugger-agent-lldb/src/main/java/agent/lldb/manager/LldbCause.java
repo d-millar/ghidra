@@ -15,7 +15,6 @@
  */
 package agent.lldb.manager;
 
-
 /**
  * Identifies the cause of an event emitted by lldb
  * 

@@ -44,13 +44,13 @@ public interface LldbModelTargetBreakpointContainer extends LldbModelTargetObjec
 
 	@Override
 	public void breakpointCreated(Object info, LldbCause cause);
-	
+
 	@Override
 	public void breakpointModified(Object info, LldbCause cause);
-	
+
 	@Override
 	public void breakpointDeleted(Object info, LldbCause cause);
-	
+
 	@Override
 	public void breakpointHit(Object info, LldbCause cause);
 
@@ -80,7 +80,7 @@ public interface LldbModelTargetBreakpointContainer extends LldbModelTargetObjec
 	public default CompletableFuture<Void> placeBreakpoint(String expression,
 			Set<TargetBreakpointKind> kinds) {
 		LldbManagerImpl manager = getManager();
-		return doPlaceBreakpoint(kinds, t -> manager.insertBreakpoint(expression, t));			
+		return doPlaceBreakpoint(kinds, t -> manager.insertBreakpoint(expression, t));
 	}
 
 	@Override
@@ -91,7 +91,7 @@ public interface LldbModelTargetBreakpointContainer extends LldbModelTargetObjec
 		int len = (int) range.getLength();
 		return doPlaceBreakpoint(kinds, t -> manager.insertBreakpoint(offset, len, t));
 	}
-	
+
 	public SBTarget getSession();
 
 }

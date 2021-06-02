@@ -32,12 +32,29 @@ import ghidra.dbg.target.TargetExecutionStateful.TargetExecutionState;
 import ghidra.dbg.target.schema.*;
 import ghidra.dbg.util.PathUtils;
 
-@TargetObjectSchemaInfo(name = "Process", elements = {
-	@TargetElementType(type = Void.class) }, attributes = {
-		@TargetAttributeType(name = "Memory", type = LldbModelTargetMemoryContainerImpl.class, required = true, fixed = true),
-		@TargetAttributeType(name = "Threads", type = LldbModelTargetThreadContainerImpl.class, required = true, fixed = true),
-		@TargetAttributeType(name = "Breakpoints", type = LldbModelTargetBreakpointLocationContainerImpl.class, required = true, fixed = true),
-		@TargetAttributeType(name = LldbModelTargetProcessImpl.EXIT_CODE_ATTRIBUTE_NAME, type = String.class),
+@TargetObjectSchemaInfo(
+	name = "Process",
+	elements = {
+		@TargetElementType(type = Void.class) },
+	attributes = {
+		@TargetAttributeType(
+			name = "Memory",
+			type = LldbModelTargetMemoryContainerImpl.class,
+			required = true,
+			fixed = true),
+		@TargetAttributeType(
+			name = "Threads",
+			type = LldbModelTargetThreadContainerImpl.class,
+			required = true,
+			fixed = true),
+		@TargetAttributeType(
+			name = "Breakpoints",
+			type = LldbModelTargetBreakpointLocationContainerImpl.class,
+			required = true,
+			fixed = true),
+		@TargetAttributeType(
+			name = LldbModelTargetProcessImpl.EXIT_CODE_ATTRIBUTE_NAME,
+			type = String.class),
 		@TargetAttributeType(type = Void.class) })
 public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetProcess {
@@ -64,7 +81,8 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 
 	private Integer base = 16;
 
-	public LldbModelTargetProcessImpl(LldbModelTargetProcessContainer processes, SBProcess process) {
+	public LldbModelTargetProcessImpl(LldbModelTargetProcessContainer processes,
+			SBProcess process) {
 		super(processes.getModel(), processes, keyProcess(process), process, "Process");
 		getModel().addModelObject(process, this);
 		getManager().getClient().addBroadcaster(process);
@@ -98,7 +116,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 
 	public String getDescription(int level) {
 		SBStream stream = new SBStream();
-		SBProcess process = (SBProcess) getModelObject();		
+		SBProcess process = (SBProcess) getModelObject();
 		process.GetDescription(stream);
 		return stream.GetData();
 	}
@@ -197,7 +215,8 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 				EXIT_CODE_ATTRIBUTE_NAME, proc.GetExitDescription() //
 			), "Exited");
 			getListeners().fire.event(getProxy(), null, TargetEventType.PROCESS_EXITED,
-				"Process " + DebugClient.getId(getProcess()) + " exited code=" + proc.GetExitDescription(),
+				"Process " + DebugClient.getId(getProcess()) + " exited code=" +
+					proc.GetExitDescription(),
 				List.of(getProxy()));
 		}
 	}
@@ -228,7 +247,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 			DISPLAY_ATTRIBUTE_NAME, getDescription(0)//
 		), "Started");
 	}
-	
+
 	public void addBreakpointLocation(LldbModelTargetBreakpointLocation loc) {
 		breakpoints.addBreakpointLocation(loc);
 	}
@@ -236,6 +255,5 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 	public void removeBreakpointLocation(LldbModelTargetBreakpointLocation loc) {
 		breakpoints.removeBreakpointLocation(loc);
 	}
-
 
 }

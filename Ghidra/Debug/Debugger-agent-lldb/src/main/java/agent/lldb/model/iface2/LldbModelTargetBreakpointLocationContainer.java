@@ -36,5 +36,4 @@ public interface LldbModelTargetBreakpointLocationContainer extends LldbModelTar
 
 	void removeBreakpointLocation(LldbModelTargetBreakpointLocation loc);
 
-
 }

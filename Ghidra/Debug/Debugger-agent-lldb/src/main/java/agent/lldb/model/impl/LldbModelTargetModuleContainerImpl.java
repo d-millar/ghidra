@@ -27,13 +27,16 @@ import ghidra.dbg.target.schema.*;
 import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
 import ghidra.lifecycle.Internal;
 
-@TargetObjectSchemaInfo(name = "ModuleContainer", elements = { //
-	@TargetElementType(type = LldbModelTargetModuleImpl.class) //
-}, //
-elementResync = ResyncMode.ONCE, //
-attributes = { //
-	@TargetAttributeType(type = Void.class) //
-}, canonicalContainer = true)
+@TargetObjectSchemaInfo(
+	name = "ModuleContainer",
+	elements = { //
+		@TargetElementType(type = LldbModelTargetModuleImpl.class) //
+	}, //
+	elementResync = ResyncMode.ONCE, //
+	attributes = { //
+		@TargetAttributeType(type = Void.class) //
+	},
+	canonicalContainer = true)
 public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetModuleContainer {
 	// NOTE: -file-list-shared-libraries omits the main module and system-supplied DSO.
@@ -63,7 +66,7 @@ public class LldbModelTargetModuleContainerImpl extends LldbModelTargetObjectImp
 			targetModule = getTargetModule(module);
 		}
 		if (targetModule == null) {
-			System.err.println("Module "+info.getModuleName(index)+" not found!");
+			System.err.println("Module " + info.getModuleName(index) + " not found!");
 			return;
 		}
 		SBThread thread = getManager().getEventThread();

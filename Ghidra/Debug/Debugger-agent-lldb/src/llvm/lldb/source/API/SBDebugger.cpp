@@ -1,3 +1,6 @@
+/* ###
+ * IP: Apache License 2.0 with LLVM Exceptions
+ */
 //===-- SBDebugger.cpp ----------------------------------------------------===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.

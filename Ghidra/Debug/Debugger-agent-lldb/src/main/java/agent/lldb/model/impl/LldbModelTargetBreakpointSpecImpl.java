@@ -37,19 +37,19 @@ import ghidra.util.datastruct.ListenerSet;
 		@TargetAttributeType(name = "Valid", type = Boolean.class),
 		@TargetAttributeType(name = "Enabled", type = Boolean.class),
 		@TargetAttributeType(name = "Count", type = Long.class),
-		@TargetAttributeType(type = Void.class) 
+		@TargetAttributeType(type = Void.class)
 	},
 	canonicalContainer = true)
 public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetAbstractXpointSpec {
 
 	protected final ListenerSet<TargetBreakpointAction> actions =
-			new ListenerSet<>(TargetBreakpointAction.class) {
-				// Use strong references on actions
-				protected Map<TargetBreakpointAction, TargetBreakpointAction> createMap() {
-					return Collections.synchronizedMap(new LinkedHashMap<>());
-				};
+		new ListenerSet<>(TargetBreakpointAction.class) {
+			// Use strong references on actions
+			protected Map<TargetBreakpointAction, TargetBreakpointAction> createMap() {
+				return Collections.synchronizedMap(new LinkedHashMap<>());
 			};
-			
+		};
+
 	public LldbModelTargetBreakpointSpecImpl(LldbModelTargetBreakpointContainer breakpoints,
 			Object info) {
 		super(breakpoints, info, "BreakpointSpec");
@@ -61,7 +61,7 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetAbstractXp
 		bpt.GetDescription(stream);
 		return stream.GetData();
 	}
-	
+
 	protected TargetBreakpointKindSet computeKinds(Object from) {
 		return TargetBreakpointKindSet.of(TargetBreakpointKind.SW_EXECUTE);
 	}
@@ -98,13 +98,14 @@ public class LldbModelTargetBreakpointSpecImpl extends LldbModelTargetAbstractXp
 		Map<String, TargetObject> cachedElements = getCachedElements();
 		if (!cachedElements.isEmpty()) {
 			Object[] elements = cachedElements.values().toArray();
-			LldbModelTargetBreakpointLocationImpl loc = (LldbModelTargetBreakpointLocationImpl) elements[0];
+			LldbModelTargetBreakpointLocationImpl loc =
+				(LldbModelTargetBreakpointLocationImpl) elements[0];
 			this.changeAttributes(List.of(), List.of(), Map.of( //
 				TargetBreakpointLocation.ADDRESS_ATTRIBUTE_NAME, loc.address //
 			), reason);
 		}
 	}
-	
+
 	public ListenerSet<TargetBreakpointAction> getActions() {
 		return actions;
 	}

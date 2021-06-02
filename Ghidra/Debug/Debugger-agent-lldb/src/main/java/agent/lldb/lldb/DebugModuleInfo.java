@@ -28,7 +28,7 @@ import SWIG.*;
  * {@code CreateProcess} of {@code IDebugEventCallbacks}.
  */
 public class DebugModuleInfo {
-	
+
 	public SBEvent event;
 	private SBProcess process;
 	private long numModules;
@@ -42,51 +42,51 @@ public class DebugModuleInfo {
 			modules.put(i, module);
 		}
 	}
-	
+
 	public DebugModuleInfo(SBProcess process, SBModule module) {
 		this.process = process;
 		this.event = null;
 		numModules = 1;
 		modules.put(0, module);
 	}
-	
+
 	public Long getNumberOfModules() {
 		return numModules;
 	}
 
 	public SBModule getModule(int index) {
-		return modules.get(index);	
+		return modules.get(index);
 	}
-	
+
 	public String toString(int index) {
-		SBModule module = modules.get(index);	
+		SBModule module = modules.get(index);
 		return module.toString();
 	}
 
 	public String getModuleName(int index) {
-		SBModule module = modules.get(index);	
+		SBModule module = modules.get(index);
 		return DebugClient.getId(module);
 	}
 
 	public void setModuleName(int index, String moduleName) {
-		SBModule module = modules.get(index);	
+		SBModule module = modules.get(index);
 		SBFileSpec filespec = module.GetFileSpec();
 		filespec.SetFilename(moduleName);
 	}
 
 	public String getImageName(int index) {
-		SBModule module = modules.get(index);	
+		SBModule module = modules.get(index);
 		SBFileSpec filespec = module.GetFileSpec();
-		return filespec.GetDirectory()+":"+filespec.GetFilename();
+		return filespec.GetDirectory() + ":" + filespec.GetFilename();
 	}
 
 	public void setImageName(int index, String dirName, String imageName) {
-		SBModule module = modules.get(index);	
+		SBModule module = modules.get(index);
 		SBFileSpec filespec = module.GetFileSpec();
 		filespec.SetDirectory(dirName);
 		filespec.SetFilename(imageName);
 	}
-	
+
 	public SBProcess getProcess() {
 		return event != null ? SBProcess.GetProcessFromEvent(event) : process;
 	}

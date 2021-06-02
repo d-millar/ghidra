@@ -25,8 +25,11 @@ import ghidra.dbg.target.schema.TargetElementType;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 import ghidra.dbg.util.PathUtils;
 
-@TargetObjectSchemaInfo(name = "Available", elements = {
-	@TargetElementType(type = Void.class) }, attributes = {
+@TargetObjectSchemaInfo(
+	name = "Available",
+	elements = {
+		@TargetElementType(type = Void.class) },
+	attributes = {
 		@TargetAttributeType(type = Void.class) })
 public class LldbModelTargetAvailableImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetAvailable {

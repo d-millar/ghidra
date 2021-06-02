@@ -33,7 +33,8 @@ public class LldbWriteMemoryCommand extends AbstractLldbCommand<Void> {
 	private final ByteBuffer buf;
 	private final int len;
 
-	public LldbWriteMemoryCommand(LldbManagerImpl manager, SBProcess process, Address addr, ByteBuffer buf, int len) {
+	public LldbWriteMemoryCommand(LldbManagerImpl manager, SBProcess process, Address addr,
+			ByteBuffer buf, int len) {
 		super(manager);
 		this.process = process;
 		this.addr = addr;
@@ -51,7 +52,7 @@ public class LldbWriteMemoryCommand extends AbstractLldbCommand<Void> {
 		if (!error.Success()) {
 			SBStream stream = new SBStream();
 			error.GetDescription(stream);
-			Msg.error(this, error.GetType()+":"+stream.GetData());
+			Msg.error(this, error.GetType() + ":" + stream.GetData());
 		}
 	}
 

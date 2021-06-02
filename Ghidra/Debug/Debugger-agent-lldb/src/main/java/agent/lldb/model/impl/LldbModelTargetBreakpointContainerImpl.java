@@ -30,20 +30,25 @@ import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.*;
 import ghidra.util.Msg;
 
-@TargetObjectSchemaInfo(name = "BreakpointContainer", elements = { //
-	@TargetElementType(type = LldbModelTargetAbstractXpointSpec.class) //
-}, attributes = { //
-	@TargetAttributeType(type = Void.class) //
-}, canonicalContainer = true)
+@TargetObjectSchemaInfo(
+	name = "BreakpointContainer",
+	elements = { //
+		@TargetElementType(type = LldbModelTargetAbstractXpointSpec.class) //
+	},
+	attributes = { //
+		@TargetAttributeType(type = Void.class) //
+	},
+	canonicalContainer = true)
 public class LldbModelTargetBreakpointContainerImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetBreakpointContainer {
 
 	protected static final TargetBreakpointKindSet SUPPORTED_KINDS =
 		TargetBreakpointKindSet.of(TargetBreakpointKind.values());
-	
+
 	private final SBTarget session;
 
-	public LldbModelTargetBreakpointContainerImpl(LldbModelTargetDebugContainer debug, SBTarget session) {
+	public LldbModelTargetBreakpointContainerImpl(LldbModelTargetDebugContainer debug,
+			SBTarget session) {
 		super(debug.getModel(), debug, "Breakpoints", "BreakpointContainer");
 		this.session = session;
 
@@ -88,7 +93,8 @@ public class LldbModelTargetBreakpointContainerImpl extends LldbModelTargetObjec
 
 		LldbModelTargetBreakpointLocation loc = spec.findLocation(targetThread);
 		if (loc == null) {
-			Msg.warn(this, "Stopped for a breakpoint whose location is unknown to the agent: " + spec);
+			Msg.warn(this,
+				"Stopped for a breakpoint whose location is unknown to the agent: " + spec);
 			//return; // Not ideal, but eb == null should be fine, since the spec holds the actions 
 		}
 		listeners.fire.breakpointHit(this, targetThread, null, spec, loc);
@@ -104,7 +110,8 @@ public class LldbModelTargetBreakpointContainerImpl extends LldbModelTargetObjec
 		}
 		if (bpt instanceof SBBreakpoint) {
 			return new LldbModelTargetBreakpointSpecImpl(this, bpt);
-		} else {
+		}
+		else {
 			return new LldbModelTargetWatchpointSpecImpl(this, bpt);
 		}
 	}

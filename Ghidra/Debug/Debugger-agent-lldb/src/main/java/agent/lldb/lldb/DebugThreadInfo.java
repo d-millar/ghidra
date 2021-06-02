@@ -26,7 +26,7 @@ import ghidra.comm.util.BitmaskSet;
  * {@code CreateProcess} of {@code IDebugEventCallbacks}.
  */
 public class DebugThreadInfo {
-	
+
 	public SBEvent event;
 	public SBThread thread;
 	public SBFrame frame;

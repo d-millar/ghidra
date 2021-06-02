@@ -28,9 +28,13 @@ import ghidra.dbg.target.schema.*;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressRangeImpl;
 
-@TargetObjectSchemaInfo(name = "SectionContainer", elements = {
-	@TargetElementType(type = LldbModelTargetModuleSectionImpl.class) }, attributes = {
-		@TargetAttributeType(type = Void.class) }, canonicalContainer = true)
+@TargetObjectSchemaInfo(
+	name = "SectionContainer",
+	elements = {
+		@TargetElementType(type = LldbModelTargetModuleSectionImpl.class) },
+	attributes = {
+		@TargetAttributeType(type = Void.class) },
+	canonicalContainer = true)
 public class LldbModelTargetModuleSectionContainerImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetModuleSectionContainer {
 
@@ -60,7 +64,8 @@ public class LldbModelTargetModuleSectionContainerImpl extends LldbModelTargetOb
 	protected synchronized LldbModelTargetModuleSection getModuleSection(SBSection section) {
 		TargetObject targetObject = getMapObject(section);
 		if (targetObject != null) {
-			LldbModelTargetModuleSection targetSection = (LldbModelTargetModuleSection) targetObject;
+			LldbModelTargetModuleSection targetSection =
+				(LldbModelTargetModuleSection) targetObject;
 			targetSection.setModelObject(section);
 			return targetSection;
 		}

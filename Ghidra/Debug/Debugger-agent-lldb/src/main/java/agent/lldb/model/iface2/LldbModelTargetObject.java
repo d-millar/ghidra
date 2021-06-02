@@ -37,11 +37,10 @@ public interface LldbModelTargetObject extends SpiTargetObject {
 		return CompletableFuture.completedFuture(null);
 	}
 
-
 	public default LldbManagerImpl getManager() {
 		return (LldbManagerImpl) getModel().getManager();
 	}
-	
+
 	public default LldbManagerImpl getManagerWithCheck() {
 		LldbManagerImpl impl = (LldbManagerImpl) getModel().getManager();
 		if (impl == null) {
@@ -82,9 +81,9 @@ public interface LldbModelTargetObject extends SpiTargetObject {
 	public void setModified(boolean modified);
 
 	public void resetModified();
-	
+
 	public Object getModelObject();
-	
+
 	public void setModelObject(Object modelObject);
 
 	public void addMapObject(Object object, TargetObject targetObject);

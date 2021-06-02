@@ -66,13 +66,14 @@ public class LldbModelTargetConnectorContainerImpl extends LldbModelTargetObject
 		super(root.getModel(), root, "Connectors", "ConnectorsContainer");
 		this.root = root;
 
-		this.processLauncher = new LldbModelTargetProcessLaunchConnectorImpl(this, "Launch process");
+		this.processLauncher =
+			new LldbModelTargetProcessLaunchConnectorImpl(this, "Launch process");
 		this.processAttacherByPid =
-				new LldbModelTargetProcessAttachByPidConnectorImpl(this, "Attach to process by pid");
+			new LldbModelTargetProcessAttachByPidConnectorImpl(this, "Attach to process by pid");
 		this.processAttacherByName =
-				new LldbModelTargetProcessAttachByNameConnectorImpl(this, "Attach to process by name");
+			new LldbModelTargetProcessAttachByNameConnectorImpl(this, "Attach to process by name");
 		this.processAttacherByPath =
-				new LldbModelTargetProcessAttachByPathConnectorImpl(this, "Attach to process by path");
+			new LldbModelTargetProcessAttachByPathConnectorImpl(this, "Attach to process by path");
 		this.traceLoader = new LldbModelTargetTraceOrDumpConnectorImpl(this, "Load trace/dump");
 		this.kernelAttacher = new LldbModelTargetKernelConnectorImpl(this, "Attach to kernel");
 		this.defaultConnector = processLauncher;

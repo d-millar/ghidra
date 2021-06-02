@@ -1,3 +1,6 @@
+/* ###
+ * IP: Apache License 2.0 with LLVM Exceptions
+ */
 /*
  * @(#)jni_md.h	1.19 05/11/17
  *

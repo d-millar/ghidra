@@ -32,16 +32,16 @@ import ghidra.util.datastruct.WeakValueHashMap;
 
 @TargetObjectSchemaInfo(
 	name = "BreakpointSpec",
-		attributes = {
-			@TargetAttributeType(name = "Type", type = String.class),
-			@TargetAttributeType(name = "Valid", type = Boolean.class),
-			@TargetAttributeType(name = "Enabled", type = Boolean.class),
-			@TargetAttributeType(name = "Count", type = Long.class),
-			@TargetAttributeType(type = Void.class) 
-		},
+	attributes = {
+		@TargetAttributeType(name = "Type", type = String.class),
+		@TargetAttributeType(name = "Valid", type = Boolean.class),
+		@TargetAttributeType(name = "Enabled", type = Boolean.class),
+		@TargetAttributeType(name = "Count", type = Long.class),
+		@TargetAttributeType(type = Void.class)
+	},
 	canonicalContainer = true)
 public abstract class LldbModelTargetAbstractXpointSpec extends LldbModelTargetObjectImpl
-	implements LldbModelTargetBreakpointSpec {
+		implements LldbModelTargetBreakpointSpec {
 
 	protected static String keyBreakpoint(Object bpt) {
 		return PathUtils.makeKey(DebugClient.getId(bpt));
@@ -83,13 +83,12 @@ public abstract class LldbModelTargetAbstractXpointSpec extends LldbModelTargetO
 	}
 
 	public abstract String getDescription(int level);
-	
+
 	public abstract void updateInfo(Object info, String reason);
-	
+
 	protected abstract TargetBreakpointKindSet computeKinds(Object from);
 
-	protected abstract void updateAttributesFromInfo(String reason); 
-
+	protected abstract void updateAttributesFromInfo(String reason);
 
 	@Override
 	public CompletableFuture<Void> delete() {
@@ -126,7 +125,8 @@ public abstract class LldbModelTargetAbstractXpointSpec extends LldbModelTargetO
 		SBTarget session = getManager().getCurrentSession();
 		String id = DebugClient.getId(getModelObject());
 		if (!refresh) {
-			return CompletableFuture.completedFuture(getManager().getKnownBreakpoints(session).get(id));
+			return CompletableFuture
+					.completedFuture(getManager().getKnownBreakpoints(session).get(id));
 		}
 		return getManager().listBreakpoints(session)
 				.thenApply(__ -> getManager().getKnownBreakpoints(session).get(id));

@@ -40,13 +40,13 @@ public class LldbModelTargetWatchpointSpecImpl extends LldbModelTargetAbstractXp
 
 	public String getDescription(int level) {
 		SBStream stream = new SBStream();
-		SBWatchpoint wpt = (SBWatchpoint) getModelObject();		
+		SBWatchpoint wpt = (SBWatchpoint) getModelObject();
 		DescriptionLevel detail = DescriptionLevel.swigToEnum(level);
 		wpt.GetDescription(stream, detail);
 		String data = stream.GetData();
 		return data.equals("No value") ? getName() : data;
 	}
-	
+
 	protected TargetBreakpointKindSet computeKinds(Object from) {
 		return TargetBreakpointKindSet.of(TargetBreakpointKind.READ, TargetBreakpointKind.WRITE);
 	}
@@ -54,8 +54,8 @@ public class LldbModelTargetWatchpointSpecImpl extends LldbModelTargetAbstractXp
 	public void updateInfo(Object info, String reason) {
 		setModelObject(info);
 		updateAttributesFromInfo(reason);
-		
-		SBWatchpoint wpt = (SBWatchpoint) getModelObject();		
+
+		SBWatchpoint wpt = (SBWatchpoint) getModelObject();
 		locs.add(new LldbModelTargetBreakpointLocationImpl(this, wpt));
 		setElements(locs, Map.of(), "Refreshed");
 	}

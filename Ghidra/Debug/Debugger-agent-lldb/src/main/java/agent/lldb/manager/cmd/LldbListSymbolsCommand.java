@@ -54,7 +54,7 @@ public class LldbListSymbolsCommand extends AbstractLldbCommand<Map<String, SBSy
 		DebugSystemObjects so = manager.getSystemObjects();
 		so.setCurrentProcessId(process.getId());
 		DebugSymbols symbols = manager.getSymbols();
-
+		
 		for (DebugSymbolName symbol : symbols.iterateSymbolMatches(module.getName() + "!*")) {
 			List<DebugSymbolId> symbolIdsByName = symbols.getSymbolIdsByName(symbol.name);
 			for (DebugSymbolId symbolId : symbolIdsByName) {

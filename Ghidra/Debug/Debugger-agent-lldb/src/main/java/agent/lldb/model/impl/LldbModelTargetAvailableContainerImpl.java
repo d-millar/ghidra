@@ -36,12 +36,17 @@ import ghidra.dbg.target.schema.TargetObjectSchema.ResyncMode;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 import ghidra.util.datastruct.WeakValueHashMap;
 
-@TargetObjectSchemaInfo(name = "AvailableContainer", elements = {
-	@TargetElementType(type = LldbModelTargetAvailableImpl.class) //
-}, elementResync = ResyncMode.ALWAYS, attributes = { //
-	@TargetAttributeType(name = TargetConfigurable.BASE_ATTRIBUTE_NAME, type = Integer.class), //
-	@TargetAttributeType(type = Void.class)  //
-}, canonicalContainer = true)
+@TargetObjectSchemaInfo(
+	name = "AvailableContainer",
+	elements = {
+		@TargetElementType(type = LldbModelTargetAvailableImpl.class) //
+	},
+	elementResync = ResyncMode.ALWAYS,
+	attributes = { //
+		@TargetAttributeType(name = TargetConfigurable.BASE_ATTRIBUTE_NAME, type = Integer.class), //
+		@TargetAttributeType(type = Void.class)  //
+	},
+	canonicalContainer = true)
 public class LldbModelTargetAvailableContainerImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetAvailableContainer, LldbModelTargetConfigurable {
 

@@ -20,7 +20,8 @@ import org.junit.Ignore;
 import agent.lldb.model.AbstractModelForLldbSessionActivationTest;
 
 @Ignore("Don't know how to make multiple sessions")
-public class InVmModelForLldbSessionActivationTest extends AbstractModelForLldbSessionActivationTest {
+public class InVmModelForLldbSessionActivationTest
+		extends AbstractModelForLldbSessionActivationTest {
 	@Override
 	public ModelHost modelHost() throws Throwable {
 		return new InVmLldbModelHost();

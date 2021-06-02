@@ -15,7 +15,6 @@
  */
 package agent.lldb.lldb;
 
-
 /**
  * The interface for receiving output callbacks via {@code IDebugOutputCallbacks} or a newer
  * variant.

@@ -47,7 +47,7 @@ public class LldbDeleteBreakpointsCommand extends AbstractLldbCommand<Void> {
 			if (info instanceof SBBreakpoint) {
 				SBBreakpoint bpt = (SBBreakpoint) info;
 				currentSession.BreakpointDelete(bpt.GetID());
-			} 
+			}
 			if (info instanceof SBWatchpoint) {
 				SBWatchpoint wpt = (SBWatchpoint) info;
 				currentSession.DeleteWatchpoint(wpt.GetID());

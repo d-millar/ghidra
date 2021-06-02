@@ -43,14 +43,14 @@ public class LldbModelTargetStackFrameRegisterImpl
 	protected static String keyRegister(SBValue register) {
 		return PathUtils.makeKey(indexRegister(register));
 	}
-	
+
 	String value = "";
 
 	public LldbModelTargetStackFrameRegisterImpl(LldbModelTargetStackFrameRegisterBankImpl bank,
 			SBValue register) {
 		super(bank.getModel(), bank, keyRegister(register), register, "Register");
 		value = getValue();
-		
+
 		changeAttributes(List.of(), Map.of( //
 			CONTAINER_ATTRIBUTE_NAME, bank.getContainer(), //
 			LENGTH_ATTRIBUTE_NAME, getBitLength(), //
@@ -64,7 +64,7 @@ public class LldbModelTargetStackFrameRegisterImpl
 			SBValue register) {
 		super(bank.getModel(), bank, keyRegister(register), register, "Register");
 		value = getValue();
-		
+
 		changeAttributes(List.of(), Map.of( //
 			CONTAINER_ATTRIBUTE_NAME, bank.getContainer(), //
 			LENGTH_ATTRIBUTE_NAME, getBitLength(), //
@@ -76,7 +76,7 @@ public class LldbModelTargetStackFrameRegisterImpl
 
 	public String getDescription(int level) {
 		SBStream stream = new SBStream();
-		SBValue val = (SBValue) getModelObject();		
+		SBValue val = (SBValue) getModelObject();
 		val.GetDescription(stream);
 		return stream.GetData();
 	}
@@ -102,8 +102,8 @@ public class LldbModelTargetStackFrameRegisterImpl
 	public SBValue getRegister() {
 		return (SBValue) getModelObject();
 	}
-	
-	public byte [] getBytes() {
+
+	public byte[] getBytes() {
 		String oldValue = value;
 		value = getValue();
 		if (value == null) {
@@ -123,7 +123,7 @@ public class LldbModelTargetStackFrameRegisterImpl
 		}
 		return bytes;
 	}
-	
+
 	public String getDisplay() {
 		return getValue() == null ? getName() : getName() + " : " + getValue();
 	}

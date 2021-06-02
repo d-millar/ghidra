@@ -57,7 +57,7 @@ public class LldbListProcessesCommand extends AbstractLldbCommand<Map<String, SB
 	}
 
 	@Override
-	public void invoke() {	
+	public void invoke() {
 		SBProcess p = session.GetProcess();
 		updatedProcesses = new HashMap<>();
 		updatedProcesses.put(DebugClient.getId(p), p);

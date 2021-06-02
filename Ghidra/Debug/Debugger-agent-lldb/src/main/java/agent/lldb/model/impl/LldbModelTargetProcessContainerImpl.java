@@ -35,12 +35,16 @@ import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetElementType;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 
-@TargetObjectSchemaInfo(name = "ProcessContainer", elements = { //
-	@TargetElementType(type = LldbModelTargetProcessImpl.class) //
-}, attributes = { //
-	@TargetAttributeType(name = TargetConfigurable.BASE_ATTRIBUTE_NAME, type = Integer.class), //
-	@TargetAttributeType(type = Void.class) //
-}, canonicalContainer = true)
+@TargetObjectSchemaInfo(
+	name = "ProcessContainer",
+	elements = { //
+		@TargetElementType(type = LldbModelTargetProcessImpl.class) //
+	},
+	attributes = { //
+		@TargetAttributeType(name = TargetConfigurable.BASE_ATTRIBUTE_NAME, type = Integer.class), //
+		@TargetAttributeType(type = Void.class) //
+	},
+	canonicalContainer = true)
 public class LldbModelTargetProcessContainerImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetProcessContainer, LldbModelTargetConfigurable {
 

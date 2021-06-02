@@ -32,11 +32,12 @@ public class LldbModelTargetSessionAttributesEnvironmentImpl extends LldbModelTa
 
 	SBTarget session;
 
-	public LldbModelTargetSessionAttributesEnvironmentImpl(LldbModelTargetSessionAttributes attributes) {
+	public LldbModelTargetSessionAttributesEnvironmentImpl(
+			LldbModelTargetSessionAttributes attributes) {
 		super(attributes.getModel(), attributes, "Environment", "SessionAttributesEnvironment");
-		
+
 		session = (SBTarget) getModelObject();
-		
+
 		getManager().addEventsListener(this);
 		getManager().listEnvironment(session).thenAccept(f -> {
 			setAttributes(List.of(), f, "Initialized");

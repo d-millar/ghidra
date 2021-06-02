@@ -97,5 +97,5 @@ public interface LldbModelTargetBreakpointSpec extends //
 	}
 
 	public LldbModelTargetBreakpointLocation findLocation(Object object);
-	
+
 }

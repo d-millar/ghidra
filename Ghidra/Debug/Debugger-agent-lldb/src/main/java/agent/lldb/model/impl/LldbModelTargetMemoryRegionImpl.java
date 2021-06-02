@@ -55,7 +55,7 @@ public class LldbModelTargetMemoryRegionImpl extends LldbModelTargetObjectImpl
 	public LldbModelTargetMemoryRegionImpl(LldbModelTargetMemoryContainer memory,
 			SBMemoryRegionInfo region) {
 		super(memory.getModel(), memory, keySection(region), region, "Region");
-		
+
 		this.changeAttributes(List.of(), List.of(), Map.of( //
 			MEMORY_ATTRIBUTE_NAME, memory, //
 			RANGE_ATTRIBUTE_NAME, range = doGetRange(region), //
@@ -73,16 +73,17 @@ public class LldbModelTargetMemoryRegionImpl extends LldbModelTargetObjectImpl
 
 	public String getDescription(int level) {
 		SBStream stream = new SBStream();
-		SBMemoryRegionInfo region = (SBMemoryRegionInfo) getModelObject();		
+		SBMemoryRegionInfo region = (SBMemoryRegionInfo) getModelObject();
 		region.GetDescription(stream);
 		return stream.GetData();
 	}
-	
+
 	protected AddressRange doGetRange(SBMemoryRegionInfo s) {
 		AddressSpace addressSpace = getModel().getAddressSpace("ram");
 		Address min = addressSpace.getAddress(s.GetRegionBase().longValue());
 		Address max = addressSpace.getAddress(s.GetRegionEnd().longValue() - 1);
-		return max.getOffset() > min.getOffset() ? new AddressRangeImpl(min, max) : new AddressRangeImpl(min, min);
+		return max.getOffset() > min.getOffset() ? new AddressRangeImpl(min, max)
+				: new AddressRangeImpl(min, min);
 	}
 
 	@Override

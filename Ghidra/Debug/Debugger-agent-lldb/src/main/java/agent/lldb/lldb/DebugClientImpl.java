@@ -1,3 +1,18 @@
+/* ###
+ * IP: GHIDRA
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package agent.lldb.lldb;
 
 import static org.junit.Assume.*;
@@ -45,11 +60,11 @@ public class DebugClientImpl implements DebugClient {
 		cmd = sbd.GetCommandInterpreter();
 		return this;
 	}
-	
+
 	public SBDebugger getDebugger() {
 		return sbd;
 	}
-	
+
 	@Override
 	public SBListener getListener() {
 		return sbd.GetListener();
@@ -58,7 +73,7 @@ public class DebugClientImpl implements DebugClient {
 	@Override
 	public void endSessionReentrant() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -69,13 +84,13 @@ public class DebugClientImpl implements DebugClient {
 	@Override
 	public void attachKernel(long flags, String options) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void startProcessServer(String options) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -92,20 +107,21 @@ public class DebugClientImpl implements DebugClient {
 	@Override
 	public void flushCallbacks() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void exitDispatch(DebugClient client) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
-	public SBProcess attachProcess(DebugServerId si, int keyType, String key, boolean wait, boolean async) {
+	public SBProcess attachProcess(DebugServerId si, int keyType, String key, boolean wait,
+			boolean async) {
 		SBListener listener = new SBListener();
 		SBError error = new SBError();
-		session = createNullSession(); 
+		session = createNullSession();
 		SBProcess process;
 		switch (keyType) {
 			case 0:  // pid
@@ -121,11 +137,11 @@ public class DebugClientImpl implements DebugClient {
 				process = session.AttachToProcessWithName(listener, key, wait, error);
 				break;
 			case 2:  // path
-				SBAttachInfo info = new SBAttachInfo(key, wait, async); 
+				SBAttachInfo info = new SBAttachInfo(key, wait, async);
 				process = session.Attach(info, error);
 				break;
 			default:
-				return null;					
+				return null;
 		}
 		if (!error.Success()) {
 			Msg.error(this, error.GetType() + " while attaching to " + key);
@@ -136,13 +152,13 @@ public class DebugClientImpl implements DebugClient {
 		}
 		if (async) {
 			manager.waitForEventEx();
-		} else {
+		}
+		else {
 			manager.updateState(process);
 		}
 		return process;
 	}
 
-	
 	@Override
 	public SBProcess createProcess(DebugServerId si, String fileName) {
 		SBError error = new SBError();
@@ -154,14 +170,14 @@ public class DebugClientImpl implements DebugClient {
 		}
 		return process;
 	}
-	
+
 	@Override
 	public SBProcess createProcess(DebugServerId si, SBLaunchInfo info) {
 		SBError error = new SBError();
 		String cmd = info.GetExecutableFile().GetDirectory();
-		cmd += "/"+info.GetExecutableFile().GetFilename();
+		cmd += "/" + info.GetExecutableFile().GetFilename();
 		for (int i = 0; i < info.GetNumArguments(); i++) {
-			cmd += " "+info.GetArgumentAtIndex(i);
+			cmd += " " + info.GetArgumentAtIndex(i);
 		}
 		session = connectSession(cmd);
 		SBProcess process = session.Launch(info, error);
@@ -171,21 +187,21 @@ public class DebugClientImpl implements DebugClient {
 		}
 		return process;
 	}
-	
+
 	@Override
-	public SBProcess createProcess(DebugServerId si, String fileName, 
-			List<String> args, List<String> envp, List<String> pathsIO, 
+	public SBProcess createProcess(DebugServerId si, String fileName,
+			List<String> args, List<String> envp, List<String> pathsIO,
 			String workingDir, long createFlags, boolean stopAtEntry) {
 		session = connectSession(fileName);
-		
+
 		SWIGTYPE_p_p_char ppArgs = listToChar(args);
 		SWIGTYPE_p_p_char ppEnvp = listToChar(envp);
-		String pathSTDIN  = pathsIO.get(0);
+		String pathSTDIN = pathsIO.get(0);
 		String pathSTDOUT = pathsIO.get(1);
 		String pathSTDERR = pathsIO.get(2);
 		SBListener listener = new SBListener();
 		SBError error = new SBError();
-		SBProcess process = session.Launch(listener, ppArgs, ppEnvp, 
+		SBProcess process = session.Launch(listener, ppArgs, ppEnvp,
 			pathSTDIN, pathSTDOUT, pathSTDERR, workingDir, createFlags, stopAtEntry, error);
 		//SBProcess process = session.Launch(listener, null, null, "", "", "", "", 0, true, error);
 		if (!error.Success()) {
@@ -206,13 +222,13 @@ public class DebugClientImpl implements DebugClient {
 	@Override
 	public void startServer(String options) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void waitForProcessServerEnd(int timeout) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -284,7 +300,7 @@ public class DebugClientImpl implements DebugClient {
 				processEvent(new LldbSymbolsLoadedEvent(new DebugEventInfo(evt)));
 			}
 		}
-		
+
 		if (SBProcess.EventIsProcessEvent(evt)) {
 			DebugProcessInfo info = new DebugProcessInfo(evt);
 			if ((type & SBProcess.eBroadcastBitStateChanged) != 0) {
@@ -312,7 +328,7 @@ public class DebugClientImpl implements DebugClient {
 				processEvent(new LldbStructuredDataEvent(info));
 			}
 		}
-		
+
 		if (SBThread.EventIsThreadEvent(evt)) {
 			DebugThreadInfo info = new DebugThreadInfo(evt);
 			if ((type & SBThread.eBroadcastBitStackChanged) != 0) {
@@ -391,7 +407,7 @@ public class DebugClientImpl implements DebugClient {
 			if (btype.equals(BreakpointEventType.eBreakpointEventTypeThreadChanged)) {
 				Msg.info(this, "*** Breakpoint Thread Changed: " + bpt.GetID());
 				processEvent(new LldbBreakpointThreadChangedEvent(info));
-			}		
+			}
 		}
 		if (SBWatchpoint.EventIsWatchpointEvent(evt)) {
 			WatchpointEventType wtype = SBWatchpoint.GetWatchpointEventTypeFromEvent(evt);
@@ -436,7 +452,7 @@ public class DebugClientImpl implements DebugClient {
 			if (wtype.equals(WatchpointEventType.eWatchpointEventTypeTypeChanged)) {
 				Msg.info(this, "*** Watchpoint Type Changed: " + wpt.GetID());
 				processEvent(new LldbBreakpointTypeChangedEvent(info));
-			}		
+			}
 		}
 	}
 
@@ -474,15 +490,18 @@ public class DebugClientImpl implements DebugClient {
 	public void addBroadcaster(Object object) {
 		if (object instanceof SBCommandInterpreter) {
 			SBCommandInterpreter interpreter = (SBCommandInterpreter) object;
-			interpreter.GetBroadcaster().AddListener(getListener(), ChangeSessionState.SESSION_ALL.getMask());
+			interpreter.GetBroadcaster()
+					.AddListener(getListener(), ChangeSessionState.SESSION_ALL.getMask());
 		}
 		if (object instanceof SBTarget) {
 			SBTarget session = (SBTarget) object;
-			session.GetBroadcaster().AddListener(getListener(), ChangeSessionState.SESSION_ALL.getMask());
+			session.GetBroadcaster()
+					.AddListener(getListener(), ChangeSessionState.SESSION_ALL.getMask());
 		}
 		if (object instanceof SBProcess) {
 			SBProcess process = (SBProcess) object;
-			process.GetBroadcaster().AddListener(getListener(), ChangeProcessState.PROCESS_ALL.getMask());
+			process.GetBroadcaster()
+					.AddListener(getListener(), ChangeProcessState.PROCESS_ALL.getMask());
 		}
 	}
 

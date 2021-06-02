@@ -20,11 +20,14 @@ import java.util.concurrent.CompletableFuture;
 import agent.lldb.model.iface2.LldbModelTargetObject;
 import ghidra.dbg.target.schema.*;
 
-@TargetObjectSchemaInfo(name = "SelectableObject", elements = {
-	@TargetElementType(type = Void.class)
-}, attributes = {
-	@TargetAttributeType(type = Void.class) 
-})
+@TargetObjectSchemaInfo(
+	name = "SelectableObject",
+	elements = {
+		@TargetElementType(type = Void.class)
+	},
+	attributes = {
+		@TargetAttributeType(type = Void.class)
+	})
 public interface LldbModelSelectableObject extends LldbModelTargetObject {
 
 	public CompletableFuture<Void> setActive();

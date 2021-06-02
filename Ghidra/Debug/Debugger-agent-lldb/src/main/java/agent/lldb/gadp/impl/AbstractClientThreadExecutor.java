@@ -125,18 +125,18 @@ public abstract class AbstractClientThreadExecutor extends AbstractExecutorServi
 						Msg.error(this, "Task in executor threw: " + t);
 					}
 				}
-				
+
 				DebugStatus status = client.getExecutionStatus();
 				if (status.shouldWait && status != DebugStatus.NO_DEBUGGEE ||
 					waitRegistered.get()) {
 					waitRegistered.set(false);
 					getManager().waitForEventEx();
-						//client.getControl().waitForEvent();
+					//client.getControl().waitForEvent();
 				}
 				else {
 					client.dispatchCallbacks(100); // TODO: Better synchronization
 				}
-				
+
 			}
 		}
 		catch (Throwable t) {

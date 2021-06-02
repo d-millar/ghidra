@@ -29,11 +29,26 @@ import ghidra.dbg.target.*;
 import ghidra.dbg.target.schema.*;
 import ghidra.dbg.util.PathUtils;
 
-@TargetObjectSchemaInfo(name = "Debugger", elements = {
-	@TargetElementType(type = Void.class) }, attributes = {
-		@TargetAttributeType(name = "Available", type = LldbModelTargetAvailableContainerImpl.class, required = true, fixed = true),
-		@TargetAttributeType(name = "Connectors", type = LldbModelTargetConnectorContainerImpl.class, required = true, fixed = true),
-		@TargetAttributeType(name = "Sessions", type = LldbModelTargetSessionContainerImpl.class, required = true, fixed = true),
+@TargetObjectSchemaInfo(
+	name = "Debugger",
+	elements = {
+		@TargetElementType(type = Void.class) },
+	attributes = {
+		@TargetAttributeType(
+			name = "Available",
+			type = LldbModelTargetAvailableContainerImpl.class,
+			required = true,
+			fixed = true),
+		@TargetAttributeType(
+			name = "Connectors",
+			type = LldbModelTargetConnectorContainerImpl.class,
+			required = true,
+			fixed = true),
+		@TargetAttributeType(
+			name = "Sessions",
+			type = LldbModelTargetSessionContainerImpl.class,
+			required = true,
+			fixed = true),
 		@TargetAttributeType(type = Void.class) })
 public class LldbModelTargetRootImpl extends LldbModelDefaultTargetModelRoot
 		implements LldbModelTargetRoot {

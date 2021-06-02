@@ -27,9 +27,9 @@ import ghidra.dbg.util.PathUtils;
 import ghidra.program.model.address.Address;
 
 @TargetObjectSchemaInfo(
-	name = "BreakpointLocation", 
+	name = "BreakpointLocation",
 	attributes = {
-		@TargetAttributeType(type = Void.class) 
+		@TargetAttributeType(type = Void.class)
 	})
 public class LldbModelTargetBreakpointLocationImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetBreakpointLocation {
@@ -37,12 +37,13 @@ public class LldbModelTargetBreakpointLocationImpl extends LldbModelTargetObject
 	protected static String keyLocation(SBBreakpointLocation loc) {
 		return PathUtils.makeKey(DebugClient.getId(loc));
 	}
+
 	protected static String keyLocation(SBWatchpoint wpt) {
-		return PathUtils.makeKey(DebugClient.getId(wpt)+".0");
+		return PathUtils.makeKey(DebugClient.getId(wpt) + ".0");
 	}
 
 	protected SBBreakpointLocation loc;
-	
+
 	protected Address address;
 	protected Integer length;
 	protected String display;
@@ -51,7 +52,7 @@ public class LldbModelTargetBreakpointLocationImpl extends LldbModelTargetObject
 			SBBreakpointLocation loc) {
 		super(spec.getModel(), spec, keyLocation(loc), loc, "BreakpointLocation");
 		this.loc = loc;
-		
+
 		doChangeAttributes("Initialization");
 	}
 
@@ -59,32 +60,32 @@ public class LldbModelTargetBreakpointLocationImpl extends LldbModelTargetObject
 			SBWatchpoint wpt) {
 		super(spec.getModel(), spec, keyLocation(wpt), wpt, "BreakpointLocation");
 		this.loc = null;
-		
+
 		address = getModel().getAddress("ram", wpt.GetWatchAddress().longValue());
 		this.changeAttributes(List.of(), Map.of(
 			SPEC_ATTRIBUTE_NAME, parent,
 			ADDRESS_ATTRIBUTE_NAME, address,
 			LENGTH_ATTRIBUTE_NAME, length = (int) wpt.GetWatchSize(),
 			DISPLAY_ATTRIBUTE_NAME, display = getDescription(1)),
-		"Initialization");
+			"Initialization");
 		placeLocations();
 	}
-	
+
 	public String getDescription(int level) {
 		Object modelObject = getModelObject();
 		SBStream stream = new SBStream();
 		DescriptionLevel detail = DescriptionLevel.swigToEnum(level);
 		if (modelObject instanceof SBBreakpointLocation) {
-			SBBreakpointLocation loc = (SBBreakpointLocation) getModelObject();		
+			SBBreakpointLocation loc = (SBBreakpointLocation) getModelObject();
 			loc.GetDescription(stream, detail);
-		} 
+		}
 		if (modelObject instanceof SBWatchpoint) {
-			SBWatchpoint wpt = (SBWatchpoint) getModelObject();		
+			SBWatchpoint wpt = (SBWatchpoint) getModelObject();
 			wpt.GetDescription(stream, detail);
-		} 
+		}
 		return stream.GetData();
 	}
-	
+
 	protected void doChangeAttributes(String reason) {
 		address = getModel().getAddress("ram", loc.GetLoadAddress().longValue());
 		length = 1;
@@ -96,11 +97,12 @@ public class LldbModelTargetBreakpointLocationImpl extends LldbModelTargetObject
 			reason);
 		placeLocations();
 	}
-	
+
 	protected void placeLocations() {
 		//TODO: FIX THIS
 		SBProcess currentProcess = getManager().getCurrentProcess();
-		LldbModelTargetProcessImpl process = (LldbModelTargetProcessImpl) getModel().getModelObject(currentProcess);
+		LldbModelTargetProcessImpl process =
+			(LldbModelTargetProcessImpl) getModel().getModelObject(currentProcess);
 		process.addBreakpointLocation(this);
 	}
 

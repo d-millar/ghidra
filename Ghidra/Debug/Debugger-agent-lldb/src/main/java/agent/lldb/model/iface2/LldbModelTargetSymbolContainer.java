@@ -19,7 +19,8 @@ import SWIG.SBSymbol;
 import agent.lldb.model.impl.LldbModelTargetSymbolImpl;
 import ghidra.dbg.target.TargetSymbolNamespace;
 
-public interface LldbModelTargetSymbolContainer extends LldbModelTargetObject, TargetSymbolNamespace {
+public interface LldbModelTargetSymbolContainer
+		extends LldbModelTargetObject, TargetSymbolNamespace {
 
 	public LldbModelTargetSymbolImpl getTargetSymbol(SBSymbol symbol);
 

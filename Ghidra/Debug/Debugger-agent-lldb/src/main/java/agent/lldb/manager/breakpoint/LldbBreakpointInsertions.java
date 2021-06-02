@@ -36,7 +36,7 @@ public interface LldbBreakpointInsertions {
 	default CompletableFuture<LldbBreakpointInfo> insertBreakpoint(String loc,
 			LldbBreakpointType type) {
 		return insertBreakpoint(NumericUtilities.parseHexLong(loc), 1,
-				LldbBreakpointType.BREAKPOINT);
+			LldbBreakpointType.BREAKPOINT);
 	}
 
 	/**
