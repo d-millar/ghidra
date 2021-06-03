@@ -12,7 +12,6 @@ package SWIG;
  * the SWIG interface file instead.
  * ----------------------------------------------------------------------------- */
 
-
 public class SBLaunchInfo {
   private transient long swigCPtr;
   protected transient boolean swigCMemOwn;
@@ -41,8 +40,8 @@ public class SBLaunchInfo {
     }
   }
 
-  public SBLaunchInfo(SWIGTYPE_p_p_char argv) {
-    this(lldbJNI.new_SBLaunchInfo(SWIGTYPE_p_p_char.getCPtr(argv)), true);
+  public SBLaunchInfo(String[] argv) {
+    this(lldbJNI.new_SBLaunchInfo(argv), true);
   }
 
   public java.math.BigInteger GetProcessID() {
@@ -97,8 +96,8 @@ public class SBLaunchInfo {
     return lldbJNI.SBLaunchInfo_GetArgumentAtIndex(swigCPtr, this, idx);
   }
 
-  public void SetArguments(SWIGTYPE_p_p_char argv, boolean append) {
-    lldbJNI.SBLaunchInfo_SetArguments(swigCPtr, this, SWIGTYPE_p_p_char.getCPtr(argv), append);
+  public void SetArguments(String[] argv, boolean append) {
+    lldbJNI.SBLaunchInfo_SetArguments(swigCPtr, this, argv, append);
   }
 
   public long GetNumEnvironmentEntries() {
@@ -109,8 +108,8 @@ public class SBLaunchInfo {
     return lldbJNI.SBLaunchInfo_GetEnvironmentEntryAtIndex(swigCPtr, this, idx);
   }
 
-  public void SetEnvironmentEntries(SWIGTYPE_p_p_char envp, boolean append) {
-    lldbJNI.SBLaunchInfo_SetEnvironmentEntries(swigCPtr, this, SWIGTYPE_p_p_char.getCPtr(envp), append);
+  public void SetEnvironmentEntries(String[] envp, boolean append) {
+    lldbJNI.SBLaunchInfo_SetEnvironmentEntries(swigCPtr, this, envp, append);
   }
 
   public void SetEnvironment(SBEnvironment env, boolean append) {
@@ -203,6 +202,22 @@ public class SBLaunchInfo {
 
   public void SetDetachOnError(boolean enable) {
     lldbJNI.SBLaunchInfo_SetDetachOnError(swigCPtr, this, enable);
+  }
+
+  public String GetScriptedProcessClassName() {
+    return lldbJNI.SBLaunchInfo_GetScriptedProcessClassName(swigCPtr, this);
+  }
+
+  public void SetScriptedProcessClassName(String class_name) {
+    lldbJNI.SBLaunchInfo_SetScriptedProcessClassName(swigCPtr, this, class_name);
+  }
+
+  public SBStructuredData GetScriptedProcessDictionary() {
+    return new SBStructuredData(lldbJNI.SBLaunchInfo_GetScriptedProcessDictionary(swigCPtr, this), true);
+  }
+
+  public void SetScriptedProcessDictionary(SBStructuredData dict) {
+    lldbJNI.SBLaunchInfo_SetScriptedProcessDictionary(swigCPtr, this, SBStructuredData.getCPtr(dict), dict);
   }
 
 }
