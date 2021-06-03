@@ -56,7 +56,18 @@ public class LldbReadMemoryCommand extends AbstractLldbCommand<RangeSet<Long>> {
 		BigInteger offset = addr.getOffsetAsBigInteger();
 		SBError error = new SBError();
 		//byte[] buffer = buf.array();
-		//long read = process.ReadMemory(offset, buffer, len, error);
+		ByteArray buffer = new ByteArray(len);
+		long read = process.ReadMemory(offset, buffer, len, error);
+		if (!error.Success()) {
+			SBStream stream = new SBStream();
+			error.GetDescription(stream);
+			Msg.error(this, error.GetType() + ":" + stream.GetData());
+			return;
+		}
+		for (int i = 0; i < read; i++) {
+			buf.put(i, buffer.getitem(i));
+		}
+		/*
 		for (int i = 0; i < len; i += 8) {
 			BigInteger increment = new BigInteger(Integer.toString(i));
 			BigInteger res = process.ReadPointerFromMemory(offset.add(increment), error);
@@ -71,5 +82,6 @@ public class LldbReadMemoryCommand extends AbstractLldbCommand<RangeSet<Long>> {
 				break;
 			}
 		}
+		*/
 	}
 }

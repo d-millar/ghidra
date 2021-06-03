@@ -46,9 +46,12 @@ public class LldbWriteMemoryCommand extends AbstractLldbCommand<Void> {
 	public void invoke() {
 		BigInteger offset = addr.getOffsetAsBigInteger();
 		byte[] byteArray = buf.array();
+		ByteArray buffer = new ByteArray(len);
+		for (int i = 0; i < len; i++) {
+			buffer.setitem(i, byteArray[i]);
+		}
 		SBError error = new SBError();
-		// TODO: how to get byteArray -> SWIGTYPE_p_void?
-		process.WriteMemory(offset, null, len, error);
+		process.WriteMemory(offset, buffer, len, error);
 		if (!error.Success()) {
 			SBStream stream = new SBStream();
 			error.GetDescription(stream);
