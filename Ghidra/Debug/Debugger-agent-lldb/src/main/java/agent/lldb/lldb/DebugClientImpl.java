@@ -194,14 +194,16 @@ public class DebugClientImpl implements DebugClient {
 			String workingDir, long createFlags, boolean stopAtEntry) {
 		session = connectSession(fileName);
 
-		SWIGTYPE_p_p_char ppArgs = listToChar(args);
-		SWIGTYPE_p_p_char ppEnvp = listToChar(envp);
+		String [] argArr = new String[args.size()];
+		args.toArray(argArr);
+		String [] envArr = new String[envp.size()];
+		envp.toArray(envArr);
 		String pathSTDIN = pathsIO.get(0);
 		String pathSTDOUT = pathsIO.get(1);
 		String pathSTDERR = pathsIO.get(2);
 		SBListener listener = new SBListener();
 		SBError error = new SBError();
-		SBProcess process = session.Launch(listener, ppArgs, ppEnvp,
+		SBProcess process = session.Launch(listener, argArr, envArr,
 			pathSTDIN, pathSTDOUT, pathSTDERR, workingDir, createFlags, stopAtEntry, error);
 		//SBProcess process = session.Launch(listener, null, null, "", "", "", "", 0, true, error);
 		if (!error.Success()) {
@@ -213,10 +215,6 @@ public class DebugClientImpl implements DebugClient {
 		}
 		manager.waitForEventEx();
 		return process;
-	}
-
-	private SWIGTYPE_p_p_char listToChar(List<String> list) {
-		return (SWIGTYPE_p_p_char) null; //list.toArray();
 	}
 
 	@Override

@@ -53,8 +53,8 @@ public class LldbLaunchProcessCommand extends AbstractLldbCommand<SBThread> {
 			List<String> pathsIO, String workingDirectory, long flags, boolean stopAtEntry) {
 		super(manager);
 		this.fileName = fileName;
-		this.args = args;
-		this.envp = envp;
+		this.args = args == null ? new ArrayList<>() : args;
+		this.envp = envp == null ? new ArrayList<>() : envp;
 		this.pathsIO = pathsIO;
 		if (pathsIO == null) {
 			this.pathsIO = new ArrayList<>();

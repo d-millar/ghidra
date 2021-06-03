@@ -57,6 +57,7 @@ public class LldbWriteMemoryCommand extends AbstractLldbCommand<Void> {
 			error.GetDescription(stream);
 			Msg.error(this, error.GetType() + ":" + stream.GetData());
 		}
+		buffer.delete();
 	}
 
 }

@@ -67,6 +67,7 @@ public class LldbReadMemoryCommand extends AbstractLldbCommand<RangeSet<Long>> {
 		for (int i = 0; i < read; i++) {
 			buf.put(i, buffer.getitem(i));
 		}
+		buffer.delete();
 		/*
 		for (int i = 0; i < len; i += 8) {
 			BigInteger increment = new BigInteger(Integer.toString(i));
