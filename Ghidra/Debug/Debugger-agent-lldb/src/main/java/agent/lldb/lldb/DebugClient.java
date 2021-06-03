@@ -229,6 +229,7 @@ public interface DebugClient extends DebugClientReentrant {
 		LAUNCH_DETACH_ON_ERROR(1 << 9), //
 		LAUNCH_SHELL_EXPAND_ARGS(1 << 10), //
 		LAUNCH_CLOSE_TTY_ON_EXIT(1 << 11), //
+		LAUNCH_INHERIT_FROM_PARENT(1 << 12) //
 		;
 
 		DebugCreateFlags(int mask) {
@@ -416,6 +417,9 @@ public interface DebugClient extends DebugClientReentrant {
 	SBProcess attachProcess(DebugServerId si, int keyType, String key, boolean wait, boolean async);
 
 	SBProcess createProcess(DebugServerId si, String fileName);
+
+	SBProcess createProcess(DebugServerId si, String fileName, 
+			List<String> args, List<String> envp, String workingDir);
 
 	SBProcess createProcess(DebugServerId si, SBLaunchInfo info);
 

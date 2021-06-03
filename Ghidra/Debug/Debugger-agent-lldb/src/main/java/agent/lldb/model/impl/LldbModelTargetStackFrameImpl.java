@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import SWIG.*;
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface1.LldbModelTargetFocusScope;
@@ -66,7 +67,12 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 		implements LldbModelTargetStackFrame {
 
 	protected static String indexFrame(SBFrame frame) {
-		return PathUtils.makeIndex(frame.GetFrameID());
+		String id = DebugClient.getId(frame);
+		if (id.equals("ffffffff")) {
+			id = "0";
+		}
+		return id;
+		//return PathUtils.makeIndex(id);
 	}
 
 	protected static String keyFrame(SBFrame frame) {
@@ -117,9 +123,9 @@ public class LldbModelTargetStackFrameImpl extends LldbModelTargetObjectImpl
 
 	protected static String computeDisplay(SBFrame frame) {
 		if (frame.GetFunction() == null) {
-			return String.format("#%d 0x%s", frame.GetFrameID(), frame.GetPC().toString(16));
+			return String.format("#%d 0x%s", DebugClient.getId(frame), frame.GetPC().toString(16));
 		}
-		return String.format("#%d 0x%s in %s ()", frame.GetFrameID(), frame.GetPC().toString(16),
+		return String.format("#%d 0x%s in %s ()", DebugClient.getId(frame), frame.GetPC().toString(16),
 			frame.GetDisplayFunctionName());
 	}
 

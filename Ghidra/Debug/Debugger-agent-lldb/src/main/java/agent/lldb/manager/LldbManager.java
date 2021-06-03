@@ -423,7 +423,7 @@ public interface LldbManager extends AutoCloseable, LldbBreakpointInsertions {
 
 	CompletableFuture<?> launch(String fileName, List<String> args);
 
-	CompletableFuture<Void> launch(Map<String, ?> args);
+	CompletableFuture<?> launch(Map<String, ?> args);
 
 	/********** NEEDED FOR TESTING ************/
 

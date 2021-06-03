@@ -1465,8 +1465,8 @@ public class LldbManagerImpl implements LldbManager {
 	}
 
 	@Override
-	public CompletableFuture<Void> launch(Map<String, ?> args) {
-		return CompletableFuture.completedFuture(null);
+	public CompletableFuture<?> launch(Map<String, ?> args) {
+		return execute(new LldbLaunchProcessWithOptionsCommand(this, args));
 	}
 
 	public CompletableFuture<?> openFile(Map<String, ?> args) {

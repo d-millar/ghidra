@@ -18,6 +18,7 @@ package agent.lldb.lldb;
 import static org.junit.Assume.*;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import SWIG.*;
@@ -161,13 +162,25 @@ public class DebugClientImpl implements DebugClient {
 
 	@Override
 	public SBProcess createProcess(DebugServerId si, String fileName) {
+		return createProcess(si, fileName, new ArrayList<String>(), new ArrayList<String>(), "");
+	}
+
+	@Override
+	public SBProcess createProcess(DebugServerId si, String fileName, 
+			List<String> args, List<String> envp, String workingDir) {
 		SBError error = new SBError();
 		session = connectSession(fileName);
-		SBProcess process = session.LaunchSimple(null, null, "");
+		String [] argArr = args.toArray(new String[args.size()]);
+		String [] envArr = envp.toArray(new String[envp.size()]);
+		SBProcess process = session.LaunchSimple(argArr, envArr, workingDir);
 		if (!error.Success()) {
 			Msg.error(this, error.GetType() + " for create process");
+			SBStream stream = new SBStream();
+			error.GetDescription(stream);
+			Msg.error(this, stream.GetData());
 			return null;
 		}
+		manager.updateState(process);
 		return process;
 	}
 
@@ -183,6 +196,9 @@ public class DebugClientImpl implements DebugClient {
 		SBProcess process = session.Launch(info, error);
 		if (!error.Success()) {
 			Msg.error(this, error.GetType() + " for create process");
+			SBStream stream = new SBStream();
+			error.GetDescription(stream);
+			Msg.error(this, stream.GetData());
 			return null;
 		}
 		return process;
@@ -194,10 +210,9 @@ public class DebugClientImpl implements DebugClient {
 			String workingDir, long createFlags, boolean stopAtEntry) {
 		session = connectSession(fileName);
 
-		String [] argArr = new String[args.size()];
-		args.toArray(argArr);
-		String [] envArr = new String[envp.size()];
-		envp.toArray(envArr);
+		
+		String [] argArr = args.toArray(new String[args.size()]);
+		String [] envArr = envp.toArray(new String[envp.size()]);
 		String pathSTDIN = pathsIO.get(0);
 		String pathSTDOUT = pathsIO.get(1);
 		String pathSTDERR = pathsIO.get(2);

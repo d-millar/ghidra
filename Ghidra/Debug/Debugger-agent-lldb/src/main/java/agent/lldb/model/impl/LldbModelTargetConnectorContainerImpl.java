@@ -32,9 +32,24 @@ import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 			required = true,
 			fixed = true),
 		@TargetAttributeType(
-			name = "Attach to process",
+			name = "Launch process w/ options",
+			type = LldbModelTargetProcessLaunchWithOptionsConnectorImpl.class,
+			required = false,
+			fixed = true),
+		@TargetAttributeType(
+			name = "Attach to process by pid",
 			type = LldbModelTargetProcessAttachByPidConnectorImpl.class,
 			required = true,
+			fixed = true),
+		@TargetAttributeType(
+			name = "Attach to process by name",
+			type = LldbModelTargetProcessAttachByNameConnectorImpl.class,
+			required = false,
+			fixed = true),
+		@TargetAttributeType(
+			name = "Attach to process by path",
+			type = LldbModelTargetProcessAttachByPathConnectorImpl.class,
+			required = false,
 			fixed = true),
 		@TargetAttributeType(
 			name = "Load trace/dump",
@@ -44,7 +59,7 @@ import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 		@TargetAttributeType(
 			name = "Attach to kernel",
 			type = LldbModelTargetKernelConnectorImpl.class,
-			required = true,
+			required = false,
 			fixed = true),
 		@TargetAttributeType(type = Void.class)
 	},
@@ -56,6 +71,7 @@ public class LldbModelTargetConnectorContainerImpl extends LldbModelTargetObject
 	private LldbModelTargetConnector defaultConnector;
 
 	protected final LldbModelTargetProcessLaunchConnectorImpl processLauncher;
+	protected final LldbModelTargetProcessLaunchWithOptionsConnectorImpl processLauncherEx;
 	protected final LldbModelTargetProcessAttachByPidConnectorImpl processAttacherByPid;
 	protected final LldbModelTargetProcessAttachByNameConnectorImpl processAttacherByName;
 	protected final LldbModelTargetProcessAttachByPathConnectorImpl processAttacherByPath;
@@ -67,7 +83,9 @@ public class LldbModelTargetConnectorContainerImpl extends LldbModelTargetObject
 		this.root = root;
 
 		this.processLauncher =
-			new LldbModelTargetProcessLaunchConnectorImpl(this, "Launch process");
+				new LldbModelTargetProcessLaunchConnectorImpl(this, "Launch process");
+		this.processLauncherEx =
+				new LldbModelTargetProcessLaunchWithOptionsConnectorImpl(this, "Launch process w/ options");
 		this.processAttacherByPid =
 			new LldbModelTargetProcessAttachByPidConnectorImpl(this, "Attach to process by pid");
 		this.processAttacherByName =
@@ -83,6 +101,7 @@ public class LldbModelTargetConnectorContainerImpl extends LldbModelTargetObject
 			processAttacherByName, //
 			processAttacherByPath, //
 			processLauncher, //
+			processLauncherEx, //
 			traceLoader //
 		), Map.of( //
 			DISPLAY_ATTRIBUTE_NAME, "Connectors" //
