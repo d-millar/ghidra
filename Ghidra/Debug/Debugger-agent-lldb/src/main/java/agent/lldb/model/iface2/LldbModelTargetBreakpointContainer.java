@@ -22,9 +22,9 @@ import java.util.function.Function;
 import SWIG.SBTarget;
 import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbEventsListenerAdapter;
-import agent.lldb.manager.breakpoint.LldbBreakpointInfo;
 import agent.lldb.manager.breakpoint.LldbBreakpointType;
 import agent.lldb.manager.impl.LldbManagerImpl;
+import agent.lldb.model.impl.LldbModelTargetAbstractXpointSpec;
 import ghidra.async.AsyncFence;
 import ghidra.dbg.target.TargetBreakpointSpec.TargetBreakpointKind;
 import ghidra.dbg.target.TargetBreakpointSpecContainer;
@@ -34,7 +34,7 @@ import ghidra.program.model.address.AddressRange;
 @TargetObjectSchemaInfo(
 	name = "BreakpointContainer",
 	elements = {
-		@TargetElementType(type = LldbModelTargetBreakpointSpec.class) },
+		@TargetElementType(type = LldbModelTargetAbstractXpointSpec.class) },
 	attributes = {
 		@TargetAttributeType(type = Void.class) },
 	canonicalContainer = true)

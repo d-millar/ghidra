@@ -1345,10 +1345,10 @@ public class LldbManagerImpl implements LldbManager {
 			return;
 		}
 		if (info instanceof SBBreakpoint) {
-			((SBBreakpoint) info).SetEnabled(false);
+			((SBBreakpoint) info).SetEnabled(true);
 		}
 		if (info instanceof SBWatchpoint) {
-			((SBWatchpoint) info).SetEnabled(false);
+			((SBWatchpoint) info).SetEnabled(true);
 		}
 		doBreakpointModifiedSameLocations(session, info, cause);
 	}

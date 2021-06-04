@@ -20,7 +20,8 @@ import java.util.Map;
 
 import SWIG.*;
 import agent.lldb.lldb.DebugClient;
-import agent.lldb.model.iface2.LldbModelTargetBreakpointLocation;
+import agent.lldb.model.iface2.*;
+import ghidra.dbg.target.TargetObject;
 import ghidra.dbg.target.schema.TargetAttributeType;
 import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 import ghidra.dbg.util.PathUtils;
@@ -42,15 +43,18 @@ public class LldbModelTargetBreakpointLocationImpl extends LldbModelTargetObject
 		return PathUtils.makeKey(DebugClient.getId(wpt) + ".0");
 	}
 
+	protected LldbModelTargetAbstractXpointSpec spec;
 	protected SBBreakpointLocation loc;
 
 	protected Address address;
 	protected Integer length;
 	protected String display;
 
+
 	public LldbModelTargetBreakpointLocationImpl(LldbModelTargetAbstractXpointSpec spec,
 			SBBreakpointLocation loc) {
 		super(spec.getModel(), spec, keyLocation(loc), loc, "BreakpointLocation");
+		this.spec = spec;
 		this.loc = loc;
 
 		doChangeAttributes("Initialization");
@@ -106,6 +110,21 @@ public class LldbModelTargetBreakpointLocationImpl extends LldbModelTargetObject
 		process.addBreakpointLocation(this);
 	}
 
+	@Override
+	protected void doInvalidate(TargetObject branch, String reason) {
+		removeLocations();
+		super.doInvalidate(branch, reason);
+	}
+
+	protected void removeLocations() {
+		TargetObject modelObject = getModel().getModelObject(getManager().getCurrentProcess());
+		if (modelObject instanceof LldbModelTargetProcess) {
+			LldbModelTargetProcess targetProcess = (LldbModelTargetProcess) modelObject;
+			LldbModelTargetBreakpointLocationContainer locs = (LldbModelTargetBreakpointLocationContainer) targetProcess.getCachedAttribute("Breakpoints");			
+			locs.removeBreakpointLocation(this);
+		}
+	}
+	
 	@Override
 	public Integer getLength() {
 		return length;

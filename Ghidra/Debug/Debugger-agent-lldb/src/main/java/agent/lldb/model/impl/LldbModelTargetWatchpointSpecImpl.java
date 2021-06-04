@@ -21,11 +21,13 @@ import SWIG.*;
 import agent.lldb.model.iface2.LldbModelTargetBreakpointContainer;
 import agent.lldb.model.iface2.LldbModelTargetBreakpointLocation;
 import ghidra.dbg.target.TargetBreakpointSpecContainer.TargetBreakpointKindSet;
-import ghidra.dbg.target.schema.TargetAttributeType;
-import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.target.schema.*;
 
 @TargetObjectSchemaInfo(
 	name = "BreakpointSpec",
+	elements = { //
+		@TargetElementType(type = LldbModelTargetBreakpointLocationImpl.class) //
+	},
 	attributes = {
 		@TargetAttributeType(type = Void.class) },
 	canonicalContainer = true)

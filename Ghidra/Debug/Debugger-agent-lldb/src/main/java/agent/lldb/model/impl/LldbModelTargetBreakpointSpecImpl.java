@@ -24,14 +24,15 @@ import agent.lldb.model.iface2.LldbModelTargetBreakpointContainer;
 import agent.lldb.model.iface2.LldbModelTargetBreakpointLocation;
 import ghidra.dbg.target.TargetBreakpointLocation;
 import ghidra.dbg.target.TargetBreakpointSpecContainer.TargetBreakpointKindSet;
+import ghidra.dbg.target.schema.*;
 import ghidra.dbg.target.TargetObject;
-import ghidra.dbg.target.TargetBreakpointSpec.TargetBreakpointAction;
-import ghidra.dbg.target.schema.TargetAttributeType;
-import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 import ghidra.util.datastruct.ListenerSet;
 
 @TargetObjectSchemaInfo(
 	name = "BreakpointSpec",
+	elements = { //
+		@TargetElementType(type = LldbModelTargetBreakpointLocationImpl.class) //
+	},
 	attributes = {
 		@TargetAttributeType(name = "Type", type = String.class),
 		@TargetAttributeType(name = "Valid", type = Boolean.class),

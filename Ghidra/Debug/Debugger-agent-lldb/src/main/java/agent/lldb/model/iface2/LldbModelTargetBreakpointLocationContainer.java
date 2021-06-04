@@ -24,7 +24,7 @@ import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
 @TargetObjectSchemaInfo(
 	name = "BreakpointContainer",
 	elements = {
-		@TargetElementType(type = LldbModelTargetBreakpointSpec.class) },
+		@TargetElementType(type = LldbModelTargetBreakpointLocation.class) },
 	attributes = {
 		@TargetAttributeType(type = Void.class) },
 	canonicalContainer = true)
