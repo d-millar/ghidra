@@ -119,7 +119,7 @@ public class LldbModelTargetProcessLaunchWithOptionsConnectorImpl extends LldbMo
 			false, "Shell-stype expansion", "perform shell-style argument expansion");
 		map.put("ExpandArgs", pFA);
 		ParameterDescription<Boolean> pFB = ParameterDescription.create(Boolean.class, "CloseTTY", false,
-			false, "Close TTY on exot", "close the open TTY on exit");
+			false, "Close TTY on exit", "close the open TTY on exit");
 		map.put("CloseTTY", pFB);
 		ParameterDescription<Boolean> pFC = ParameterDescription.create(Boolean.class, "Inherit", false,
 			false, "Inherit TCC", "inherit TCC permissions but instead them from the parent");

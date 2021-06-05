@@ -325,7 +325,7 @@ public class DebugClientImpl implements DebugClient {
 				processEvent(new LldbInterruptEvent(info));
 			}
 			if ((type & SBProcess.eBroadcastBitSTDOUT) != 0) {
-				Msg.info(this, "*** Console STDOU: " + evt.GetType());
+				Msg.info(this, "*** Console STDOUT: " + evt.GetType());
 				processEvent(new LldbConsoleOutputEvent(info));
 			}
 			if ((type & SBProcess.eBroadcastBitSTDERR) != 0) {

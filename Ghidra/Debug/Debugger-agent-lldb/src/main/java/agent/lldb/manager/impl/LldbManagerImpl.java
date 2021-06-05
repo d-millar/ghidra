@@ -625,6 +625,7 @@ public class LldbManagerImpl implements LldbManager {
 	private void defaultHandlers() {
 		handlerMap.put(LldbBreakpointEvent.class, this::processBreakpoint);
 		handlerMap.put(LldbExceptionEvent.class, this::processException);
+		handlerMap.put(LldbInterruptEvent.class, this::processInterrupt);
 		handlerMap.put(LldbThreadCreatedEvent.class, this::processThreadCreated);
 		handlerMap.put(LldbThreadExitedEvent.class, this::processThreadExited);
 		handlerMap.put(LldbThreadSelectedEvent.class, this::processThreadSelected);
@@ -655,6 +656,7 @@ public class LldbManagerImpl implements LldbManager {
 		statusMap.put(LldbProcessCreatedEvent.class, DebugStatus.BREAK);
 		statusMap.put(LldbStateChangedEvent.class, DebugStatus.NO_CHANGE);
 		statusMap.put(LldbStoppedEvent.class, DebugStatus.BREAK);
+		statusMap.put(LldbInterruptEvent.class, DebugStatus.BREAK);
 	}
 
 	public void updateState(SBEvent event) {
@@ -768,6 +770,26 @@ public class LldbManagerImpl implements LldbManager {
 	 * @return retval handling/break status
 	 */
 	protected DebugStatus processException(LldbExceptionEvent evt, Void v) {
+		/*
+		Integer eventId = updateState(evt);
+		
+		DebugExceptionRecord64 info = evt.getInfo();
+		String key = Integer.toHexString(info.code);
+		if (statusByNameMap.containsKey(key)) {
+			return statusByNameMap.get(key);
+		}
+		*/
+		return statusMap.get(evt.getClass());
+	}
+
+	/**
+	 * Handler for breakpoint events
+	 * 
+	 * @param evt the event
+	 * @param v nothing
+	 * @return retval handling/break status
+	 */
+	protected DebugStatus processInterrupt(LldbInterruptEvent evt, Void v) {
 		/*
 		Integer eventId = updateState(evt);
 		
