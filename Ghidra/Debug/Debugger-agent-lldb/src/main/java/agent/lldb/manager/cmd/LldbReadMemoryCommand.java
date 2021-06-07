@@ -55,7 +55,6 @@ public class LldbReadMemoryCommand extends AbstractLldbCommand<RangeSet<Long>> {
 	public void invoke() {
 		BigInteger offset = addr.getOffsetAsBigInteger();
 		SBError error = new SBError();
-		//byte[] buffer = buf.array();
 		ByteArray buffer = new ByteArray(len);
 		long read = process.ReadMemory(offset, buffer, len, error);
 		if (!error.Success()) {

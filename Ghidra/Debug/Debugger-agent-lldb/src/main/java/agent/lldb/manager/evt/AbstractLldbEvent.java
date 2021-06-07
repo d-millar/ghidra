@@ -50,7 +50,7 @@ public abstract class AbstractLldbEvent<T> implements LldbEvent<T> {
 	@Override
 	public void claim(LldbPendingCommand<?> cmd) {
 		if (cause != Causes.UNCLAIMED) {
-			throw new IllegalStateException("Event is already claimed by " + cause);
+			//throw new IllegalStateException("Event is already claimed by " + cause);
 		}
 		cause = cmd;
 	}

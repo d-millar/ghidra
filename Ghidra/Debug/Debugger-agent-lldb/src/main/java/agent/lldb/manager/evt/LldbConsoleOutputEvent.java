@@ -16,7 +16,9 @@
 package agent.lldb.manager.evt;
 
 import SWIG.SBEvent;
+import SWIG.SBStream;
 import agent.lldb.lldb.DebugProcessInfo;
+import ghidra.util.Msg;
 
 /**
  * The event corresponding with "{@code ~""}" output records
@@ -30,6 +32,14 @@ public class LldbConsoleOutputEvent extends AbstractLldbEvent<DebugProcessInfo> 
 		super(info);
 		this.mask = 0;
 		this.text = SBEvent.GetCStringFromEvent(info.event);
+		SBStream stream = new SBStream();
+		boolean success = info.event.GetDescription(stream);
+		if (success) {
+			Msg.info(this, stream.GetData());
+			if (text == null) {
+				text = stream.GetData();
+			}
+		}
 	}
 
 	public LldbConsoleOutputEvent(int mask, String text) {
