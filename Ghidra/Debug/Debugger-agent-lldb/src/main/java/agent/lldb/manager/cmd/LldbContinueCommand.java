@@ -15,12 +15,11 @@
  */
 package agent.lldb.manager.cmd;
 
-import SWIG.SBProcess;
+import SWIG.*;
 import agent.lldb.manager.LldbEvent;
-import agent.lldb.manager.evt.AbstractLldbCompletedCommandEvent;
-import agent.lldb.manager.evt.LldbCommandErrorEvent;
-import agent.lldb.manager.evt.LldbRunningEvent;
+import agent.lldb.manager.evt.*;
 import agent.lldb.manager.impl.LldbManagerImpl;
+import ghidra.util.Msg;
 
 /**
  * Implementation of {@link DbgProcess#kill()}
@@ -50,6 +49,11 @@ public class LldbContinueCommand extends AbstractLldbCommand<Void> {
 
 	@Override
 	public void invoke() {
-		process.Continue();
+		SBError res = process.Continue();
+		if (!res.Success()) {
+			SBStream stream = new SBStream();
+			res.GetDescription(stream);
+			Msg.error(this, stream.GetData());
+		}
 	}
 }

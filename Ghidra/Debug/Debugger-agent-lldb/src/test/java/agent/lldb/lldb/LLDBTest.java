@@ -36,7 +36,7 @@ public class LLDBTest extends AbstractGhidraHeadlessIntegrationTest {
 
 	public static void assumeLibLoadable() {
 		try {
-			System.load("/Users/llero/git/llvm-build/lib/liblldb.dylib");
+			System.load("/Users/llero/git/llvm-project/build/lib/liblldb.dylib");
 		}
 		catch (UnsatisfiedLinkError ex) {
 			assumeTrue("liblldb.dylib not found. Probably not OSX here.", false);

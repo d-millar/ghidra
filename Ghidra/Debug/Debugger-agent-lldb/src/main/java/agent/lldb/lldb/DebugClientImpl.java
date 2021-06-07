@@ -171,7 +171,7 @@ public class DebugClientImpl implements DebugClient {
 		SBError error = new SBError();
 		session = connectSession(fileName);
 		String [] argArr = args.toArray(new String[args.size()]);
-		String [] envArr = envp.toArray(new String[envp.size()]);
+		String [] envArr = envp.isEmpty() ? null : envp.toArray(new String[envp.size()]);
 		SBProcess process = session.LaunchSimple(argArr, envArr, workingDir);
 		if (!error.Success()) {
 			Msg.error(this, error.GetType() + " for create process");
@@ -212,7 +212,8 @@ public class DebugClientImpl implements DebugClient {
 
 		
 		String [] argArr = args.toArray(new String[args.size()]);
-		String [] envArr = envp.toArray(new String[envp.size()]);
+		// null for envp means use the default environment
+		String [] envArr = envp.isEmpty() ? null : envp.toArray(new String[envp.size()]);
 		String pathSTDIN = pathsIO.get(0);
 		String pathSTDOUT = pathsIO.get(1);
 		String pathSTDERR = pathsIO.get(2);

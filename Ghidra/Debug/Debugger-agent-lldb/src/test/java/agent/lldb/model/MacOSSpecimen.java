@@ -33,6 +33,12 @@ public enum MacOSSpecimen implements DebuggerTestSpecimen, DebuggerModelTestUtil
 			return "/bin/echo Hello, World!";
 		}
 	},
+	XCLOCK {
+		@Override
+		String getCommandLine() {
+			return "/opt/X11/bin/xclock-x86_64";
+		}
+	},
 	DD {
 		@Override
 		String getCommandLine() {
