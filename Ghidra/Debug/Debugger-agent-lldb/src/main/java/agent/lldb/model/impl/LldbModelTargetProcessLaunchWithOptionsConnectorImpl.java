@@ -62,7 +62,7 @@ public class LldbModelTargetProcessLaunchWithOptionsConnectorImpl extends LldbMo
 
 	protected Map<String, ParameterDescription<?>> computeParameters() {
 		HashMap<String, ParameterDescription<?>> map =
-			new HashMap<String, ParameterDescription<?>>();
+			new LinkedHashMap<String, ParameterDescription<?>>();
 		ParameterDescription<String> p0 = ParameterDescription.create(String.class, "File", true,
 			"", "File", "executable to be launched");
 		map.put("File", p0);
@@ -116,7 +116,7 @@ public class LldbModelTargetProcessLaunchWithOptionsConnectorImpl extends LldbMo
 			false, "Detach on disconnect", "client stub should detach rather than killing the debugee if it loses connection with lldb");
 		map.put("Detach", pF9);
 		ParameterDescription<Boolean> pFA = ParameterDescription.create(Boolean.class, "ExpandArgs", false,
-			false, "Shell-stype expansion", "perform shell-style argument expansion");
+			false, "Shell-style expansion", "perform shell-style argument expansion");
 		map.put("ExpandArgs", pFA);
 		ParameterDescription<Boolean> pFB = ParameterDescription.create(Boolean.class, "CloseTTY", false,
 			false, "Close TTY on exit", "close the open TTY on exit");

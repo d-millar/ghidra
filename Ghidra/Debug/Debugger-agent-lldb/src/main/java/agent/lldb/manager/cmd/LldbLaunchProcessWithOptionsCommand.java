@@ -44,9 +44,9 @@ public class LldbLaunchProcessWithOptionsCommand extends AbstractLldbCommand<SBT
 		super(manager);
 		this.fileName = (String) args.get("File");
 		String argstr = (String) args.get("Args");
-		this.args = Arrays.asList(argstr.split(" "));
+		this.args = argstr.equals("") ? new ArrayList<String>() : Arrays.asList(argstr.split(" "));
 		String envstr = (String) args.get("Env");
-		this.envp = Arrays.asList(envstr.split(" "));
+		this.envp = envstr.equals("") ? new ArrayList<String>() : Arrays.asList(envstr.split(" "));
 		this.pathsIO = new ArrayList<>();
 		this.pathsIO.add((String)args.get("STDIN"));
 		this.pathsIO.add((String)args.get("STDOUT"));
