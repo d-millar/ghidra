@@ -24,6 +24,7 @@ import agent.lldb.manager.LldbCause;
 import agent.lldb.manager.LldbReason;
 import agent.lldb.model.iface1.LldbModelSelectableObject;
 import agent.lldb.model.iface2.*;
+import ghidra.async.AsyncUtils;
 import ghidra.dbg.error.DebuggerUserException;
 import ghidra.dbg.target.*;
 import ghidra.dbg.target.schema.*;
@@ -126,6 +127,17 @@ public class LldbModelTargetRootImpl extends LldbModelDefaultTargetModelRoot
 		});
 	}
 
+	@Override
+	public CompletableFuture<Void> attach(TargetAttachable attachable) {
+		LldbModelTargetProcessAttachByPidConnectorImpl targetConnector = connectors.processAttacherByPid;
+		String key = attachable.getName();
+		Map<String,String> map = new HashMap<>();
+		map.put("Pid", key.substring(1, key.length()-1));
+		return model.gateFuture(targetConnector.launch(map)).exceptionally(exc -> {
+			throw new DebuggerUserException("Launch failed for " + key);
+		});
+	}
+	
 	@Override
 	public CompletableFuture<Void> attach(long pid) {
 		//SBProcess process = new SBProcess(getManager());

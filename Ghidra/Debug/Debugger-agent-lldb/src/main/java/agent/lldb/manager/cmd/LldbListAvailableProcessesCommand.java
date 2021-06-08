@@ -18,14 +18,18 @@ package agent.lldb.manager.cmd;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import SWIG.SBCommandReturnObject;
+import SWIG.SBDebugger;
+import agent.lldb.lldb.DebugClientImpl;
 import agent.lldb.manager.impl.LldbManagerImpl;
 
 public class LldbListAvailableProcessesCommand
 		extends AbstractLldbCommand<List<Pair<String, String>>> {
 
-	//private Snapshot snap;
+	private String output;
 
 	public LldbListAvailableProcessesCommand(LldbManagerImpl manager) {
 		super(manager);
@@ -34,21 +38,22 @@ public class LldbListAvailableProcessesCommand
 	@Override
 	public List<Pair<String, String>> complete(LldbPendingCommand<?> pending) {
 		List<Pair<String, String>> result = new ArrayList<>();
-		/*
-		for (PROCESSENTRY32W proc : snap.getProcesses()) {
-			int pid = proc.th32ProcessID.intValue();
-			char[] name = proc.szExeFile;
-			String exe = new String(name);
-			result.add(new ImmutablePair<>(pid, exe));
+		String[] lines = output.split("\n");
+		// Skip count & header
+		for (int i = 3; i < lines.length; i++) {
+			String[] fields = lines[i].split("\\s+");
+			result.add(new ImmutablePair<String,String>(fields[0], fields[4]));
 		}
-		*/
 		return result;
 	}
 
 	@Override
 	public void invoke() {
-		//snap = ToolhelpUtil
-		//		.createSnapshot(BitmaskSet.of(SnapshotFlags.PROCESS, SnapshotFlags.THREAD), 0);
+		DebugClientImpl client = (DebugClientImpl) manager.getClient();
+		SBDebugger sbd = client.getDebugger();
+		SBCommandReturnObject obj = new SBCommandReturnObject();
+		sbd.GetCommandInterpreter().HandleCommand("platform process list", obj);
+		output = obj.GetOutput();
 	}
 
 }
