@@ -108,12 +108,11 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public String getDisplay() {
-		if (getManager().isKernelMode()) {
-			return "[PR" + DebugClient.getId(getThread()) + "]";
-		}
 		String tidstr = DebugClient.getId(getThread());
 		if (base == 16) {
 			tidstr = "0x" + tidstr;
+		} else {
+			tidstr = Long.toString(Long.parseLong(tidstr,16));
 		}
 		return "[" + tidstr + "]";
 	}
@@ -176,7 +175,7 @@ public class LldbModelTargetThreadImpl extends LldbModelTargetObjectImpl
 	public void setBase(Object value) {
 		this.base = (Integer) value;
 		changeAttributes(List.of(), List.of(), Map.of( //
-			DISPLAY_ATTRIBUTE_NAME, getDescription(0)//
+			DISPLAY_ATTRIBUTE_NAME, getDisplay()//
 		), "Started");
 	}
 

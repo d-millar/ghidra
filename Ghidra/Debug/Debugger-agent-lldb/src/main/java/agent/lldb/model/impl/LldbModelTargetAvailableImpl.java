@@ -18,6 +18,7 @@ package agent.lldb.model.impl;
 import java.util.List;
 import java.util.Map;
 
+import agent.lldb.lldb.DebugClient;
 import agent.lldb.model.iface2.LldbModelTargetAvailable;
 import agent.lldb.model.iface2.LldbModelTargetAvailableContainer;
 import ghidra.dbg.target.schema.TargetAttributeType;
@@ -39,21 +40,25 @@ public class LldbModelTargetAvailableImpl extends LldbModelTargetObjectImpl
 	}
 
 	protected final String pid;
+	protected final String name;
+	private Integer base = 16;
 
 	public LldbModelTargetAvailableImpl(LldbModelTargetAvailableContainer parent, String pid,
 			String name) {
 		super(parent.getModel(), parent, keyAttachable(pid), name);
+		this.name = name;
 		this.pid = pid;
 
 		this.changeAttributes(List.of(), List.of(), Map.of(//
 			PID_ATTRIBUTE_NAME, Long.parseLong(pid, 16), //
-			DISPLAY_ATTRIBUTE_NAME, keyAttachable(pid) + " : " + name.trim() //
+			DISPLAY_ATTRIBUTE_NAME, getDisplay() //
 		), "Initialized");
 	}
 
 	public LldbModelTargetAvailableImpl(LldbModelTargetAvailableContainer parent, String pid) {
 		super(parent.getModel(), parent, keyAttachable(pid), "Attachable");
 		this.pid = pid;
+		this.name = "";
 
 		this.changeAttributes(List.of(), List.of(), Map.of(//
 			PID_ATTRIBUTE_NAME, Long.parseLong(pid, 16), //
@@ -67,10 +72,23 @@ public class LldbModelTargetAvailableImpl extends LldbModelTargetObjectImpl
 		return Long.parseLong(pid);
 	}
 
+	@Override
+	public String getDisplay() {
+		Long p = Long.decode(pid);
+		String pidstr = "";
+		if (base == 16) {
+			pidstr = "0x" + Long.toHexString(p);
+		} else {
+			pidstr = pid;
+		}
+		return "[" + pidstr + "] : " + name.trim();
+	}
+	
 	public void setBase(Object value) {
-		this.changeAttributes(List.of(), List.of(), Map.of(//
-			DISPLAY_ATTRIBUTE_NAME, keyAttachable(pid) //
-		), "Initialized");
+		this.base = (Integer) value;
+		changeAttributes(List.of(), List.of(), Map.of( //
+			DISPLAY_ATTRIBUTE_NAME, getDisplay()//
+		), "Started");
 	}
 
 }

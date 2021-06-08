@@ -122,13 +122,11 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 
 	@Override
 	public String getDisplay() {
-		if (getManager().isKernelMode()) {
-			return "[kernel]";
-		}
-
 		String pidstr = DebugClient.getId(getProcess());
 		if (base == 16) {
 			pidstr = "0x" + pidstr;
+		} else {
+			pidstr = Long.toString(Long.parseLong(pidstr,16));
 		}
 		return "[" + pidstr + "]";
 	}
@@ -199,7 +197,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 		if (proc != null) {
 			changeAttributes(List.of(), List.of(), Map.of( //
 				PID_ATTRIBUTE_NAME, getProcess().GetProcessID().longValue(), //
-				DISPLAY_ATTRIBUTE_NAME, getDescription(0), //
+				DISPLAY_ATTRIBUTE_NAME, getDisplay(), //
 				STATE_ATTRIBUTE_NAME, TargetExecutionState.ALIVE //
 			), "Started");
 		}
@@ -243,7 +241,7 @@ public class LldbModelTargetProcessImpl extends LldbModelTargetObjectImpl
 	public void setBase(Object value) {
 		this.base = (Integer) value;
 		changeAttributes(List.of(), List.of(), Map.of( //
-			DISPLAY_ATTRIBUTE_NAME, getDescription(0)//
+			DISPLAY_ATTRIBUTE_NAME, getDisplay()//
 		), "Started");
 	}
 
