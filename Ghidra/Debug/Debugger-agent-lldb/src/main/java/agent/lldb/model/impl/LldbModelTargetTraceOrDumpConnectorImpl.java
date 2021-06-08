@@ -15,9 +15,7 @@
  */
 package agent.lldb.model.impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import agent.lldb.model.iface2.LldbModelTargetConnector;
@@ -27,9 +25,7 @@ import ghidra.dbg.error.DebuggerUserException;
 import ghidra.dbg.target.TargetMethod;
 import ghidra.dbg.target.TargetMethod.ParameterDescription;
 import ghidra.dbg.target.TargetMethod.TargetParameterMap;
-import ghidra.dbg.target.schema.TargetAttributeType;
-import ghidra.dbg.target.schema.TargetElementType;
-import ghidra.dbg.target.schema.TargetObjectSchemaInfo;
+import ghidra.dbg.target.schema.*;
 
 @TargetObjectSchemaInfo(
 	name = "TraceOrDumpConnector",
@@ -65,7 +61,7 @@ public class LldbModelTargetTraceOrDumpConnectorImpl extends LldbModelTargetObje
 
 	protected Map<String, ParameterDescription<?>> computeParameters() {
 		HashMap<String, ParameterDescription<?>> map =
-			new HashMap<String, ParameterDescription<?>>();
+			new LinkedHashMap<String, ParameterDescription<?>>();
 		ParameterDescription<String> p1 = ParameterDescription.create(String.class, "CommandLine",
 			true, ".opendump", "Cmd", "native loader command");
 		ParameterDescription<String> p2 = ParameterDescription.create(String.class, "TraceOrDump",

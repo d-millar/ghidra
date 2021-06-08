@@ -62,7 +62,7 @@ public class LldbModelTargetProcessAttachByPathConnectorImpl extends LldbModelTa
 
 	protected Map<String, ParameterDescription<?>> computeParameters() {
 		HashMap<String, ParameterDescription<?>> map =
-			new HashMap<String, ParameterDescription<?>>();
+			new LinkedHashMap<String, ParameterDescription<?>>();
 		ParameterDescription<String> p0 = ParameterDescription.create(
 			String.class, "Name", true, "", "Name", "name for the target process");
 		map.put("Name", p0);
